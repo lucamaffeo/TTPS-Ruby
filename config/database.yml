@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  username: postgres
+  password: postgres
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: tpps_development
+
+test:
+  <<: *default
+  database: tpps_test
+
+production:
+  <<: *default
+  database: tpps_production
+  username: TU_USUARIO_PRODUCCION
+  password: <%= ENV['TPPS_DATABASE_PASSWORD'] %>

@@ -1,0 +1,12 @@
+<!-- filepath: c:\Users\fabia\Trabajo_Ruby\TTPS\app\views\usuarios\index.html.erb -->
+<h1>Usuarios</h1>
+<%= link_to 'Nuevo Usuario', new_usuario_path %>
+<ul>
+  <% @usuarios.each do |usuario| %>
+    <li>
+      <%= link_to usuario.nombre, usuario_path(usuario) %> - <%= usuario.email %>
+      <%= link_to 'Editar', edit_usuario_path(usuario) %>
+      <%= link_to 'Eliminar', usuario_path(usuario), method: :delete, data: { confirm: '¿Seguro?' } %>
+    </li>
+  <% end %>
+</ul>

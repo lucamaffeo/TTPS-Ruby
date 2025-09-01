@@ -1,0 +1,16 @@
+<!-- filepath: c:\Users\fabia\Trabajo_Ruby\TTPS\app\views\usuarios\new.html.erb -->
+<h1>Nuevo Usuario</h1>
+<%= form_with(model: @usuario, local: true) do |form| %>
+  <div>
+    <%= form.label :nombre %>
+    <%= form.text_field :nombre %>
+  </div>
+  <div>
+    <%= form.label :email %>
+    <%= form.email_field :email %>
+  </div>
+  <div>
+    <%= form.submit "Crear Usuario" %>
+  </div>
+<% end %>
+<%= link_to 'Volver', usuarios_path %>

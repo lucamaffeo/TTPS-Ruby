@@ -1,6 +1,11 @@
-<!-- filepath: c:\Users\fabia\Trabajo_Ruby\TTPS\app\views\usuarios\show.html.erb -->
-<h1><%= @usuario.nombre %></h1>
-<p>Email: <%= @usuario.email %></p>
-<%= link_to 'Editar', edit_usuario_path(@usuario) %> |
-<%= link_to 'Eliminar', usuario_path(@usuario), method: :delete, data: { confirm: '¿Seguro que quieres eliminar este usuario?' } %> |
-<%= link_to 'Volver', usuarios_path %>
+<%= render "bases/base_show",
+					 title: @usuario.nombre,
+					 fields: {
+						 "Email" => @usuario.email
+					 } %>
+
+<p>
+	<%= link_to 'Editar', edit_usuario_path(@usuario) %> |
+	<%= link_to 'Eliminar', usuario_path(@usuario), method: :delete, data: { confirm: '¿Seguro que quieres eliminar este usuario?' } %> |
+	<%= link_to 'Volver', usuarios_path %>
+</p>

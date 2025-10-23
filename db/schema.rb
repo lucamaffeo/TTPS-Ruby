@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_06_10_120000) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_13_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,4 +20,16 @@ ActiveRecord::Schema[8.0].define(version: 2024_06_10_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  create_table "vehiculos", force: :cascade do |t|
+    t.bigint "usuario_id", null: false
+    t.string "marca"
+    t.string "modelo"
+    t.integer "anio"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["usuario_id"], name: "index_vehiculos_on_usuario_id"
+  end
+
+  add_foreign_key "vehiculos", "usuarios"
 end

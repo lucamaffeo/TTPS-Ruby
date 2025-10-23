@@ -1,25 +1,62 @@
 # README
 TRABAJO RUBY
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Requisitos
 
-Things you may want to cover:
+- Ruby y Bundler instalados
+- PostgreSQL en localhost con usuario `postgres`/`postgres` (ver `config/database.yml`)
 
-* Ruby version
+## Configuración inicial
 
-* System dependencies
+En PowerShell, desde la carpeta del proyecto:
 
-* Configuration
+```powershell
+bundle install
+bin\rails db:create 
+bin\rails db:migrate
+bin\rails db:seed
+ESTO TAMB PUEDE SER SIN BIN.
+```
 
-* Database creation
+Arrancar el servidor:
 
-* Database initialization
+```powershell
+bin\rails s
+```
 
-* How to run the test suite
+## Migraciones y base de datos
 
-* Services (job queues, cache servers, search engines, etc.)
+- Ejecutar migraciones pendientes:
+	```powershell
+	bin\rails db:migrate
+	```
 
-* Deployment instructions
+- Ver estado de migraciones:
+	```powershell
+	bin\rails db:migrate:status
+	```
 
-* ...
+- Deshacer la última migración:
+	```powershell
+	bin\rails db:rollback STEP=1
+	```
+
+- Resetear la base (drop + create + schema + seed) ATENCIÓN: borra datos:
+	```powershell
+	bin\rails db:reset
+	```
+
+- Replantar seeds rápidamente (Rails 6+):
+	```powershell
+	bin\rails db:seed:replant
+	```
+
+## Seeds
+
+Edita `db/seeds.rb` para definir datos iniciales. Para cargar:
+
+```powershell
+bin\rails db:seed
+```
+
+El archivo actual crea usuarios y vehículos de ejemplo.

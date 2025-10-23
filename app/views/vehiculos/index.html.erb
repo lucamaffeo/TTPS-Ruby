@@ -1,0 +1,10 @@
+<%= render "bases/base_index",
+                     title: "Vehículos",
+                     columns: ["Usuario", "Marca", "Modelo", "Año"],
+                     collection: @vehiculos,
+                     row_partial: "vehiculos/row" %>
+
+<p>
+    <%= link_to 'Nuevo Vehículo', new_vehiculo_path %>
+</p>
+

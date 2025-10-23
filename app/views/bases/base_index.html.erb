@@ -1,0 +1,18 @@
+<h1><%= title %></h1>
+
+<table>
+	<thead>
+		<tr>
+			<% columns.each do |c| %>
+				<th><%= c %></th>
+			<% end %>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<% collection.each do |item| %>
+			<%= render partial: row_partial, locals: { item: item } %>
+		<% end %>
+	</tbody>
+</table>
+

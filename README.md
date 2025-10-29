@@ -4,7 +4,7 @@ TRABAJO RUBY
 ## Requisitos
 
 - Ruby y Bundler instalados
-- PostgreSQL en localhost con usuario `postgres`/`postgres` (ver `config/database.yml`)
+- SQLite 3 (la app usa sqlite3; ver `config/database.yml`)
 
 ## Configuración inicial
 
@@ -15,7 +15,6 @@ bundle install
 bin\rails db:create 
 bin\rails db:migrate
 bin\rails db:seed
-ESTO TAMB PUEDE SER SIN BIN.
 ```
 
 Arrancar el servidor:
@@ -59,4 +58,4 @@ Edita `db/seeds.rb` para definir datos iniciales. Para cargar:
 bin\rails db:seed
 ```
 
-El archivo actual crea usuarios y vehículos de ejemplo.
+El archivo actual crea usuarios (incluyendo los que se usan en vehículos) y vehículos de ejemplo de forma idempotente.

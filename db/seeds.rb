@@ -8,47 +8,32 @@ usuarios_data = [
     { nombre: "Carla López",   email: "carla@example.com" }
 ]
 
-usuarios = usuarios_data.map do |attrs|
-    Usuario.find_or_create_by!(email: attrs[:email]) do |u|
-        u.nombre = attrs[:nombre]
-    end
-end
-
-usuario_by_email = usuarios.index_by(&:email)
-
-puts "==> Creando vehículos"
+# REEMPLAZO: unificar emails (usuarios + vehiculos) y crear usuarios de forma idempotente
 vehiculos_data = [
-    { usuario_email: "ana@example.com",   marca: "Toyota",   modelo: "Corolla",  anio: 2020 },
-    { usuario_email: "bruno@example.com", marca: "Ford",     modelo: "Fiesta",   anio: 2018 },
-    { usuario_email: "carla@example.com", marca: "Honda",    modelo: "Civic",    anio: 2022 },
-    { usuario_email: "ana@example.com",   marca: "Renault",  modelo: "Clio",     anio: 2016 }
+    { marca: "Toyota", modelo: "Corolla", anio: 2020, usuario_email: "ana@example.com" },
+    { marca: "Ford", modelo: "Fiesta", anio: 2019, usuario_email: "bruno@example.com" },
+    { marca: "Honda", modelo: "Civic", anio: 2021, usuario_email: "carla@example.com" },
+    { marca: "Toyota", modelo: "Hilux", anio: 2018, usuario_email: "ana@example.com" }
 ]
 
-vehiculos_data.each do |attrs|
-    user = usuario_by_email.fetch(attrs[:usuario_email])
-    Vehiculo.find_or_create_by!(
-        usuario: user,
-        marca: attrs[:marca],
-        modelo: attrs[:modelo],
-        anio: attrs[:anio]
-    )
+# Construir mapa de nombre por email a partir de usuarios_data
+name_by_email = usuarios_data.to_h { |u| [u[:email], u[:nombre]] }
+
+# Asegurar que todos los emails involucrados existan como usuarios
+all_emails = (name_by_email.keys + vehiculos_data.map { |v| v[:usuario_email] }).uniq
+usuarios = all_emails.map do |email|
+  Usuario.find_or_create_by!(email: email) do |u|
+    # Generar nombre si no estaba en usuarios_data (e.g., "juan.perez" -> "Juan Perez")
+    u.nombre = name_by_email[email] || email.split('@').first.tr('.', ' ').split.map(&:capitalize).join(' ')
+  end
+end
+usuarios_by_email = usuarios.index_by(&:email)
+
+puts "==> Creando vehículos"
+vehiculos_data.each do |v|
+  usuario = usuarios_by_email.fetch(v[:usuario_email])
+  attrs = v.slice(:marca, :modelo, :anio)
+  Vehiculo.find_or_create_by!(attrs.merge(usuario: usuario))
 end
 
 puts "==> Listo: #{Usuario.count} usuarios y #{Vehiculo.count} vehículos."
-
-
-# Create some default users
-usuarios = [
-    { nombre: "Juan Perez", email: "juan.perez@example.com" },
-]
-vehiculos = [
-    { marca: "Toyota", modelo: "Corolla", anio: 2020, usuario_email: "juan.perez@example.com" }
-]
-
-vehiculos.each do |vehiculo_attrs|
-    Vehiculo.find_or_create_by!(vehiculo_attrs)
-end
-usuarios.each do |usuario_attrs|
-    Usuario.find_or_create_by!(usuario_attrs)
-end
-    

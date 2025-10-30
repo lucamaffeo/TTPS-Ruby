@@ -1,10 +1,13 @@
 class UsuariosController < ApplicationController
+  before_action :set_usuario, only: %i[show edit update destroy]
+
   def index
-    @usuarios = Usuario.all
+    @usuarios = policy_scope(Usuario)
+    authorize Usuario
   end
 
   def show
-    @usuario = Usuario.find(params[:id])
+    authorize @usuario
   end
 
   def new
@@ -21,27 +24,31 @@ class UsuariosController < ApplicationController
   end
 
   def edit
-    @usuario = Usuario.find(params[:id])
+    authorize @usuario
   end
 
   def update
-    @usuario = Usuario.find(params[:id])
-    if @usuario.update(usuario_params)
-      redirect_to @usuario, notice: "Usuario actualizado correctamente."
+    authorize @usuario
+    if @usuario.update(permitted_attributes(@usuario))
+      redirect_to @usuario, notice: "Usuario actualizado."
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @usuario = Usuario.find(params[:id])
+    authorize @usuario
     @usuario.destroy
     redirect_to usuarios_path, notice: "Usuario eliminado."
   end
 
   private
 
+  def set_usuario
+    @usuario = Usuario.find(params[:id])
+  end
+
   def usuario_params
-    params.require(:usuario).permit(:nombre, :email)
+    params.require(:usuario).permit(:nombre, :email, :dni)
   end
 end

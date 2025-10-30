@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  resources :usuarios
-  resources :vehiculos
+  devise_for :usuarios
+
+  resources :usuarios, only: %i[index show edit update destroy]
+
+  root to: "usuarios#index"
 end

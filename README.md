@@ -1,61 +1,48 @@
-# README
-TRABAJO RUBY
+# TTPS - Trabajo Ruby
 
-## Requisitos
+## Requisitos técnicos
+- Ruby 3.4.x y Bundler
+- SQLite 3
+- Node opcional (solo si usás tooling adicional)
+- PowerShell/Terminal con `bundle exec` o `rails`
 
-- Ruby y Bundler instalados
-- SQLite 3 (la app usa sqlite3; ver `config/database.yml`)
+## Decisiones de diseño
+- Autenticación: Devise (email + password).
+- Autorización: Pundit, con políticas por recurso.
+- Modelo Usuario:
+  - Atributos: nombre, email, dni, rol, password.
+  - Roles como enum: 0=empleado, 1=gerente, 2=administrador.
+  - Restricciones de BD: email único, dni único, check constraint `rol IN (0,1,2)`.
+- Seeds: crean 3 usuarios base (admin/gerente/empleado) con password "password".
 
-## Configuración inicial
 
-En PowerShell, desde la carpeta del proyecto:
-
+## Puesta en marcha local
 ```powershell
 bundle install
-bin\rails db:create 
-bin\rails db:migrate
-bin\rails db:seed
+bundle exec rails db:create
+bundle exec rails db:migrate
+bundle exec rails db:seed
+bundle exec rails s
 ```
 
-Arrancar el servidor:
+## Gestión de base de datos
+- Migraciones pendientes:
+  ```powershell
+  bundle exec rails db:migrate
+  ```
+- Reset completo (drop + create + schema + seed). Recomendado en Windows/SQLite:
+  ```powershell
+  bundle exec rails db:reset
+  ```
+- Replantar seeds:
+  ```powershell
+  bundle exec rails db:seed:replant
+  ```
 
-```powershell
-bin\rails s
-```
+Notas:
+- Cerrá cualquier visor de SQLite antes de resetear (evita "Permission denied").
 
-## Migraciones y base de datos
-
-- Ejecutar migraciones pendientes:
-	```powershell
-	bin\rails db:migrate
-	```
-
-- Ver estado de migraciones:
-	```powershell
-	bin\rails db:migrate:status
-	```
-
-- Deshacer la última migración:
-	```powershell
-	bin\rails db:rollback STEP=1
-	```
-
-- Resetear la base (drop + create + schema + seed) ATENCIÓN: borra datos:
-	```powershell
-	bin\rails db:reset
-	```
-
-- Replantar seeds rápidamente (Rails 6+):
-	```powershell
-	bin\rails db:seed:replant
-	```
-
-## Seeds
-
-Edita `db/seeds.rb` para definir datos iniciales. Para cargar:
-
-```powershell
-bin\rails db:seed
-```
-
-El archivo actual crea usuarios (incluyendo los que se usan en vehículos) y vehículos de ejemplo de forma idempotente.
+## Cuentas iniciales (seeds)
+- admin@example.com / password (rol: administrador)
+- gerente@example.com / password (rol: gerente)
+- empleado@example.com / password (rol: empleado)

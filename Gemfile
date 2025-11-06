@@ -62,8 +62,8 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "pundit", "~> 2.5"
-gem "ransack", "~> 4.4"
-gem "kaminari", "~> 1.2"
-gem "devise", "~> 4.9"
-gem "mini_magick", "~> 5.3"
+gem "pundit", "~> 2.5" # autorización de roles
+gem "ransack", "~> 4.4" # búsquedas avanzadas (filtros y ordenamiento)
+gem "kaminari", "~> 1.2" # paginación
+gem "devise", "~> 4.9" # autenticación (manejo de usuarios)
+gem "mini_magick", "~> 5.3" # procesamiento de imágenes

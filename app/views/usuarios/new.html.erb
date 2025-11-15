@@ -1,15 +1,23 @@
-<h1>Nuevo Usuario</h1>
-<%= form_with(model: @usuario, local: true) do |form| %>
-  <div>
-    <%= form.label :nombre %>
-    <%= form.text_field :nombre %>
+<h1 class="mb-4 text-light">Nuevo Usuario</h1>
+
+<%= form_with(model: @usuario, local: true, class: "row g-3") do |form| %>
+  <div class="col-12">
+    <%= form.label :nombre, class: "form-label text-light" %>
+    <%= form.text_field :nombre, class: "form-control" %>
   </div>
-  <div>
-    <%= form.label :email %>
-    <%= form.email_field :email %>
+
+  <div class="col-12">
+    <%= form.label :email, class: "form-label text-light" %>
+    <%= form.email_field :email, class: "form-control" %>
   </div>
-  <div>
-    <%= form.submit "Crear Usuario" %>
+
+  <div class="col-12 mt-3">
+    <%= form.submit "Crear Usuario", class: "btn btn-dark" %>
   </div>
 <% end %>
-<%= link_to 'Volver', usuarios_path %>
+
+<p class="mt-3">
+  <%= link_to usuarios_path, class: "btn btn-dark" do %>
+    <i class="bi bi-arrow-left"></i> Volver
+  <% end %>
+</p>

@@ -49,6 +49,8 @@ class UsuariosController < ApplicationController
   end
 
   def usuario_params
-    params.require(:usuario).permit(:nombre, :email, :dni)
+    permitidos = [:nombre, :email, :dni]
+    permitidos << :rol if current_usuario&.administrador?
+    params.require(:usuario).permit(permitidos)
   end
 end

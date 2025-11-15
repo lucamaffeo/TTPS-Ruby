@@ -4,20 +4,31 @@ class Usuario < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  # Roles (evitar fallo en db:setup cuando aún no existe la tabla)
-  begin
-    if ActiveRecord::Base.connection.data_source_exists?("usuarios") &&
-       ActiveRecord::Base.connection.column_exists?(:usuarios, :rol)
-      enum rol: { empleado: 0, gerente: 1, administrador: 2 }
-    end
-  rescue StandardError
-    # Ignorar durante tareas que cargan el schema
+  # Definición de roles sin usar enum (evita conflicto ActiveRecord::Enum)
+  ROLES = {
+    empleado: 0,
+    gerente: 1,
+    administrador: 2
+  }.freeze
+
+  # Helpers de rol (compatibles con lo que usan tus policies: administrador?, gerente?, etc.)
+  def empleado?
+    rol == ROLES[:empleado]
   end
 
-  # Validaciones
+  def gerente?
+    rol == ROLES[:gerente]
+  end
+
+  def administrador?
+    rol == ROLES[:administrador]
+  end
+
+  # Validación: solo roles válidos (0, 1, 2) o nil
+  validates :rol,
+            inclusion: { in: ROLES.values },
+            allow_nil: true
+
   validates :nombre, presence: true
   validates :dni, presence: true, uniqueness: true
-
-  # Validaciones mínimas (Devise ya valida email/password)
-  # ...puedes agregar validaciones extra si hace falta...
 end

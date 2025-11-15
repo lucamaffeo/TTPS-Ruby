@@ -1,11 +1,21 @@
 <%= render "bases/base_show",
-					 title: @usuario.nombre,
-					 fields: {
-						 "Email" => @usuario.email
-					 } %>
+           title: @usuario.nombre,
+           fields: {
+             "Email" => @usuario.email
+           } %>
 
-<p>
-	<%= link_to 'Editar', edit_usuario_path(@usuario) %> |
-	<%= link_to 'Eliminar', usuario_path(@usuario), method: :delete, data: { confirm: '¿Seguro que quieres eliminar este usuario?' } %> |
-	<%= link_to 'Volver', usuarios_path %>
+<p class="mt-3">
+  <%= link_to edit_usuario_path(@usuario), class: "btn btn-dark me-2" do %>
+    <i class="bi bi-pencil-square"></i> Editar
+  <% end %>
+
+  <%= link_to usuario_path(@usuario),
+              data: { turbo_method: :delete, turbo_confirm: "¿Seguro que quieres eliminar este usuario?" },
+              class: "btn btn-dark me-2" do %>
+    <i class="bi bi-trash3"></i> Eliminar
+  <% end %>
+
+  <%= link_to usuarios_path, class: "btn btn-dark" do %>
+    <i class="bi bi-arrow-left"></i> Volver
+  <% end %>
 </p>

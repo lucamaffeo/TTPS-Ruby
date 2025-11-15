@@ -13,6 +13,11 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Pundit debe usar current_usuario en lugar de current_user
+  def pundit_user
+    current_usuario
+  end
+
   def configure_permitted_parameters
     # Registro
     devise_parameter_sanitizer.permit(:sign_up, keys: [:nombre, :dni])
@@ -24,5 +29,14 @@ class ApplicationController < ActionController::Base
     keys = [:email, :nombre, :dni, :password, :password_confirmation, :current_password]
     keys << :rol if current_usuario&.administrador? # solo admin puede cambiar rol
     keys
+  end
+
+  # Redirección después de login
+  def after_sign_in_path_for(resource)
+    if resource.administrador?
+      usuarios_path
+    else
+      productos_path
+    end
   end
 end

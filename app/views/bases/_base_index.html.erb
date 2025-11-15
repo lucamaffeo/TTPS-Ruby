@@ -3,10 +3,10 @@
 <table>
   <thead>
     <tr>
-      <% columns.each do |c| %>
+      <% ah = local_assigns[:actions_header] || '' %>
+      <% (columns + [ah]).each do |c| %>
         <th><%= c %></th>
       <% end %>
-      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -15,3 +15,7 @@
     <% end %>
   </tbody>
 </table>
+
+<% if collection.blank? %>
+  <p>No hay registros.</p>
+<% end %>

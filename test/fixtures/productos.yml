@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  titulo: MyString
+  descripcion: MyText
+  autor: MyString
+  precio: 9.99
+  stock: 1
+  categoria: MyString
+  tipo: MyString
+  estado: MyString
+  fecha_ingreso: 2025-11-14
+  fecha_modificacion: 2025-11-14
+  fecha_baja: 2025-11-14
+
+two:
+  titulo: MyString
+  descripcion: MyText
+  autor: MyString
+  precio: 9.99
+  stock: 1
+  categoria: MyString
+  tipo: MyString
+  estado: MyString
+  fecha_ingreso: 2025-11-14
+  fecha_modificacion: 2025-11-14
+  fecha_baja: 2025-11-14

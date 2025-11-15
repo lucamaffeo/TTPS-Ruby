@@ -1,18 +1,8 @@
-<h1><%= title %></h1>
-
-<table>
-	<thead>
-		<tr>
-			<% columns.each do |c| %>
-				<th><%= c %></th>
-			<% end %>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<% collection.each do |item| %>
-			<%= render partial: row_partial, locals: { item: item } %>
-		<% end %>
-	</tbody>
-</table>
+<%= render partial: 'bases/base_index', locals: {
+  title: title,
+  columns: columns,
+  collection: collection,
+  row_partial: row_partial,
+  actions_header: (defined?(actions_header) ? actions_header : nil)
+} %>
 

@@ -48,11 +48,8 @@
                 </span>
               </li>
               <li class="nav-item">
-                <%= link_to destroy_usuario_session_path,
-                            data: { "turbo-method": :delete },
-                            class: "btn btn-dark btn-sm border-light" do %>
-                  <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-                <% end %>
+                <%= button_to "Cerrar sesión", destroy_usuario_session_path, method: :delete, 
+                            class: "btn btn-dark btn-sm border-light" %>
               </li>
             <% else %>
               <li class="nav-item">

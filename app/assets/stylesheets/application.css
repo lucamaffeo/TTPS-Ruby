@@ -9,9 +9,114 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
- body.custom-bg {
-        background-image: url('<%= asset_path "ActiveSound.png" %>');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
+/* Fondo general de la app */
+body.custom-bg {
+  background:
+    linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.15)),
+    var(--app-bg-url);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+}
+
+/* Oscurecer un poco el contenido para que destaque sobre el fondo */
+.app-overlay {
+  background: rgba(0,0,0,0.08); /* más transparente para ver la imagen */
+  min-height: 100vh;
+}
+
+/* Contenedor principal tipo “card” */
+.main-card {
+  background: rgba(245, 245, 245, 0.90);
+  color: #222;
+  border-radius: 1rem;
+  padding: 2rem;
+  backdrop-filter: blur(3px);
+  box-shadow: 0 0.75rem 1.75rem rgba(0, 0, 0, 0.35);
+}
+
+/* Títulos */
+.main-card h1,
+.main-card h2,
+.main-card h3 {
+  font-weight: 600;
+}
+
+/* Tablas base_index */
+.table-base {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.table-base thead th {
+  background-color: #2f2f2f;
+  color: #f8f9fa;
+  padding: 0.75rem;
+}
+
+.table-base tbody td {
+  background-color: #fdfdfd;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Formularios */
+.form-panel {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.form-panel .form-label {
+  font-weight: 500;
+}
+
+.form-panel .form-control {
+  border-radius: 0.5rem;
+}
+
+/* Estilo genérico para links/botones deshabilitados por permisos */
+.button-disabled {
+  pointer-events: auto;          /* Permitimos click para que llegue al servidor */
+  cursor: not-allowed !important;
+  opacity: 0.55;
+}
+
+/* Botones oscuros personalizados */
+.btn-as-dark {
+  background-color: #111827;
+  border-color: #111827;
+  color: #f9fafb;
+}
+
+.btn-as-dark:hover {
+  background-color: #020617;
+  border-color: #020617;
+  color: #f9fafb;
+}
+
+/* Mensajes flash */
+.flash-wrapper {
+  position: relative;
+  margin-top: .5rem;
+}
+
+.flash-message {
+  border-radius: .6rem;
+  padding: .75rem 1rem;
+  font-weight: 500;
+  box-shadow: 0 .25rem .75rem rgba(0,0,0,.2);
+}
+
+.flash-success {
+  background: #e7e7e7;
+  color: #1f1f1f;
+  border: 1px solid #cfcfcf;
+}
+
+.flash-danger {
+  background: #f3f3f3;
+  color: #3b0000;
+  border: 1px solid #d8d8d8;
 }

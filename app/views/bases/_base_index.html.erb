@@ -1,21 +1,23 @@
-<h1><%= title %></h1>
+<h1 class="mb-4"><%= title %></h1>
 
-<table>
-  <thead>
-    <tr>
-      <% ah = local_assigns[:actions_header] || '' %>
-      <% (columns + [ah]).each do |c| %>
-        <th><%= c %></th>
+<div class="table-responsive">
+  <table class="table-base table table-sm align-middle">
+    <thead>
+      <tr>
+        <% ah = local_assigns[:actions_header] || '' %>
+        <% (columns + [ah]).each do |c| %>
+          <th scope="col"><%= c %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% collection.each do |item| %>
+        <%= render partial: row_partial, locals: { item: item } %>
       <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% collection.each do |item| %>
-      <%= render partial: row_partial, locals: { item: item } %>
-    <% end %>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+</div>
 
 <% if collection.blank? %>
-  <p>No hay registros.</p>
+  <p class="text-muted fst-italic">No hay registros.</p>
 <% end %>

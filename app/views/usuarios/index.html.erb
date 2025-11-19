@@ -1,11 +1,11 @@
 <%= render "bases/base_index",
            title: "Usuarios",
-           columns: ["Nombre", "Email", "Acciones"],
+           columns: ["Nombre", "Email", "Rol", "Acciones"],
            collection: @usuarios,
            row_partial: "usuarios/row" %>
 
 <p class="mt-3">
-  <%= link_to new_usuario_path, class: "btn btn-dark" do %>
+  <%= link_to new_usuario_path, class: usuario_new_button_classes do %>
     <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
   <% end %>
 </p>

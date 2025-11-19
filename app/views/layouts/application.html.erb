@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>TTPS</title>
+    <title>ActiveSound</title>
+    <%= favicon_link_tag "ActiveSound.png", rel: "icon", type: "image/png" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -16,11 +17,17 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+   
+    <link rel="stylesheet" href="<%= asset_path 'application.css' %>">
+    
   </head>
-  <body class="bg-dark text-light">
+  <body class="bg-dark text-light custom-bg">
     <nav class="navbar navbar-expand-lg navbar-dark bg-black mb-4">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">TTPS Disquería</a>
+        <a class="navbar-brand" href="<%= root_path %>">
+          <%= image_tag "ActiveSound.png", alt: "ActiveSound Disquería", height: "48", width: "50", class: "d-inline-block align-text" %>  ActiveSound Disquería
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">

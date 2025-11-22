@@ -2,26 +2,22 @@
 
 one:
   titulo: MyString
+  artista: MyString
   descripcion: MyText
-  autor: MyString
+  anio: 1
   precio: 9.99
   stock: 1
-  categoria: MyString
-  tipo: MyString
-  estado: MyString
-  fecha_ingreso: 2025-11-14
-  fecha_modificacion: 2025-11-14
-  fecha_baja: 2025-11-14
+  tipo_producto: 1
+  estado: 1
+  categoria: one
 
 two:
   titulo: MyString
+  artista: MyString
   descripcion: MyText
-  autor: MyString
+  anio: 1
   precio: 9.99
   stock: 1
-  categoria: MyString
-  tipo: MyString
-  estado: MyString
-  fecha_ingreso: 2025-11-14
-  fecha_modificacion: 2025-11-14
-  fecha_baja: 2025-11-14
+  tipo_producto: 1
+  estado: 1
+  categoria: two

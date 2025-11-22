@@ -1,23 +1,50 @@
-<h1 class="mb-4 text-light">Nuevo Usuario</h1>
+<h1 class="mb-4 text-dark">Nuevo Usuario</h1>
 
-<%= form_with(model: @usuario, local: true, class: "row g-3") do |form| %>
-  <div class="col-12">
-    <%= form.label :nombre, class: "form-label text-light" %>
-    <%= form.text_field :nombre, class: "form-control" %>
-  </div>
+<div class="form-panel">
+  <%= form_with(model: @usuario, local: true, class: "row g-3") do |form| %>
+    <div class="col-12">
+      <%= form.label :nombre, class: "form-label" %>
+      <%= form.text_field :nombre, class: "form-control" %>
+    </div>
 
-  <div class="col-12">
-    <%= form.label :email, class: "form-label text-light" %>
-    <%= form.email_field :email, class: "form-control" %>
-  </div>
+    <div class="col-12">
+      <%= form.label :email, class: "form-label" %>
+      <%= form.email_field :email, class: "form-control" %>
+    </div>
 
-  <div class="col-12 mt-3">
-    <%= form.submit "Crear Usuario", class: "btn btn-dark" %>
-  </div>
-<% end %>
+    <div class="col-12">
+      <%= form.label :dni, class: "form-label" %>
+      <%= form.text_field :dni, class: "form-control" %>
+    </div>
+
+    <div class="col-12">
+      <%= form.label :password, class: "form-label" %>
+      <%= form.password_field :password, class: "form-control", autocomplete: "new-password" %>
+    </div>
+
+    <div class="col-12">
+      <%= form.label :password_confirmation, class: "form-label" %>
+      <%= form.password_field :password_confirmation, class: "form-control", autocomplete: "new-password" %>
+    </div>
+
+    <% if policy(@usuario).permitted_attributes.include?(:rol) %>
+      <div class="col-12">
+        <%= form.label :rol, class: "form-label" %>
+        <%= form.select :rol,
+              Usuario::ROLES.map { |k,v| [k.to_s.capitalize, v] },
+              { include_blank: "Seleccione rol" },
+              class: "form-select" %>
+      </div>
+    <% end %>
+
+    <div class="col-12 mt-3">
+      <%= form.submit "Crear Usuario", class: "btn btn-as-dark" %>
+    </div>
+  <% end %>
+</div>
 
 <p class="mt-3">
-  <%= link_to usuarios_path, class: "btn btn-dark" do %>
+  <%= link_to usuarios_path, class: "btn btn-as-dark" do %>
     <i class="bi bi-arrow-left"></i> Volver
   <% end %>
 </p>

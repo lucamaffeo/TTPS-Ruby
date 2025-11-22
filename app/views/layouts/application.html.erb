@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>TTPS</title>
+    <title>ActiveSound</title>
+    <%= favicon_link_tag "ActiveSound.png", rel: "icon", type: "image/png" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -16,56 +17,74 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <style>
+      :root { --app-bg-url: url('<%= asset_path "ActiveSound.png" %>'); }
+    </style>
   </head>
-  <body class="bg-dark text-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-black mb-4">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">TTPS Disquería</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+  <body class="text-light custom-bg">
+    <div class="app-overlay">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-black mb-4">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="<%= root_path %>">
+            <%= image_tag "ActiveSound.png", alt: "ActiveSound Disquería", height: "48", width: "50", class: "d-inline-block align-text" %>  ActiveSound Disquería
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                  aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <% if usuario_signed_in? %>
-              <li class="nav-item">
-                <%= link_to "Productos", productos_path, class: "nav-link" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Usuarios", usuarios_path, class: "nav-link" %>
-              </li>
-            <% end %>
-          </ul>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <% if usuario_signed_in? %>
+                <li class="nav-item">
+                  <%= link_to "Productos", productos_path, class: "nav-link" %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to "Usuarios", usuarios_path, class: "nav-link" %>
+                </li>
+              <% end %>
+            </ul>
 
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <% if usuario_signed_in? %>
-              <li class="nav-item me-2">
-                <span class="navbar-text text-white">
-                  <i class="bi bi-person-circle"></i>
-                  <%= current_usuario.nombre %>
-                </span>
-              </li>
-              <li class="nav-item">
-                <%= button_to "Cerrar sesión", destroy_usuario_session_path, method: :delete, 
-                            class: "btn btn-dark btn-sm border-light" %>
-              </li>
-            <% else %>
-              <li class="nav-item">
-                <%= link_to new_usuario_session_path, class: "btn btn-dark btn-sm border-light" do %>
-                  <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
-                <% end %>
-              </li>
-            <% end %>
-          </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <% if usuario_signed_in? %>
+                <li class="nav-item me-2">
+                  <span class="navbar-text text-white">
+                    <i class="bi bi-person-circle"></i>
+                    <%= current_usuario.nombre %>
+                  </span>
+                </li>
+                <li class="nav-item">
+                  <%= button_to "Cerrar sesión", destroy_usuario_session_path, method: :delete, 
+                                  class: "btn btn-dark btn-sm border-light" %>
+                </li>
+              <% else %>
+                <li class="nav-item">
+                  <%= link_to new_usuario_session_path, class: "btn btn-dark btn-sm border-light" do %>
+                    <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
-    <main class="container bg-secondary-subtle text-dark rounded-3 p-4">
-      <%= yield %>
-    </main>
+      <div class="container flash-wrapper">
+        <% flash.each do |key, value| %>
+          <% css = key == "alert" ? "flash-danger" : "flash-success" %>
+          <div class="flash-message <%= css %> mb-2">
+            <%= value %>
+          </div>
+        <% end %>
+      </div>
+
+      <main class="container my-4">
+        <div class="main-card">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

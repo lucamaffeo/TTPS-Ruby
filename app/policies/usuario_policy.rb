@@ -17,6 +17,14 @@ class UsuarioPolicy < ApplicationPolicy
     user&.administrador?
   end
 
+  def new?
+    user&.administrador? || user&.gerente?
+  end
+
+  def create?
+    new?
+  end
+
   def permitted_attributes
     attrs = [:email, :nombre, :dni, :password, :password_confirmation]
     attrs << :rol if user&.administrador?

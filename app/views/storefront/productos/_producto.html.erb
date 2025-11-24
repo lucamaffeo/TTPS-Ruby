@@ -1,0 +1,19 @@
+<div class="producto">
+  <div class="imagen">
+    <% if producto.imagenes.attached? %>
+      <%= image_tag producto.imagenes.first, style: "width: 200px;" %>
+    <% else %>
+      <p>Sin imagen</p>
+    <% end %>
+  </div>
+
+  <h3><%= producto.titulo %></h3>
+
+  <p><strong>Descripción:</strong> <%= producto.descripcion %></p>
+  <p><strong>Precio:</strong> $<%= producto.precio %></p>
+  <p><strong>Stock:</strong> <%= producto.stock %></p>
+  <p><strong>Tipo:</strong> <%= producto.tipo %></p>
+  <p><strong>Estado:</strong> <%= producto.estado %></p>
+  <p><strong>Categoría:</strong> <%= producto.categoria %></p>
+</div>
+

@@ -1,0 +1,11 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render partial: "producto", locals: { producto: @producto } %>
+
+<h2>Discos relacionados</h2>
+<%= render partial: "related", locals: { relacionados: @relacionados } %>
+
+<div>
+  <%= link_to "Volver", storefront_productos_path %>
+</div>
+

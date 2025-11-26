@@ -30,5 +30,6 @@ class Usuario < ApplicationRecord
             allow_nil: true
 
   validates :nombre, presence: true
-  validates :dni, presence: true, uniqueness: true
+  validates :dni, presence: true, uniqueness: { message: "ya está en uso" }
+  validates :email, presence: true, uniqueness: { message: "ya está en uso" }
 end

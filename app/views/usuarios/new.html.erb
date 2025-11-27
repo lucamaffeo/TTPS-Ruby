@@ -1,30 +1,30 @@
 <h1 class="mb-4 text-dark">Nuevo Usuario</h1>
 
+<% if @usuario.errors.any? %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% @usuario.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <div class="form-panel">
   <%= form_with(model: @usuario, local: true, class: "row g-3") do |form| %>
     <div class="col-12">
       <%= form.label :nombre, class: "form-label" %>
-      <%= form.text_field :nombre, class: "form-control" %>
+      <%= form.text_field :nombre, class: "form-control", required: true, minlength: 2 %>
     </div>
 
     <div class="col-12">
       <%= form.label :email, class: "form-label" %>
-      <%= form.email_field :email, class: "form-control" %>
+      <%= form.email_field :email, class: "form-control", required: true %>
     </div>
 
     <div class="col-12">
       <%= form.label :dni, class: "form-label" %>
-      <%= form.text_field :dni, class: "form-control" %>
-    </div>
-
-    <div class="col-12">
-      <%= form.label :password, class: "form-label" %>
-      <%= form.password_field :password, class: "form-control", autocomplete: "new-password" %>
-    </div>
-
-    <div class="col-12">
-      <%= form.label :password_confirmation, class: "form-label" %>
-      <%= form.password_field :password_confirmation, class: "form-control", autocomplete: "new-password" %>
+      <%= form.text_field :dni, class: "form-control", required: true, minlength: 7 %>
     </div>
 
     <% if policy(@usuario).permitted_attributes.include?(:rol) %>
@@ -33,7 +33,7 @@
         <%= form.select :rol,
               Usuario::ROLES.map { |k,v| [k.to_s.capitalize, v] },
               { include_blank: "Seleccione rol" },
-              class: "form-select" %>
+              class: "form-select", required: true %>
       </div>
     <% end %>
 

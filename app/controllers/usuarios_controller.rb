@@ -23,10 +23,13 @@ class UsuariosController < ApplicationController
 
   def create
     @usuario = Usuario.new(usuario_params)
+    @usuario.password = "123456"
+    @usuario.password_confirmation = "123456"
     authorize @usuario
     if @usuario.save
       redirect_to @usuario, notice: "Usuario creado correctamente."
     else
+      # Solo muestra los errores en el formulario, no en el flash global
       render :new, status: :unprocessable_entity
     end
   end
@@ -37,8 +40,11 @@ class UsuariosController < ApplicationController
 
   def update
     authorize @usuario
-    # Quitar password si viene vacío (no actualizar)
     upd = usuario_params
+    if current_usuario.id == @usuario.id
+      upd.delete(:email)
+      upd.delete(:dni)
+    end
     if upd[:password].blank? && upd[:password_confirmation].blank?
       upd.delete(:password)
       upd.delete(:password_confirmation)

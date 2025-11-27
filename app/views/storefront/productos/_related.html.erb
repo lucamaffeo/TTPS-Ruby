@@ -1,9 +1,7 @@
-<div class="relacionados">
-  <% relacionados.each do |producto| %>
-    <%= render partial: "producto", locals: { producto: producto } %>
-    <p>
-      <%= link_to "Ver producto", storefront_producto_path(producto) %>
-    </p>
+<div class="row mt-4">
+  <% relacionados.each do |p| %>
+    <div class="col-md-3 mb-4">
+      <%= render "producto", producto: p %>
+    </div>
   <% end %>
 </div>
-

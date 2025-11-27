@@ -54,9 +54,9 @@ class Storefront::ProductosController < ApplicationController
 
     # Productos relacionados
     @relacionados = Producto
-                      .where(categoria: @producto.categoria)
-                      .where.not(id: @producto.id)
-                      .limit(4)
+      .where(categoria: @producto.categoria)
+      .where.not(id: @producto.id)
+      .limit(4)
   end
 
 end

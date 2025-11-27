@@ -63,7 +63,7 @@
     <%= form.label :estado_fisico, "Estado del producto", class: "form-label" %>
     <%= form.select :estado_fisico,
           [["Nuevo", "nuevo"], ["Usado", "usado"]],
-          {}, class: "form-control" %>
+          {}, class: "form-control", id: "estado_fisico_select" %>
   </div>
 
   <div class="col-12">
@@ -71,7 +71,7 @@
     <%= form.file_field :imagenes, multiple: true, accept: "image/*", class: "form-control" %>
   </div>
 
-  <div class="col-12">
+  <div class="col-12" id="audio-muestra-field" style="<%= producto.estado_fisico == "usado" ? "" : "display:none;" %>">
     <%= form.label :audio_muestra, "Audio de muestra", class: "form-label" %>
     <%= form.file_field :audio_muestra, accept: "audio/*", class: "form-control" %>
   </div>
@@ -80,3 +80,19 @@
     <%= form.submit "Guardar", class: "btn btn-as-dark" %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var estadoSelect = document.getElementById("estado_fisico_select");
+    var audioField = document.getElementById("audio-muestra-field");
+    if (estadoSelect) {
+      estadoSelect.addEventListener("change", function() {
+        if (estadoSelect.value === "usado") {
+          audioField.style.display = "";
+        } else {
+          audioField.style.display = "none";
+        }
+      });
+    }
+  });
+</script>

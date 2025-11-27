@@ -4,7 +4,7 @@
   <%= form_with url: storefront_productos_path, method: :get, local: true, class: "row g-3 align-items-end" do %>
     <div class="col-md-4">
       <%= label_tag :q, "Buscar:", class: "form-label fw-semibold" %>
-      <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "Título, autor..." %>
+      <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "Ingrese título o artista" %>
     </div>
     <div class="col-md-2">
       <%= label_tag :categoria, "Género:", class: "form-label fw-semibold" %>
@@ -21,13 +21,27 @@
             class: "form-select" %>
     </div>
     <div class="col-md-2">
+      <%= label_tag :estado_fisico, "Estado:", class: "form-label fw-semibold" %>
+      <%= select_tag :estado_fisico,
+            options_for_select(
+              [
+                ["Nuevo", "nuevo"],
+                ["Usado", "usado"]
+              ],
+              params[:estado_fisico]
+            ),
+            include_blank: "Todos",
+            class: "form-select" %>
+    </div>
+
+    <div class="col-md-2">
       <%= label_tag :orden, "Ordenar por:", class: "form-label fw-semibold" %>
       <%= select_tag :orden,
             options_for_select([
               ["Precio (menor a mayor)", "precio_asc"],
               ["Precio (mayor a menor)", "precio_desc"],
               ["Nombre (A-Z)", "nombre_asc"],
-              ["Nombre (Z-A)", "nombre_desc"]
+              ["Nombre (Z-A)", "nombre_desc"],
             ], params[:orden]),
             include_blank: "Sin orden",
             class: "form-select" %>

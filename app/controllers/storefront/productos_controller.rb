@@ -9,8 +9,8 @@ class Storefront::ProductosController < ApplicationController
     # FILTRO POR BÚSQUEDA
     if params[:q].present?
       @productos = @productos.where(
-        "titulo ILIKE :q OR descripcion ILIKE :q OR autor ILIKE :q",
-        q: "%#{params[:q]}%"
+        "LOWER(titulo) LIKE LOWER(?) OR LOWER(descripcion) LIKE LOWER(?) OR LOWER(autor) LIKE LOWER(?)",
+        "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%"
       )
     end
 
@@ -40,6 +40,10 @@ class Storefront::ProductosController < ApplicationController
         @productos = @productos.order(titulo: :asc)
       when "nombre_desc"
         @productos = @productos.order(titulo: :desc)
+      when "estado_asc"
+        @productos = @productos.order(estado_fisico: :asc)
+      when "estado_desc"
+        @productos = @productos.order(estado_fisico: :desc)  
       end
     end
 

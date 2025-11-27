@@ -12,12 +12,14 @@
     <% else %>
       <%= image_tag "placeholder.png", class: "img-fluid producto-img-zoom" %>
     <% end %>
-    <% if @producto.estado_fisico == "usado" && @producto.audio_muestra.attached? %>
+    <% if @producto.estado_fisico == "usado" %>
+    <% if @producto.audio_muestra.attached? %>
       <h5 class="mt-4">Audio de muestra</h5>
       <audio controls>
         <source src="<%= url_for(@producto.audio_muestra) %>" />
       </audio>
     <% end %>
+<% end %>
   </div>
   <div class="col-md-6">
     <h2 class="fw-bold text-dark"><%= @producto.titulo %></h2>

@@ -24,9 +24,9 @@ class Storefront::ProductosController < ApplicationController
       @productos = @productos.where(tipo: params[:tipo])
     end
 
-    # FILTRO POR ESTADO
-    if params[:estado].present?
-      @productos = @productos.where(estado: params[:estado])
+    # FILTRO POR ESTADO FÍSICO
+    if params[:estado_fisico].present?
+      @productos = @productos.where(estado_fisico: params[:estado_fisico])
     end
 
      # === ORDEN ASC / DESC ===
@@ -37,9 +37,9 @@ class Storefront::ProductosController < ApplicationController
       when "precio_desc"
         @productos = @productos.order(precio: :desc)
       when "nombre_asc"
-        @productos = @productos.order(nombre: :asc)
+        @productos = @productos.order(titulo: :asc)
       when "nombre_desc"
-        @productos = @productos.order(nombre: :desc)
+        @productos = @productos.order(titulo: :desc)
       end
     end
 
@@ -59,4 +59,5 @@ class Storefront::ProductosController < ApplicationController
       .limit(4)
   end
 
+  # No requiere autenticación para index ni show
 end

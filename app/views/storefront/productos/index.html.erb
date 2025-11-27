@@ -1,74 +1,51 @@
-<h2 class="mb-4">Catálogo de Productos</h2>
+<h2 class="mb-4 text-dark fw-bold">StoreFront</h2>
 
-<!-- FORMULARIO DE FILTRO / BÚSQUEDA / ORDEN -->
-<%= form_with url: storefront_productos_path, method: :get, local: true, class: "row g-3 mb-4" do %>
+<div class="bg-white rounded-3 p-3 mb-4 shadow-sm">
+  <%= form_with url: storefront_productos_path, method: :get, local: true, class: "row g-3 align-items-end" do %>
+    <div class="col-md-4">
+      <%= label_tag :q, "Buscar:", class: "form-label fw-semibold" %>
+      <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "Título, autor..." %>
+    </div>
+    <div class="col-md-2">
+      <%= label_tag :categoria, "Género:", class: "form-label fw-semibold" %>
+      <%= select_tag :categoria,
+            options_for_select(Producto.distinct.pluck(:categoria), params[:categoria]),
+            include_blank: "Todos",
+            class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <%= label_tag :tipo, "Tipo:", class: "form-label fw-semibold" %>
+      <%= select_tag :tipo,
+            options_for_select(Producto.distinct.pluck(:tipo), params[:tipo]),
+            include_blank: "Todos",
+            class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <%= label_tag :orden, "Ordenar por:", class: "form-label fw-semibold" %>
+      <%= select_tag :orden,
+            options_for_select([
+              ["Precio (menor a mayor)", "precio_asc"],
+              ["Precio (mayor a menor)", "precio_desc"],
+              ["Nombre (A-Z)", "nombre_asc"],
+              ["Nombre (Z-A)", "nombre_desc"]
+            ], params[:orden]),
+            include_blank: "Sin orden",
+            class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <%= submit_tag "Filtrar", class: "btn btn-as-dark w-100" %>
+    </div>
+  <% end %>
+</div>
 
-  <!-- BUSCADOR -->
-  <div class="col-md-3">
-    <%= label_tag :q, "Buscar:" %>
-    <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "Título, autor, descripción..." %>
-  </div>
-
-  <!-- FILTRO CATEGORÍA -->
-  <div class="col-md-2">
-    <%= label_tag :categoria, "Categoría:" %>
-    <%= select_tag :categoria,
-          options_for_select(Producto.distinct.pluck(:categoria), params[:categoria]),
-          include_blank: "Todas",
-          class: "form-control" %>
-  </div>
-
-  <!-- FILTRO TIPO -->
-  <div class="col-md-2">
-    <%= label_tag :tipo, "Tipo:" %>
-    <%= select_tag :tipo,
-          options_for_select(Producto.distinct.pluck(:tipo), params[:tipo]),
-          include_blank: "Todos",
-          class: "form-control" %>
-  </div>
-
-  <!-- FILTRO ESTADO -->
-  <div class="col-md-2">
-    <%= label_tag :estado, "Estado:" %>
-    <%= select_tag :estado,
-          options_for_select(Producto.distinct.pluck(:estado), params[:estado]),
-          include_blank: "Todos",
-          class: "form-control" %>
-  </div>
-
-  <!-- ORDENAMIENTO -->
-  <div class="col-md-2">
-    <%= label_tag :orden, "Ordenar por:" %>
-    <%= select_tag :orden,
-          options_for_select([
-            ["Precio (menor a mayor)", "precio_asc"],
-            ["Precio (mayor a menor)", "precio_desc"],
-            ["Nombre (A-Z)",        "nombre_asc"],
-            ["Nombre (Z-A)",        "nombre_desc"]
-          ], params[:orden]),
-          include_blank: "Sin orden",
-          class: "form-control" %>
-  </div>
-
-  <!-- BOTÓN -->
-  <div class="col-md-1 d-flex align-items-end">
-    <%= submit_tag "Aplicar", class: "btn btn-primary w-100" %>
-  </div>
-
-<% end %>
-
-<hr>
-
-<!-- LISTADO DE PRODUCTOS -->
-<div class="row">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
   <% @productos.each do |producto| %>
-    <div class="col-md-3 mb-4">
+    <div class="col">
       <%= render "producto", producto: producto %>
     </div>
   <% end %>
 </div>
 
-<!-- PAGINACIÓN -->
-<div class="d-flex justify-content-center">
+<div class="d-flex justify-content-center mt-4">
   <%= paginate @productos %>
 </div>

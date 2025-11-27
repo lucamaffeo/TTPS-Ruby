@@ -1,33 +1,33 @@
-<div class="card h-100">
-  
-  <!-- Imagen de portada -->
-  <%= link_to storefront_producto_path(producto) do %>
-    <% if producto.imagenes.attached? %>
-      <%= image_tag producto.imagenes.first, class: "card-img-top", style: "object-fit: cover; height: 200px;" %>
-    <% else %>
-      <%= image_tag "placeholder.png", class: "card-img-top", style: "object-fit: cover; height: 200px;" %>
+<div class="card producto-card h-100 shadow-sm border-0">
+  <div class="position-relative">
+    <%= link_to storefront_producto_path(producto) do %>
+      <% if producto.imagenes.attached? %>
+        <%= image_tag producto.imagenes.first, class: "card-img-top rounded-top", style: "object-fit: cover; height: 220px;" %>
+      <% else %>
+        <%= image_tag "placeholder.png", class: "card-img-top rounded-top", style: "object-fit: cover; height: 220px;" %>
+      <% end %>
     <% end %>
-  <% end %>
-
-  <div class="card-body">
-    <h5 class="card-title"><%= producto.titulo %></h5>
-
-    <p class="text-muted"><strong>Artista:</strong> <%= producto.autor %></p>
-
-    <p>
-      <%= truncate(producto.descripcion, length: 80) %>
-    </p>
-
-    <p class="fw-bold text-primary">
-      $ <%= number_with_precision(producto.precio, precision: 2) %>
-    </p>
-
-    <p class="<%= producto.stock > 0 ? 'text-success' : 'text-danger' %>">
-      <strong>Stock:</strong> <%= producto.stock %>
-    </p>
+    <div class="producto-tags position-absolute top-0 start-0 m-2">
+      <% if producto.estado_fisico == "usado" %>
+        <span class="badge bg-estado-usado me-1">USADO</span>
+      <% elsif producto.estado_fisico == "nuevo" %>
+        <span class="badge bg-estado-nuevo me-1">NUEVO</span>
+      <% end %>
+    </div>
   </div>
-
-  <div class="card-footer text-center">
-    <%= link_to "Ver más", storefront_producto_path(producto), class: "btn btn-outline-primary w-100" %>
+  <div class="card-body pb-2 d-flex flex-column">
+    <h5 class="card-title fw-bold text-dark mb-1"><%= producto.titulo %></h5>
+    <p class="text-muted mb-2"><strong>Artista:</strong> <%= producto.autor %></p>
+    <div class="mt-auto">
+      <p class="precio-producto mb-1">$ <%= number_with_precision(producto.precio, precision: 2) %></p>
+      <p class="<%= producto.stock > 0 ? 'text-success' : 'text-danger' %> mb-2">
+        <strong>Stock:</strong> <%= producto.stock %>
+      </p>
+      <span class="badge bg-tipo me-1"><%= producto.tipo %></span>
+      <span class="badge bg-categoria"><%= producto.categoria %></span>
+    </div>
+  </div>
+  <div class="card-footer bg-white border-0 text-center pt-0">
+    <%= link_to "Ver más", storefront_producto_path(producto), class: "btn btn-as-dark w-100" %>
   </div>
 </div>

@@ -28,12 +28,12 @@ body.custom-bg {
 
 /* Contenedor principal tipo “card” */
 .main-card {
-  background: rgba(245, 245, 245, 0.90);
+  background: rgba(250, 250, 250, 0.92);
   color: #222;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 2rem;
-  backdrop-filter: blur(3px);
-  box-shadow: 0 0.75rem 1.75rem rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.25);
 }
 
 /* Títulos */
@@ -129,6 +129,7 @@ body.custom-bg {
   padding: .75rem 1rem;
   font-weight: 500;
   box-shadow: 0 .25rem .75rem rgba(0,0,0,.2);
+  border-left: 6px solid #ffe066;
 }
 
 .flash-success {
@@ -141,4 +142,107 @@ body.custom-bg {
   background: #f3f3f3;
   color: #3b0000;
   border: 1px solid #d8d8d8;
+}
+
+/* Storefront tarjetas y etiquetas */
+.producto-card {
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s, transform 0.2s;
+  overflow: hidden;
+  position: relative;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.producto-card:hover {
+  box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.15);
+  transform: translateY(-5px);
+}
+.producto-tags .badge {
+  font-size: 0.8rem;
+  padding: 0.3em 0.6em;
+  border-radius: 0.3rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Nuevos estilos para las etiquetas */
+.badge.bg-estado-nuevo {
+  background-color: #e9ecef;
+  color: #343a40;
+}
+.badge.bg-estado-usado {
+  background-color: #ffc107;
+  color: #343a40;
+}
+.badge.bg-categoria {
+  background-color: #6c757d;
+  color: #fff;
+}
+.badge.bg-tipo {
+  background-color: #495057;
+  color: #fff;
+}
+
+.precio-producto {
+  color: #212529; /* Color oscuro para el precio */
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+.card-img-top {
+  border-bottom: 1px solid #f0f0f0;
+  transition: filter 0.3s, transform 0.3s;
+  width: 100%;
+  height: 200px !important;
+  object-fit: cover;
+}
+.producto-card:hover .card-img-top {
+  filter: brightness(1);
+  transform: scale(1.05);
+}
+.btn-as-dark {
+  background-color: #111 !important;
+  border-color: #111 !important;
+  color: #f9fafb !important;
+  min-width: 120px;
+  min-height: 38px;
+  font-size: 1rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.10);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 0.3rem;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+}
+.btn-as-dark:hover {
+  background-color: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+.table-base {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+.table-base thead th {
+  background-color: #343a40;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+}
+.table-base tbody td {
+  border-bottom: 1px solid #eee;
+}
+.form-panel {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.06);
+  padding: 2rem;
 }

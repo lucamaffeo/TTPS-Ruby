@@ -4,14 +4,13 @@ Rails.application.routes.draw do
   resources :productos
   resources :usuarios
 
-  # Root: formulario de login de Devise para Usuario
-  devise_scope :usuario do
-    root to: "devise/sessions#new"  
-  end
+  # Root: storefront
+  root "storefront/productos#index"
 
   # STORE FRONT (vista pública)
   namespace :storefront do
-    root "productos#index"            # GET /storefront
+    # La raíz del storefront ahora es la raíz principal de la app.
+    # Mantenemos las rutas de productos para el show.
     resources :productos, only: [:index, :show]
   end
 end

@@ -1,12 +1,17 @@
 <% content_for :title, "Editing venta" %>
 
-<h1>Editing venta</h1>
+<h1 class="mb-4"><i class="bi bi-pencil"></i> Editar venta</h1>
 
-<%= render "form", venta: @venta %>
+<div class="main-card">
+  <%= render "form", venta: @venta %>
 
-<br>
+  <div class="mt-3">
+    <%= link_to({ controller: 'venta', action: :show, id: @venta }, class: "btn btn-outline-secondary") do %>
+      <i class="bi bi-eye"></i> Ver
+    <% end %>
 
-<div>
-  <%= link_to "Show this venta", controller: 'venta', action: :show, id: @venta %> |
-  <%= link_to "Back to venta", controller: 'venta', action: :index %>
+    <%= link_to({ controller: 'venta', action: :index }, class: "btn btn-outline-secondary") do %>
+      <i class="bi bi-arrow-left"></i> Volver
+    <% end %>
+  </div>
 </div>

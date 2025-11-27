@@ -1,10 +1,43 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render partial: "venta/ventum", venta: @venta %>
+<div class="main-card">
+  <h2 class="mb-3">Venta #<%= @venta.id %></h2>
 
-<div>
-  <%= link_to "Edit this venta", controller: 'venta', action: :edit, id: @venta %> |
-  <%= link_to "Back to venta", controller: 'venta', action: :index %>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <strong>Fecha y hora:</strong>
+      <div><%= l(@venta.fecha_hora, format: :long) rescue @venta.fecha_hora %></div>
+    </div>
 
-  <%= button_to "Destroy this venta", { controller: 'venta', action: :destroy, id: @venta }, method: :delete %>
+    <div class="col-md-6">
+      <strong>Total:</strong>
+      <div>$<%= number_with_precision(@venta.total, precision: 2) %></div>
+    </div>
+
+    <div class="col-md-6">
+      <strong>Comprador:</strong>
+      <div><%= @venta.comprador %></div>
+    </div>
+
+    <div class="col-md-6">
+      <strong>Empleado:</strong>
+      <div><%= @venta.empleado.try(:nombre) || @venta.empleado_id %></div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="d-flex gap-2 mt-3">
+    <%= link_to({ controller: 'venta', action: :edit, id: @venta }, class: "btn btn-as-dark") do %>
+      <i class="bi bi-pencil"></i> Editar
+    <% end %>
+
+    <%= link_to({ controller: 'venta', action: :index }, class: "btn btn-outline-secondary") do %>
+      <i class="bi bi-arrow-left"></i> Volver
+    <% end %>
+
+    <%= button_to({ controller: 'venta', action: :destroy, id: @venta }, method: :delete, data: { confirm: "¿Eliminar venta?" }, class: "btn btn-danger") do %>
+      <i class="bi bi-trash"></i> Eliminar
+    <% end %>
+  </div>
 </div>

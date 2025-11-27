@@ -1,22 +1,21 @@
-<div id="<%= dom_id venta %>">
-  <div>
-    <strong>Fecha hora:</strong>
-    <%= venta.fecha_hora %>
-  </div>
+<tr id="<%= dom_id venta %>">
+  <td><%= l(venta.fecha_hora, format: :short) rescue venta.fecha_hora %></td>
+  <td>$<%= number_with_precision(venta.total, precision: 2) %></td>
+  <td><%= venta.comprador %></td>
+  <td><%= venta.empleado.try(:nombre) || venta.empleado_id %></td>
+  <td>
+    <div class="d-flex gap-2">
+      <%= link_to({ controller: 'venta', action: :show, id: venta }, class: "btn btn-sm btn-as-dark") do %>
+        <i class="bi bi-eye"></i> Ver
+      <% end %>
 
-  <div>
-    <strong>Total:</strong>
-    <%= venta.total %>
-  </div>
+      <%= link_to({ controller: 'venta', action: :edit, id: venta }, class: "btn btn-sm btn-outline-secondary") do %>
+        <i class="bi bi-pencil"></i> Editar
+      <% end %>
 
-  <div>
-    <strong>Comprador:</strong>
-    <%= venta.comprador %>
-  </div>
-
-  <div>
-    <strong>Empleado:</strong>
-    <%= venta.empleado_id %>
-  </div>
-
-</div>
+      <%= button_to({ controller: 'venta', action: :destroy, id: venta }, method: :delete, data: { confirm: "¿Eliminar venta?" }, class: "btn btn-sm btn-danger") do %>
+        <i class="bi bi-trash"></i> Borrar
+      <% end %>
+    </div>
+  </td>
+</tr>

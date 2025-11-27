@@ -67,6 +67,13 @@
   </div>
 
   <div class="col-6">
+    <%= form.label :estado, "Estado", class: "form-label" %>
+    <%= form.select :estado,
+          [["Activo", "activo"], ["Eliminado", "eliminado"]],
+          {}, class: "form-control" %>
+  </div>
+
+  <div class="col-6">
     <%= form.label :anio, "Año", class: "form-label" %>
     <%= form.number_field :anio, class: "form-control", min: 1900, max: Time.current.year, required: true %>
   </div>

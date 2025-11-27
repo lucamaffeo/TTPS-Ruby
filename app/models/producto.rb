@@ -22,7 +22,7 @@ class Producto < ApplicationRecord
   private
 
   def set_default_values
-    self.estado ||= "activo"
+    self.estado = "activo" if self.estado.blank?
     self.fecha_ingreso = Time.current
     self.fecha_modificacion = Time.current
     self.fecha_baja ||= nil
@@ -30,5 +30,6 @@ class Producto < ApplicationRecord
 
   def set_update_date
     self.fecha_modificacion = Time.current
+    # No modificar self.estado aquí
   end
 end

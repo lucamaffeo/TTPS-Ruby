@@ -9,6 +9,7 @@ class CreateProductos < ActiveRecord::Migration[8.1]
       t.string :categoria
       t.string :tipo
       t.string :estado
+      t.integer :anio
       t.date :fecha_ingreso
       t.date :fecha_modificacion
       t.date :fecha_baja

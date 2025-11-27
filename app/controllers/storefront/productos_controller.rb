@@ -6,11 +6,12 @@ class Storefront::ProductosController < ApplicationController
   def index
     @productos = Producto.all
 
-    # FILTRO POR BÚSQUEDA
+    # FILTRO POR BÚSQUEDA (título, artista o año)
     if params[:q].present?
+      q = params[:q].to_s.downcase
       @productos = @productos.where(
-        "titulo ILIKE :q OR descripcion ILIKE :q OR autor ILIKE :q",
-        q: "%#{params[:q]}%"
+        "LOWER(titulo) LIKE ? OR LOWER(autor) LIKE ? OR CAST(anio AS TEXT) LIKE ?",
+        "%#{q}%", "%#{q}%", "%#{q}%"
       )
     end
 
@@ -29,6 +30,11 @@ class Storefront::ProductosController < ApplicationController
       @productos = @productos.where(estado_fisico: params[:estado_fisico])
     end
 
+    # FILTRO POR AÑO
+    if params[:anio].present?
+      @productos = @productos.where(anio: params[:anio])
+    end
+
      # === ORDEN ASC / DESC ===
      if params[:orden].present?
       case params[:orden]
@@ -40,6 +46,10 @@ class Storefront::ProductosController < ApplicationController
         @productos = @productos.order(titulo: :asc)
       when "nombre_desc"
         @productos = @productos.order(titulo: :desc)
+      when "estado_asc"
+        @productos = @productos.order(estado_fisico: :asc)
+      when "estado_desc"
+        @productos = @productos.order(estado_fisico: :desc)  
       end
     end
 

@@ -7,10 +7,6 @@
 <br>
 
 <div>
-  <%= link_to "Ver producto", @producto, class: "btn btn-as-dark btn-sm" do %>
-    <i class="bi bi-search"></i> Ver
-  <% end %>
-  <%= link_to "Volver a productos", productos_path, class: "btn btn-as-dark btn-sm" do %>
-    <i class="bi bi-arrow-left"></i> Volver
-  <% end %>
+  <%= link_to raw('<i class="bi bi-search"></i> Ver'), @producto, class: "btn btn-as-dark btn-sm" %>
+  <%= link_to raw('<i class="bi bi-arrow-left"></i> Volver'), productos_path, class: "btn btn-as-dark btn-sm" %>
 </div>

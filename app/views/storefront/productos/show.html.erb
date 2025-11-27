@@ -1,4 +1,3 @@
-<p class="text-success"><%= notice %></p>
 
 <div class="row mb-4">
   <div class="col-md-6">
@@ -10,14 +9,16 @@
         <% end %>
       </div>
     <% else %>
-      <%= image_tag "placeholder.png", class: "img-fluid producto-img-zoom" %>
+      <%= image_tag "ActiveSound.png", class: "img-fluid producto-img-zoom" %>
     <% end %>
-    <% if @producto.estado_fisico == "usado" && @producto.audio_muestra.attached? %>
+    <% if @producto.estado_fisico == "usado" %>
+    <% if @producto.audio_muestra.attached? %>
       <h5 class="mt-4">Audio de muestra</h5>
       <audio controls>
         <source src="<%= url_for(@producto.audio_muestra) %>" />
       </audio>
     <% end %>
+<% end %>
   </div>
   <div class="col-md-6">
     <h2 class="fw-bold text-dark"><%= @producto.titulo %></h2>
@@ -26,6 +27,7 @@
     <p><strong>Género:</strong> <%= @producto.categoria %></p>
     <p><strong>Tipo:</strong> <%= @producto.tipo %></p>
     <p><strong>Estado físico:</strong> <%= @producto.estado_fisico %></p>
+    <p><strong>Año:</strong> <%= @producto.anio %></p>
     <h4 class="text-primary mt-3">$ <%= @producto.precio %></h4>
     <p class="<%= @producto.stock > 0 ? 'text-success' : 'text-danger' %>">
       <strong>Stock:</strong> <%= @producto.stock %>

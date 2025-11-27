@@ -4,7 +4,7 @@
       <% if producto.imagenes.attached? %>
         <%= image_tag producto.imagenes.first, class: "card-img-top rounded-top", style: "object-fit: cover; height: 220px;" %>
       <% else %>
-        <%= image_tag "placeholder.png", class: "card-img-top rounded-top", style: "object-fit: cover; height: 220px;" %>
+        <%= image_tag "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/image.svg", class: "card-img-top rounded-top", style: "object-fit: cover; height: 220px; background: #eee;" %>
       <% end %>
     <% end %>
     <div class="producto-tags position-absolute top-0 start-0 m-2">
@@ -17,6 +17,7 @@
   </div>
   <div class="card-body pb-2 d-flex flex-column">
     <h5 class="card-title fw-bold text-dark mb-1"><%= producto.titulo %></h5>
+    <p class="mb-1 text-secondary" style="font-size: 0.95em;"><strong>Año:</strong> <%= producto.anio %></p>
     <p class="text-muted mb-2"><strong>Artista:</strong> <%= producto.autor %></p>
     <div class="mt-auto">
       <p class="precio-producto mb-1">$ <%= number_with_precision(producto.precio, precision: 2) %></p>

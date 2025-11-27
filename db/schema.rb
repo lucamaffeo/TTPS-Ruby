@@ -72,6 +72,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_27_203751) do
   end
 
   create_table "productos", force: :cascade do |t|
+    t.integer "anio"
     t.string "autor"
     t.string "categoria"
     t.datetime "created_at", null: false

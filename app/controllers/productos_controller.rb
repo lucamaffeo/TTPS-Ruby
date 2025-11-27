@@ -23,38 +23,26 @@ class ProductosController < ApplicationController
   def create
     @producto = Producto.new(producto_params)
 
-    respond_to do |format|
-      if @producto.save
-        format.html { redirect_to @producto, notice: "Producto was successfully created." }
-        format.json { render :show, status: :created, location: @producto }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @producto.errors, status: :unprocessable_entity }
-      end
+    if @producto.save
+      redirect_to @producto, notice: "Producto creado correctamente."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /productos/1 or /productos/1.json
   def update
-    respond_to do |format|
-      if @producto.update(producto_params)
-        format.html { redirect_to @producto, notice: "Producto was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @producto }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @producto.errors, status: :unprocessable_entity }
-      end
+    if @producto.update(producto_params)
+      redirect_to @producto, notice: "Producto actualizado correctamente."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
   # DELETE /productos/1 or /productos/1.json
   def destroy
-    @producto.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to productos_path, notice: "Producto was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+    @producto.update(estado: "eliminado", fecha_baja: Date.today)
+    redirect_to productos_path, notice: "Producto eliminado lógicamente."
   end
 
   private
@@ -65,12 +53,10 @@ class ProductosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def producto_params
-      params.expect(producto: [
+      params.require(:producto).permit(
         :titulo, :descripcion, :autor, :precio, :stock,
-        :categoria,        # select género musical
-        :tipo,             # select vinilo/CD
-        :estado_fisico,    # select nuevo/usado
+        :categoria, :tipo, :estado_fisico, :anio, :estado,
         { imagenes: [] }, :audio_muestra
-      ])
+      )
     end
 end

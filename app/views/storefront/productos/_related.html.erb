@@ -1,0 +1,7 @@
+<div class="row mt-4">
+  <% relacionados.each do |p| %>
+    <div class="col-md-3 mb-4">
+      <%= render "producto", producto: p %>
+    </div>
+  <% end %>
+</div>

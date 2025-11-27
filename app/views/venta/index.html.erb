@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Venta" %>
+
+<h1>Venta</h1>
+
+<div id="venta">
+  <% @ventas.each do |venta| %>
+    <%= render partial: "venta/ventum", venta: venta %>
+    <p>
+      <%= link_to "Show this venta", controller: 'venta', action: :show, id: venta %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New venta", controller: 'venta', action: :new %>

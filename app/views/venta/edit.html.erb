@@ -1,0 +1,12 @@
+<% content_for :title, "Editing venta" %>
+
+<h1>Editing venta</h1>
+
+<%= render "form", venta: @venta %>
+
+<br>
+
+<div>
+  <%= link_to "Show this venta", controller: 'venta', action: :show, id: @venta %> |
+  <%= link_to "Back to venta", controller: 'venta', action: :index %>
+</div>

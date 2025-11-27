@@ -1,0 +1,42 @@
+
+<div class="row mb-4">
+  <div class="col-md-6">
+    <% if @producto.imagenes.attached? %>
+      <%= image_tag @producto.imagenes.first, class: "img-fluid mb-3 rounded shadow producto-img-zoom" %>
+      <div class="d-flex gap-2">
+        <% @producto.imagenes.each do |img| %>
+          <%= image_tag img, size: "80x80", class: "rounded border producto-img-zoom" %>
+        <% end %>
+      </div>
+    <% else %>
+      <%= image_tag "ActiveSound.png", class: "img-fluid producto-img-zoom" %>
+    <% end %>
+    <% if @producto.estado_fisico == "usado" %>
+    <% if @producto.audio_muestra.attached? %>
+      <h5 class="mt-4">Audio de muestra</h5>
+      <audio controls>
+        <source src="<%= url_for(@producto.audio_muestra) %>" />
+      </audio>
+    <% end %>
+<% end %>
+  </div>
+  <div class="col-md-6">
+    <h2 class="fw-bold text-dark"><%= @producto.titulo %></h2>
+    <h5 class="text-muted">Artista: <%= @producto.autor %></h5>
+    <p class="mt-3"><%= @producto.descripcion %></p>
+    <p><strong>Género:</strong> <%= @producto.categoria %></p>
+    <p><strong>Tipo:</strong> <%= @producto.tipo %></p>
+    <p><strong>Estado físico:</strong> <%= @producto.estado_fisico %></p>
+    <p><strong>Año:</strong> <%= @producto.anio %></p>
+    <h4 class="text-primary mt-3">$ <%= @producto.precio %></h4>
+    <p class="<%= @producto.stock > 0 ? 'text-success' : 'text-danger' %>">
+      <strong>Stock:</strong> <%= @producto.stock %>
+    </p>
+    <%= link_to "Volver al catálogo", storefront_productos_path, class: "btn btn-as-dark mt-3" %>
+  </div>
+</div>
+
+<% if @relacionados.present? %>
+  <h2 class="mt-5 text-dark">Discos relacionados</h2>
+  <%= render "related", relacionados: @relacionados %>
+<% end %>

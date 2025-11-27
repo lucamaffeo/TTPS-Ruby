@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fecha_hora: 2025-11-27 17:37:32
+  total: 9.99
+  comprador: MyString
+  empleado: one
+
+two:
+  fecha_hora: 2025-11-27 17:37:32
+  total: 9.99
+  comprador: MyString
+  empleado: two

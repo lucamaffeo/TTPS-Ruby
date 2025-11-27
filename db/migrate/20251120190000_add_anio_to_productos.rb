@@ -1,0 +1,5 @@
+class AddAnioToProductos < ActiveRecord::Migration[8.1]
+  def change
+    add_column :productos, :anio, :integer
+  end
+end

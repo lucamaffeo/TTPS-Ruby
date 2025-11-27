@@ -67,3 +67,7 @@ gem "ransack", "~> 4.4" # búsquedas avanzadas (filtros y ordenamiento)
 gem "kaminari", "~> 1.2" # paginación
 gem "devise", "~> 4.9" # autenticación (manejo de usuarios)
 gem "mini_magick", "~> 5.3" # procesamiento de imágenes
+
+# Gemas para generación de PDFs
+gem "wicked_pdf"
+gem "wkhtmltopdf-binary"

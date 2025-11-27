@@ -1,8 +1,7 @@
-<%= form_with(model: producto) do |form| %>
+<%= form_with(model: producto, class: "row g-3") do |form| %>
   <% if producto.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(producto.errors.count, "error") %> prohibited this producto from being saved:</h2>
-
+    <div class="alert alert-danger">
+      <h2><%= pluralize(producto.errors.count, "error") %> impidieron guardar el producto:</h2>
       <ul>
         <% producto.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,72 +10,101 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :titulo, style: "display: block" %>
-    <%= form.text_field :titulo %>
+  <div class="col-12">
+    <%= form.label :titulo, "Título", class: "form-label" %>
+    <%= form.text_field :titulo, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :descripcion, style: "display: block" %>
-    <%= form.text_area :descripcion %>
+  <div class="col-12">
+    <%= form.label :descripcion, "Descripción", class: "form-label" %>
+    <%= form.text_area :descripcion, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :autor, style: "display: block" %>
-    <%= form.text_field :autor %>
+  <div class="col-12">
+    <%= form.label :autor, "Autor", class: "form-label" %>
+    <%= form.text_field :autor, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :precio, style: "display: block" %>
-    <%= form.number_field :precio, step: 0.01 %>
+  <div class="col-6">
+    <%= form.label :precio, "Precio", class: "form-label" %>
+    <%= form.number_field :precio, step: 0.01, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :stock, style: "display: block" %>
-    <%= form.number_field :stock %>
+  <div class="col-6">
+    <%= form.label :stock, "Stock", class: "form-label" %>
+    <%= form.number_field :stock, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :categoria, style: "display: block" %>
-    <%= form.text_field :categoria %>
+  <div class="col-6">
+    <%= form.label :categoria, "Género musical", class: "form-label" %>
+    <%= form.select :categoria,
+          [
+            ["Rock", "rock"],
+            ["Pop", "pop"],
+            ["Jazz", "jazz"],
+            ["Blues", "blues"],
+            ["Clásica", "clasica"],
+            ["Reggae", "reggae"],
+            ["Hip-Hop", "hiphop"],
+            ["Metal", "metal"],
+            ["Electrónica", "electronica"]
+          ],
+          {}, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :tipo, style: "display: block" %>
-    <%= form.text_field :tipo %>
+  <div class="col-6">
+    <%= form.label :tipo, "Tipo", class: "form-label" %>
+    <%= form.select :tipo,
+          [["Vinilo", "vinilo"], ["CD", "cd"]],
+          {}, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :estado, style: "display: block" %>
-    <%= form.text_field :estado %>
+  <div class="col-6">
+    <%= form.label :estado_fisico, "Estado del producto", class: "form-label" %>
+    <%= form.select :estado_fisico,
+          [["Nuevo", "nuevo"], ["Usado", "usado"]],
+          {}, class: "form-control", id: "estado_fisico_select" %>
   </div>
 
-  <div>
-    <%= form.label :fecha_ingreso, style: "display: block" %>
-    <%= form.date_field :fecha_ingreso %>
+  <div class="col-6">
+    <%= form.label :estado, "Estado", class: "form-label" %>
+    <%= form.select :estado,
+          [["Activo", "activo"], ["Eliminado", "eliminado"]],
+          {}, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :fecha_modificacion, style: "display: block" %>
-    <%= form.date_field :fecha_modificacion %>
+  <div class="col-6">
+    <%= form.label :anio, "Año", class: "form-label" %>
+    <%= form.number_field :anio, class: "form-control", min: 1900, max: Time.current.year, required: true %>
   </div>
 
-  <div>
-    <%= form.label :fecha_baja, style: "display: block" %>
-    <%= form.date_field :fecha_baja %>
+  <div class="col-12">
+    <%= form.label :imagenes, "Imágenes", class: "form-label" %>
+    <%= form.file_field :imagenes, multiple: true, accept: "image/*", class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :imagenes, "Imágenes", style: "display: block" %>
-    <%= form.file_field :imagenes, multiple: true, accept: "image/*" %>
+  <div class="col-12" id="audio-muestra-field" style="<%= producto.estado_fisico == "usado" ? "" : "display:none;" %>">
+    <%= form.label :audio_muestra, "Audio de muestra", class: "form-label" %>
+    <%= form.file_field :audio_muestra, accept: "audio/*", class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :audio_muestra, "Audio de muestra", style: "display: block" %>
-    <%= form.file_field :audio_muestra, accept: "audio/*" %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="col-12 mt-3">
+    <%= form.submit "Guardar", class: "btn btn-as-dark" %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var estadoSelect = document.getElementById("estado_fisico_select");
+    var audioField = document.getElementById("audio-muestra-field");
+    if (estadoSelect) {
+      estadoSelect.addEventListener("change", function() {
+        if (estadoSelect.value === "usado") {
+          audioField.style.display = "";
+        } else {
+          audioField.style.display = "none";
+        }
+      });
+    }
+  });
+</script>

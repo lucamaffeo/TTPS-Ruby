@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render partial: "venta/ventum", venta: @venta %>
+
+<div>
+  <%= link_to "Edit this venta", controller: 'venta', action: :edit, id: @venta %> |
+  <%= link_to "Back to venta", controller: 'venta', action: :index %>
+
+  <%= button_to "Destroy this venta", { controller: 'venta', action: :destroy, id: @venta }, method: :delete %>
+</div>

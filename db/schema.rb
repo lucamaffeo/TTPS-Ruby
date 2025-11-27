@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_14_231029) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_27_203751) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -39,12 +39,46 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_231029) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "categoria", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "nombre"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "detalle_venta", force: :cascade do |t|
+    t.integer "cantidad"
+    t.datetime "created_at", null: false
+    t.decimal "precio"
+    t.integer "producto_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "venta_id", null: false
+    t.index ["producto_id"], name: "index_detalle_venta_on_producto_id"
+    t.index ["venta_id"], name: "index_detalle_venta_on_venta_id"
+  end
+
+  create_table "imagen_productos", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "es_portada"
+    t.integer "producto_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["producto_id"], name: "index_imagen_productos_on_producto_id"
+  end
+
+  create_table "muestra_audios", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "producto_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["producto_id"], name: "index_muestra_audios_on_producto_id"
+  end
+
   create_table "productos", force: :cascade do |t|
+    t.integer "anio"
     t.string "autor"
     t.string "categoria"
     t.datetime "created_at", null: false
     t.text "descripcion"
     t.string "estado"
+    t.string "estado_fisico"
     t.date "fecha_baja"
     t.date "fecha_ingreso"
     t.date "fecha_modificacion"
@@ -58,7 +92,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_231029) do
   create_table "usuarios", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "dni", null: false
-    t.string "email"
+    t.string "email", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "nombre", null: false
     t.datetime "remember_created_at"
@@ -73,6 +107,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_231029) do
     t.check_constraint "rol IN (0,1,2)", name: "usuarios_rol_in_range"
   end
 
+  create_table "venta", force: :cascade do |t|
+    t.string "comprador"
+    t.datetime "created_at", null: false
+    t.integer "empleado_id", null: false
+    t.datetime "fecha_hora"
+    t.decimal "total"
+    t.datetime "updated_at", null: false
+    t.index ["empleado_id"], name: "index_venta_on_empleado_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "detalle_venta", "productos"
+  add_foreign_key "detalle_venta", "venta", column: "venta_id"
+  add_foreign_key "imagen_productos", "productos"
+  add_foreign_key "muestra_audios", "productos"
+  add_foreign_key "venta", "empleados"
 end

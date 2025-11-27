@@ -1,7 +1,10 @@
 <tr>
   <td><%= item.nombre %></td>
   <td><%= item.email %></td>
+  <td><%= Usuario::ROLES.key(item.rol)&.to_s&.capitalize || "—" %></td>
   <td>
-    <%= link_to "Ver", usuario_path(item) %>
+    <%= link_to usuario_path(item), class: "btn btn-sm btn-as-dark" do %>
+      <i class="bi bi-search"></i> Ver
+    <% end %>
   </td>
 </tr>

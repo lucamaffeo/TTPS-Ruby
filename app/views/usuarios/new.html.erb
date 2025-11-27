@@ -1,15 +1,50 @@
-<h1>Nuevo Usuario</h1>
-<%= form_with(model: @usuario, local: true) do |form| %>
-  <div>
-    <%= form.label :nombre %>
-    <%= form.text_field :nombre %>
-  </div>
-  <div>
-    <%= form.label :email %>
-    <%= form.email_field :email %>
-  </div>
-  <div>
-    <%= form.submit "Crear Usuario" %>
+<h1 class="mb-4 text-dark">Nuevo Usuario</h1>
+
+<% if @usuario.errors.any? %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% @usuario.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
   </div>
 <% end %>
-<%= link_to 'Volver', usuarios_path %>
+
+<div class="form-panel">
+  <%= form_with(model: @usuario, local: true, class: "row g-3") do |form| %>
+    <div class="col-12">
+      <%= form.label :nombre, class: "form-label" %>
+      <%= form.text_field :nombre, class: "form-control", required: true, minlength: 2 %>
+    </div>
+
+    <div class="col-12">
+      <%= form.label :email, class: "form-label" %>
+      <%= form.email_field :email, class: "form-control", required: true %>
+    </div>
+
+    <div class="col-12">
+      <%= form.label :dni, class: "form-label" %>
+      <%= form.text_field :dni, class: "form-control", required: true, minlength: 7 %>
+    </div>
+
+    <% if policy(@usuario).permitted_attributes.include?(:rol) %>
+      <div class="col-12">
+        <%= form.label :rol, class: "form-label" %>
+        <%= form.select :rol,
+              Usuario::ROLES.map { |k,v| [k.to_s.capitalize, v] },
+              { include_blank: "Seleccione rol" },
+              class: "form-select", required: true %>
+      </div>
+    <% end %>
+
+    <div class="col-12 mt-3">
+      <%= form.submit "Crear Usuario", class: "btn btn-as-dark" %>
+    </div>
+  <% end %>
+</div>
+
+<p class="mt-3">
+  <%= link_to usuarios_path, class: "btn btn-as-dark" do %>
+    <i class="bi bi-arrow-left"></i> Volver
+  <% end %>
+</p>

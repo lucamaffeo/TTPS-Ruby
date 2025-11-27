@@ -1,5 +1,11 @@
 class UsuariosController < ApplicationController
+  include Pundit
+
   before_action :set_usuario, only: %i[show edit update destroy]
+  after_action :verify_authorized, except: :index
+  after_action :verify_policy_scoped, only: :index
+
+  rescue_from Pundit::NotAuthorizedError, with: :usuario_not_authorized
 
   def index
     @usuarios = policy_scope(Usuario)
@@ -12,13 +18,18 @@ class UsuariosController < ApplicationController
 
   def new
     @usuario = Usuario.new
+    authorize @usuario
   end
 
   def create
     @usuario = Usuario.new(usuario_params)
+    @usuario.password = "123456"
+    @usuario.password_confirmation = "123456"
+    authorize @usuario
     if @usuario.save
       redirect_to @usuario, notice: "Usuario creado correctamente."
     else
+      # Solo muestra los errores en el formulario, no en el flash global
       render :new, status: :unprocessable_entity
     end
   end
@@ -29,7 +40,16 @@ class UsuariosController < ApplicationController
 
   def update
     authorize @usuario
-    if @usuario.update(permitted_attributes(@usuario))
+    upd = usuario_params
+    if current_usuario.id == @usuario.id
+      upd.delete(:email)
+      upd.delete(:dni)
+    end
+    if upd[:password].blank? && upd[:password_confirmation].blank?
+      upd.delete(:password)
+      upd.delete(:password_confirmation)
+    end
+    if @usuario.update(upd)
       redirect_to @usuario, notice: "Usuario actualizado."
     else
       render :edit, status: :unprocessable_entity
@@ -49,6 +69,12 @@ class UsuariosController < ApplicationController
   end
 
   def usuario_params
-    params.require(:usuario).permit(:nombre, :email, :dni)
+    permitted = policy(@usuario || Usuario).permitted_attributes
+    params.require(:usuario).permit(permitted)
+  end
+
+  def usuario_not_authorized
+    flash[:alert] = "No tenés permisos para realizar esta acción."
+    redirect_back(fallback_location: root_path)
   end
 end

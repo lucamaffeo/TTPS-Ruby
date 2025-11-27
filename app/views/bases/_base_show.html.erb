@@ -1,8 +1,9 @@
-<h1><%= title %></h1>
+<%# Espera locals: title:, fields: (hash label => valor) %>
+<h1 class="mb-4"><%= title %></h1>
 
-<dl>
+<dl class="row">
   <% fields.each do |label, value| %>
-    <dt><%= label %></dt>
-    <dd><%= value %></dd>
+    <dt class="col-sm-3 fw-semibold"><%= label %></dt>
+    <dd class="col-sm-9"><%= value %></dd>
   <% end %>
 </dl>

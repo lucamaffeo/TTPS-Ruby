@@ -1,11 +1,25 @@
 <%= render "bases/base_show",
-					 title: @usuario.nombre,
-					 fields: {
-						 "Email" => @usuario.email
-					 } %>
+           title: @usuario.nombre,
+           fields: {
+             "Email" => @usuario.email,
+             "DNI" => @usuario.dni,
+             "Rol" => Usuario::ROLES.key(@usuario.rol)&.to_s&.capitalize
+           } %>
 
-<p>
-	<%= link_to 'Editar', edit_usuario_path(@usuario) %> |
-	<%= link_to 'Eliminar', usuario_path(@usuario), method: :delete, data: { confirm: '¿Seguro que quieres eliminar este usuario?' } %> |
-	<%= link_to 'Volver', usuarios_path %>
-</p>
+<div class="d-flex flex-row flex-wrap gap-2 mt-3">
+  <%= link_to edit_usuario_path(@usuario), class: "btn btn-as-dark btn-sm" do %>
+    <i class="bi bi-pencil-square"></i> Editar
+  <% end %>
+
+
+  <%= button_to usuario_path(@usuario),
+                method: :delete,
+                class: "btn btn-as-dark btn-sm",
+                onclick: "return confirm('¿Seguro que quieres eliminar este usuario?');" do %>
+    <i class="bi bi-trash3"></i> Eliminar
+  <% end %>
+
+  <%= link_to usuarios_path, class: "btn btn-as-dark btn-sm" do %>
+    <i class="bi bi-arrow-left"></i> Volver
+  <% end %>
+</div>

@@ -1,0 +1,25 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Productos" %>
+
+<h1>Productos</h1>
+
+<div id="productos">
+  <% @productos.each do |producto| %>
+    <%= render producto %>
+    <p>
+      <%= link_to "Ver producto", producto %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New producto", new_producto_path %>
+
+<%# Ejemplo para unificar con bases/_base_index:
+# <%= render partial: 'bases/base_index', locals: {
+#   title: 'Productos',
+#   columns: ['Titulo', 'Autor', 'Precio', 'Stock', 'Categoria'],
+#   collection: @productos,
+#   row_partial: 'productos/row', # requiere _row.html.erb con <tr>...</tr>
+#   actions_header: 'Acciones'
+# } %>

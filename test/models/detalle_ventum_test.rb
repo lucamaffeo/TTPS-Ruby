@@ -1,6 +1,6 @@
 require "test_helper"
 
-class DetalleVentumTest < ActiveSupport::TestCase
+class DetalleventaTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

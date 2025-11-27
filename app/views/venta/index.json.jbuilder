@@ -1,1 +1,1 @@
-json.array! @venta, partial: "venta/ventum", as: :ventum
+json.array! @ventas, partial: "venta/ventum", as: :venta

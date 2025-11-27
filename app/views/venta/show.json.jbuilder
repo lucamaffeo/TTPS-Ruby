@@ -1,1 +1,1 @@
-json.partial! "venta/ventum", ventum: @ventum
+json.partial! "venta/ventum", venta: @venta

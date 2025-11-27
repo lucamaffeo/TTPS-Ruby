@@ -1,6 +1,6 @@
 require "test_helper"
 
-class VentumTest < ActiveSupport::TestCase
+class ventaTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

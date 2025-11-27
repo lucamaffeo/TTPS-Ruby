@@ -2,7 +2,7 @@ require "test_helper"
 
 class VentaControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @ventum = venta(:one)
+    @venta = venta(:one)
   end
 
   test "should get index" do
@@ -11,36 +11,36 @@ class VentaControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new" do
-    get new_ventum_url
+    get new_venta_url
     assert_response :success
   end
 
-  test "should create ventum" do
-    assert_difference("Ventum.count") do
-      post venta_url, params: { ventum: { comprador: @ventum.comprador, empleado_id: @ventum.empleado_id, fecha_hora: @ventum.fecha_hora, total: @ventum.total } }
+  test "should create venta" do
+    assert_difference("venta.count") do
+      post venta_url, params: { venta: { comprador: @venta.comprador, empleado_id: @venta.empleado_id, fecha_hora: @venta.fecha_hora, total: @venta.total } }
     end
 
-    assert_redirected_to ventum_url(Ventum.last)
+    assert_redirected_to venta_url(venta.last)
   end
 
-  test "should show ventum" do
-    get ventum_url(@ventum)
+  test "should show venta" do
+    get venta_url(@venta)
     assert_response :success
   end
 
   test "should get edit" do
-    get edit_ventum_url(@ventum)
+    get edit_venta_url(@venta)
     assert_response :success
   end
 
-  test "should update ventum" do
-    patch ventum_url(@ventum), params: { ventum: { comprador: @ventum.comprador, empleado_id: @ventum.empleado_id, fecha_hora: @ventum.fecha_hora, total: @ventum.total } }
-    assert_redirected_to ventum_url(@ventum)
+  test "should update venta" do
+    patch venta_url(@venta), params: { venta: { comprador: @venta.comprador, empleado_id: @venta.empleado_id, fecha_hora: @venta.fecha_hora, total: @venta.total } }
+    assert_redirected_to venta_url(@venta)
   end
 
-  test "should destroy ventum" do
-    assert_difference("Ventum.count", -1) do
-      delete ventum_url(@ventum)
+  test "should destroy venta" do
+    assert_difference("venta.count", -1) do
+      delete venta_url(@venta)
     end
 
     assert_redirected_to venta_url

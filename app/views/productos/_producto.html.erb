@@ -1,79 +1,33 @@
-<div id="<%= dom_id producto %>">
-  <div>
-    <strong>Titulo:</strong>
-    <%= producto.titulo %>
-  </div>
+<div id="<%= dom_id producto %>" class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title"><i class="bi bi-disc"></i> <%= producto.titulo %></h5>
+    <p class="card-text"><strong>Descripción:</strong> <%= producto.descripcion %></p>
+    <p class="card-text"><strong>Autor:</strong> <%= producto.autor %></p>
+    <p class="card-text"><strong>Precio:</strong> $<%= producto.precio %></p>
+    <p class="card-text"><strong>Stock:</strong> <%= producto.stock %></p>
+    <p class="card-text"><strong>Categoría:</strong> <%= producto.categoria %></p>
+    <p class="card-text"><strong>Tipo:</strong> <%= producto.tipo %></p>
+    <p class="card-text"><strong>Estado:</strong> <%= producto.estado %></p>
+    <p class="card-text"><strong>Fecha ingreso:</strong> <%= producto.fecha_ingreso %></p>
+    <p class="card-text"><strong>Fecha modificación:</strong> <%= producto.fecha_modificacion %></p>
+    <p class="card-text"><strong>Fecha baja:</strong> <%= producto.fecha_baja %></p>
 
-  <div>
-    <strong>Descripcion:</strong>
-    <%= producto.descripcion %>
-  </div>
-
-  <div>
-    <strong>Autor:</strong>
-    <%= producto.autor %>
-  </div>
-
-  <div>
-    <strong>Precio:</strong>
-    <%= producto.precio %>
-  </div>
-
-  <div>
-    <strong>Stock:</strong>
-    <%= producto.stock %>
-  </div>
-
-  <div>
-    <strong>Categoria:</strong>
-    <%= producto.categoria %>
-  </div>
-
-  <div>
-    <strong>Tipo:</strong>
-    <%= producto.tipo %>
-  </div>
-
-  <div>
-    <strong>Estado:</strong>
-    <%= producto.estado %>
-  </div>
-
-  <div>
-    <strong>Fecha ingreso:</strong>
-    <%= producto.fecha_ingreso %>
-  </div>
-
-  <div>
-    <strong>Fecha modificacion:</strong>
-    <%= producto.fecha_modificacion %>
-  </div>
-
-  <div>
-    <strong>Fecha baja:</strong>
-    <%= producto.fecha_baja %>
-  </div>
-
-  <div>
-    <strong>Tipo:</strong>
-    <%= producto.tipo %>
-  </div>
-
-  <% if producto.imagenes.attached? %>
-    <div>
-      <strong>Imágenes:</strong>
+    <% if producto.imagenes.attached? %>
       <div>
-        <% producto.imagenes.each do |img| %>
-          <%= image_tag url_for(img), style: "max-width: 300px; height: auto; margin-right: 8px;" %>
-        <% end %>
+        <strong>Imágenes:</strong>
+        <div>
+          <% producto.imagenes.each do |img| %>
+            <%= image_tag url_for(img), style: "max-width: 300px; height: auto; margin-right: 8px;" %>
+          <% end %>
+        </div>
       </div>
-    </div>
-  <% end %>
+    <% end %>
 
-  <% if producto.audio_muestra.attached? %>
-    <div>
-      <strong>Audio de muestra:</strong>
-      <%= audio_tag url_for(producto.audio_muestra), controls: true %>
-    </div>
-  <% end %>
+    <% if producto.audio_muestra.attached? %>
+      <div>
+        <strong>Audio de muestra:</strong>
+        <%= audio_tag url_for(producto.audio_muestra), controls: true %>
+      </div>
+    <% end %>
+  </div>
 </div>

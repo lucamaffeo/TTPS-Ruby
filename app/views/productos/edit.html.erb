@@ -1,12 +1,16 @@
-<% content_for :title, "Editing producto" %>
+<% content_for :title, "Editar producto" %>
 
-<h1>Editing producto</h1>
+<h1 class="mb-4"><i class="bi bi-pencil-square"></i> Editar producto</h1>
 
 <%= render "form", producto: @producto %>
 
 <br>
 
 <div>
-  <%= link_to "Show this producto", @producto %> |
-  <%= link_to "Back to productos", productos_path %>
+  <%= link_to "Ver producto", @producto, class: "btn btn-as-dark btn-sm" do %>
+    <i class="bi bi-search"></i> Ver
+  <% end %>
+  <%= link_to "Volver a productos", productos_path, class: "btn btn-as-dark btn-sm" do %>
+    <i class="bi bi-arrow-left"></i> Volver
+  <% end %>
 </div>

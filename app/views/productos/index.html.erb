@@ -2,24 +2,41 @@
 
 <% content_for :title, "Productos" %>
 
-<h1>Productos</h1>
+<h1 class="mb-4"><i class="bi bi-disc"></i> Productos</h1>
 
-<div id="productos">
-  <% @productos.each do |producto| %>
-    <%= render producto %>
-    <p>
-      <%= link_to "Ver producto", producto %>
-    </p>
-  <% end %>
+<div class="table-responsive">
+  <table class="table-base table table-sm align-middle">
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Precio</th>
+        <th>Tipo</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @productos.each do |producto| %>
+        <tr>
+          <td><%= producto.titulo %></td>
+          <td><%= producto.autor %></td>
+          <td>$<%= producto.precio %></td>
+          <td><%= producto.tipo %></td>
+          <td><%= producto.estado %></td>
+          <td>
+            <%= link_to producto_path(producto), class: "btn btn-sm btn-as-dark" do %>
+              <i class="bi bi-search"></i> Ver
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
 
-<%= link_to "New producto", new_producto_path %>
-
-<%# Ejemplo para unificar con bases/_base_index:
-# <%= render partial: 'bases/base_index', locals: {
-#   title: 'Productos',
-#   columns: ['Titulo', 'Autor', 'Precio', 'Stock', 'Categoria'],
-#   collection: @productos,
-#   row_partial: 'productos/row', # requiere _row.html.erb con <tr>...</tr>
-#   actions_header: 'Acciones'
-# } %>
+<p class="mt-3">
+  <%= link_to new_producto_path, class: "btn btn-as-dark" do %>
+    <i class="bi bi-plus-circle"></i> Nuevo producto
+  <% end %>
+</p>

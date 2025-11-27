@@ -84,16 +84,38 @@ body.custom-bg {
 }
 
 /* Botones oscuros personalizados */
-.btn-as-dark {
-  background-color: #111827;
-  border-color: #111827;
-  color: #f9fafb;
+.btn-as-dark,
+.btn-dark,
+.btn.btn-dark,
+.btn.btn-dark.btn-sm,
+.btn.btn-dark.btn-sm.border-light {
+  background-color: #111 !important; /* igual que navbar */
+  border-color: #111 !important;
+  color: #f9fafb !important;
+  min-width: 120px;
+  min-height: 38px;
+  font-size: 1rem;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn-as-dark:hover {
-  background-color: #020617;
-  border-color: #020617;
-  color: #f9fafb;
+.btn-as-dark:hover,
+.btn-dark:hover,
+.btn.btn-dark:hover,
+.btn.btn-dark.btn-sm:hover,
+.btn.btn-dark.btn-sm.border-light:hover {
+  background-color: #222 !important;
+  border-color: #222 !important;
+  color: #f9fafb !important;
+}
+
+/* Espaciado uniforme entre botones en contenedores flex */
+.d-flex.gap-2 > .btn,
+.d-flex.gap-2 > form > .btn {
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 /* Mensajes flash */

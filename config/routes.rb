@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :usuarios, path: "auth"
+  devise_for :usuarios, controllers: { sessions: 'usuarios/sessions' }, path: 'auth'
 
   resources :productos
   resources :usuarios

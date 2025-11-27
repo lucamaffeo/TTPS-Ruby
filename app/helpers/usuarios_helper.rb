@@ -1,11 +1,11 @@
 module UsuariosHelper
   def usuario_edit_button_classes(usuario)
-    base = "btn btn-sm btn-as-dark me-2"
+    base = "btn btn-as-dark btn-sm"
     policy(usuario).update? ? base : "#{base} button-disabled disabled"
   end
 
   def usuario_destroy_button_classes(usuario)
-    base = "btn btn-sm btn-as-dark me-2"
+    base = "btn btn-as-dark btn-sm"
     policy(usuario).destroy? ? base : "#{base} button-disabled disabled"
   end
 

@@ -43,5 +43,4 @@
 
 # Ignorar bases SQLite en /db (y archivos de journal/WAL)
 /db/*.sqlite3
-/db/*.sqlite3-*
 /db/*.sqlite3-journal

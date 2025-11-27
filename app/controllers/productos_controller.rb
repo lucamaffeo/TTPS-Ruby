@@ -65,12 +65,10 @@ class ProductosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def producto_params
-      params.expect(producto: [
+      params.require(:producto).permit(
         :titulo, :descripcion, :autor, :precio, :stock,
-        :categoria,        # select género musical
-        :tipo,             # select vinilo/CD
-        :estado_fisico,    # select nuevo/usado
+        :categoria, :tipo, :estado_fisico, :anio,
         { imagenes: [] }, :audio_muestra
-      ])
+      )
     end
 end

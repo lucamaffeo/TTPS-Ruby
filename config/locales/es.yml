@@ -1,0 +1,8 @@
+es:
+  activerecord:
+    errors:
+      models:
+        producto:
+          attributes:
+            stock:
+              greater_than: "debe ser mayor que %{count}"

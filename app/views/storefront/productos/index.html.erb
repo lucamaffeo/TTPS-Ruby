@@ -3,8 +3,8 @@
 <div class="bg-white rounded-3 p-3 mb-4 shadow-sm">
   <%= form_with url: storefront_productos_path, method: :get, local: true, class: "row g-3 align-items-end" do %>
     <div class="col-md-4">
-      <%= label_tag :q, "Buscar:", class: "form-label fw-semibold" %>
-      <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "Ingrese título o artista" %>
+      <%= label_tag :q, "Buscar por título, artista o año:", class: "form-label fw-semibold" %>
+      <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "Ejemplo: Beatles, Thriller, 1980..." %>
     </div>
     <div class="col-md-2">
       <%= label_tag :categoria, "Género:", class: "form-label fw-semibold" %>
@@ -33,7 +33,6 @@
             include_blank: "Todos",
             class: "form-select" %>
     </div>
-
     <div class="col-md-2">
       <%= label_tag :orden, "Ordenar por:", class: "form-label fw-semibold" %>
       <%= select_tag :orden,

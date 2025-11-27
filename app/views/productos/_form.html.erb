@@ -66,6 +66,11 @@
           {}, class: "form-control", id: "estado_fisico_select" %>
   </div>
 
+  <div class="col-6">
+    <%= form.label :anio, "Año", class: "form-label" %>
+    <%= form.number_field :anio, class: "form-control", min: 1900, max: Time.current.year, required: true %>
+  </div>
+
   <div class="col-12">
     <%= form.label :imagenes, "Imágenes", class: "form-label" %>
     <%= form.file_field :imagenes, multiple: true, accept: "image/*", class: "form-control" %>

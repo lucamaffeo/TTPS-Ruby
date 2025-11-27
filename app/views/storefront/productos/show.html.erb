@@ -10,7 +10,7 @@
         <% end %>
       </div>
     <% else %>
-      <%= image_tag "placeholder.png", class: "img-fluid producto-img-zoom" %>
+      <%= image_tag "ActiveSound.png", class: "img-fluid producto-img-zoom" %>
     <% end %>
     <% if @producto.estado_fisico == "usado" %>
     <% if @producto.audio_muestra.attached? %>
@@ -28,6 +28,7 @@
     <p><strong>Género:</strong> <%= @producto.categoria %></p>
     <p><strong>Tipo:</strong> <%= @producto.tipo %></p>
     <p><strong>Estado físico:</strong> <%= @producto.estado_fisico %></p>
+    <p><strong>Año:</strong> <%= @producto.anio %></p>
     <h4 class="text-primary mt-3">$ <%= @producto.precio %></h4>
     <p class="<%= @producto.stock > 0 ? 'text-success' : 'text-danger' %>">
       <strong>Stock:</strong> <%= @producto.stock %>

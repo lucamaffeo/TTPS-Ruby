@@ -13,6 +13,7 @@
         <th>Precio</th>
         <th>Tipo</th>
         <th>Estado</th>
+        <th>Año</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -24,6 +25,7 @@
           <td>$<%= producto.precio %></td>
           <td><%= producto.tipo %></td>
           <td><%= producto.estado %></td>
+          <td><%= producto.anio %></td>
           <td>
             <%= link_to producto_path(producto), class: "btn btn-sm btn-as-dark" do %>
               <i class="bi bi-search"></i> Ver

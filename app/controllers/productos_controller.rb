@@ -60,14 +60,16 @@ class ProductosController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_producto
-      @producto = Producto.find(params(:id)) #params.expect(:id)
+      @producto = Producto.find(params[:id]) #params.expect(:id)
     end
 
     # Only allow a list of trusted parameters through.
     def producto_params
       params.expect(producto: [
-        :titulo, :descripcion, :autor, :precio, :stock, :categoria, :tipo, :estado,
-        :fecha_ingreso, :fecha_modificacion, :fecha_baja,
+        :titulo, :descripcion, :autor, :precio, :stock,
+        :categoria,        # select género musical
+        :tipo,             # select vinilo/CD
+        :estado_fisico,    # select nuevo/usado
         { imagenes: [] }, :audio_muestra
       ])
     end

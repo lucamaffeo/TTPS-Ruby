@@ -37,43 +37,47 @@
   </div>
 
   <div>
-    <%= form.label :categoria, style: "display: block" %>
-    <%= form.text_field :categoria %>
+  <%= form.label :categoria, "Género musical", style: "display: block" %>
+  <%= form.select :categoria,
+        [
+          ["Rock", "rock"],
+          ["Pop", "pop"],
+          ["Jazz", "jazz"],
+          ["Blues", "blues"],
+          ["Clásica", "clasica"],
+          ["Reggae", "reggae"],
+          ["Hip-Hop", "hiphop"],
+          ["Metal", "metal"],
+          ["Electrónica", "electronica"]
+        ],
+        {},
+        class: "form-control" %>
   </div>
 
   <div>
-    <%= form.label :tipo, style: "display: block" %>
-    <%= form.text_field :tipo %>
+    <%= form.label :tipo, "Tipo", style: "display: block" %>
+    <%= form.select :tipo,
+          [["Vinilo", "vinilo"], ["CD", "cd"]],
+          {}, class: "form-control" %>
   </div>
 
   <div>
-    <%= form.label :estado, style: "display: block" %>
-    <%= form.text_field :estado %>
-  </div>
-
-  <div>
-    <%= form.label :fecha_ingreso, style: "display: block" %>
-    <%= form.date_field :fecha_ingreso %>
-  </div>
-
-  <div>
-    <%= form.label :fecha_modificacion, style: "display: block" %>
-    <%= form.date_field :fecha_modificacion %>
-  </div>
-
-  <div>
-    <%= form.label :fecha_baja, style: "display: block" %>
-    <%= form.date_field :fecha_baja %>
-  </div>
+  <%= form.label :estado_fisico, "Estado del producto", style: "display: block" %>
+  <%= form.select :estado_fisico,
+        [["Nuevo", "nuevo"], ["Usado", "usado"]],
+        {}, class: "form-control" %>
+</div>
 
   <div>
     <%= form.label :imagenes, "Imágenes", style: "display: block" %>
     <%= form.file_field :imagenes, multiple: true, accept: "image/*" %>
   </div>
 
-  <div>
-    <%= form.label :audio_muestra, "Audio de muestra", style: "display: block" %>
-    <%= form.file_field :audio_muestra, accept: "audio/*" %>
+  <!-- Campo Audio SOLO si es usado -->
+  <div *ngIf="producto.estado === 'usado'">
+    <label>Audio muestra</label>
+    <br>
+    <input type="file" accept="audio/*">
   </div>
 
   <div>

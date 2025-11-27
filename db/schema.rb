@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_19_215730) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_27_145945) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -66,6 +66,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_19_215730) do
     t.datetime "created_at", null: false
     t.text "descripcion"
     t.string "estado"
+    t.string "estado_fisico"
     t.date "fecha_baja"
     t.date "fecha_ingreso"
     t.date "fecha_modificacion"
@@ -90,8 +91,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_19_215730) do
     t.index ["dni"], name: "index_usuarios_on_dni", unique: true
     t.index ["email"], name: "index_usuarios_on_email", unique: true
     t.index ["reset_password_token"], name: "index_usuarios_on_reset_password_token", unique: true
-    t.index ["rol"], name: "index_usuarios_on_rol"
-    t.check_constraint "rol IN (0,1,2)", name: "usuarios_rol_in_range"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
+  resources :venta
   devise_for :usuarios, controllers: { sessions: 'usuarios/sessions' }, path: 'auth'
 
   resources :productos
   resources :usuarios
-
+  resources :venta
   # Root: storefront
   root "storefront/productos#index"
 

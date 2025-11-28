@@ -21,6 +21,8 @@ class Producto < ApplicationRecord
   before_create :set_default_values
   before_update :set_update_date
 
+  validate :stock_por_estado_fisico
+
   private
 
   def set_default_values
@@ -33,5 +35,13 @@ class Producto < ApplicationRecord
   def set_update_date
     self.fecha_modificacion = Time.current
     # No modificar self.estado aquí
+  end
+
+  def stock_por_estado_fisico
+    if estado_fisico == "usado"
+      errors.add(:stock, "debe ser 1 para productos usados") unless stock == 1
+    elsif estado_fisico == "nuevo"
+      errors.add(:stock, "debe ser mayor a 0 para productos nuevos") unless stock.present? && stock > 0
+    end
   end
 end

@@ -32,7 +32,7 @@
 
   <div class="col-6">
     <%= form.label :stock, "Stock", class: "form-label" %>
-    <%= form.number_field :stock, class: "form-control" %>
+    <%= form.number_field :stock, class: "form-control", min: 1, id: "stock_field", value: producto.stock || 1 %>
   </div>
 
   <div class="col-6">
@@ -97,14 +97,20 @@
   document.addEventListener("DOMContentLoaded", function() {
     var estadoSelect = document.getElementById("estado_fisico_select");
     var audioField = document.getElementById("audio-muestra-field");
+    var stockField = document.getElementById("stock_field");
+    function toggleFields() {
+      if (estadoSelect.value === "usado") {
+        audioField.style.display = "";
+        stockField.value = 1;
+        stockField.readOnly = true;
+      } else {
+        audioField.style.display = "none";
+        stockField.readOnly = false;
+      }
+    }
     if (estadoSelect) {
-      estadoSelect.addEventListener("change", function() {
-        if (estadoSelect.value === "usado") {
-          audioField.style.display = "";
-        } else {
-          audioField.style.display = "none";
-        }
-      });
+      estadoSelect.addEventListener("change", toggleFields);
+      toggleFields();
     }
   });
 </script>

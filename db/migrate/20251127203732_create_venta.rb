@@ -4,7 +4,7 @@ class CreateVenta < ActiveRecord::Migration[8.1]
       t.datetime :fecha_hora
       t.decimal :total
       t.string :comprador
-      t.references :empleado, null: false, foreign_key: true
+      t.references :usuario, null: false, foreign_key: true
 
       t.timestamps
     end

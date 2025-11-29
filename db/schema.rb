@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_27_203751) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_29_200138) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -123,5 +123,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_27_203751) do
   add_foreign_key "detalle_venta", "venta", column: "venta_id"
   add_foreign_key "imagen_productos", "productos"
   add_foreign_key "muestra_audios", "productos"
-  add_foreign_key "venta", "empleados"
+  add_foreign_key "venta", "usuarios", column: "empleado_id"
 end

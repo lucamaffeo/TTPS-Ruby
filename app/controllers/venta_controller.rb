@@ -1,5 +1,5 @@
 class VentaController < ApplicationController
-  # before_action :set_venta, only: %i[ show edit update destroy ]
+  before_action :set_venta, only: %i[ show edit update destroy ]
 
   # # GET /venta or /venta.json
   # def index
@@ -14,11 +14,11 @@ class VentaController < ApplicationController
   # def new
   #   @venta = Venta.new
   # end
-  # 
+  #
   def new
     @venta = Venta.new
-    @venta.detalle_ventas.build   # <- crea una fila vacía para que fields_for la muestre
-    @productos = Producto.order(:titulo).limit(200) # opcional, para poblar selects
+    @venta.detalle_ventas.build
+    @productos = Producto.order(:titulo).limit(200)
     @venta.empleado = current_usuario
   end
   # # GET /venta/1/edit
@@ -50,6 +50,15 @@ class VentaController < ApplicationController
   #     end
   #   end
   # end
+  # PATCH/PUT /venta/:id
+  def update
+    if @venta.update(venta_params)
+      redirect_to @venta, notice: "Venta actualizada correctamente."
+    else
+      @productos = Producto.order(:titulo)
+      render :edit, status: :unprocessable_entity
+    end
+  end
 
   # # PATCH/PUT /venta/1 or /venta/1.json
   # def update
@@ -63,6 +72,10 @@ class VentaController < ApplicationController
   #     end
   #   end
   # end
+  def destroy
+    @venta.destroy
+    redirect_to ventas_path, notice: "Venta eliminada correctamente."
+  end
 
   # # DELETE /venta/1 or /venta/1.json
   # def destroy
@@ -80,14 +93,17 @@ class VentaController < ApplicationController
   #     @venta = Venta.find(params[:id])
   #   end
 
-    # Only allow a list of trusted parameters through.
+  def set_venta
+    @venta = Venta.find(params[:id])
+  end
+  #
   def venta_params
   params.require(:venta).permit(
     :fecha_hora,
     :total,
     :comprador,
     :empleado_id,
-    detalle_ventas_attributes: [:id, :producto_id, :cantidad, :precio, :_destroy]
+    detalle_ventas_attributes: [ :id, :producto_id, :cantidad, :precio, :_destroy ]
   )
   end
 end

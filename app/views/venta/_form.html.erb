@@ -31,9 +31,32 @@
     </div>
 
     <div class="mb-3">
-      <%= form.label :empleado_id, class: "form-label" %>
-      <%= form.number_field :empleado_id, class: "form-control" %>
+      <label class="form-label">Empleado</label>
+      <input class="form-control" value="<%= current_usuario.nombre %>" disabled>
+    <%= form.hidden_field :empleado_id, value: current_usuario.id %>
+
     </div>
+
+    <hr>
+    <h4>Producto de la venta</h4>
+
+    <%= form.fields_for :detalle_ventas do |df| %>
+      <div class="mb-3">
+        <%= df.label :producto_id, "Producto", class: "form-label" %>
+        <%= df.collection_select :producto_id, (@productos || Producto.all), :id, :titulo, { include_blank: "Seleccioná un producto" }, { class: "form-control" } %>
+      </div>
+
+      <div class="mb-3">
+        <%= df.label :cantidad, class: "form-label" %>
+        <%= df.number_field :cantidad, class: "form-control", min: 1, value: 1 %>
+      </div>
+
+      <div class="mb-3">
+        <%= df.label :precio, "Precio unitario", class: "form-label" %>
+        <%= df.number_field :precio, step: "0.01", class: "form-control" %>
+      </div>
+    <% end %>
+
 
     <div class="mt-3">
       <%= form.submit class: "btn btn-as-dark" %>

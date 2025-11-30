@@ -22,6 +22,8 @@ class Producto < ApplicationRecord
   before_update :set_update_date
 
   validate :stock_por_estado_fisico
+  validate :imagen_obligatoria
+  validate :audio_solo_usado
 
   private
 
@@ -35,6 +37,18 @@ class Producto < ApplicationRecord
   def set_update_date
     self.fecha_modificacion = Time.current
     # No modificar self.estado aquí
+  end
+
+  def imagen_obligatoria
+    if imagenes.blank? || !imagenes.attached?
+      errors.add(:imagenes, "debe subir al menos una imagen")
+    end
+  end
+
+  def audio_solo_usado
+    if audio_muestra.attached? && estado_fisico != "usado"
+      errors.add(:audio_muestra, "solo se permite para productos usados")
+    end
   end
 
   def stock_por_estado_fisico

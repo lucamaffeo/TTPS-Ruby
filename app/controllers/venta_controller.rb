@@ -2,19 +2,15 @@ class VentaController < ApplicationController
   before_action :set_venta, only: %i[ show edit update destroy ]
 
   # # GET /venta or /venta.json
-  # def index
-  #   @ventas = Venta.all
-  # end
+   def index
+     @ventas = Venta.all
+   end
 
-  # # GET /venta/1 or /venta/1.json
-  # def show
-  # end
+  # Aca lo que hace es mostrar una venta especifica.
+   def show
+   end
 
-  # # GET /venta/new
-  # def new
-  #   @venta = Venta.new
-  # end
-  #
+  # Aca lo que hace es inicializar una nueva venta y cargar los productos para el formulario.
   def new
     @venta = Venta.new
     @venta.detalle_ventas.build
@@ -24,6 +20,8 @@ class VentaController < ApplicationController
   # # GET /venta/1/edit
   # def edit
   # end
+
+  # Aca lo que hace es crear una nueva venta con los parametros que vienen del formulario.
   def create
     @venta = Venta.new(venta_params)
     @venta.empleado = current_usuario if @venta.empleado.nil?
@@ -35,22 +33,8 @@ class VentaController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
-
-  # # POST /venta or /venta.json
-  # def create
-  #   @venta = Venta.new(venta_params)
-
-  #   respond_to do |format|
-  #     if @venta.save
-  #       format.html { redirect_to @venta, notice: "venta was successfully created." }
-  #       format.json { render :show, status: :created, location: @venta }
-  #     else
-  #       format.html { render :new, status: :unprocessable_entity }
-  #       format.json { render json: @venta.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end
-  # PATCH/PUT /venta/:id
+  
+  # Aca lo que hace es actualizar una venta especifica.
   def update
     if @venta.update(venta_params)
       redirect_to @venta, notice: "Venta actualizada correctamente."
@@ -59,44 +43,18 @@ class VentaController < ApplicationController
       render :edit, status: :unprocessable_entity
     end
   end
-
-  # # PATCH/PUT /venta/1 or /venta/1.json
-  # def update
-  #   respond_to do |format|
-  #     if @venta.update(venta_params)
-  #       format.html { redirect_to @venta, notice: "venta was successfully updated.", status: :see_other }
-  #       format.json { render :show, status: :ok, location: @venta }
-  #     else
-  #       format.html { render :edit, status: :unprocessable_entity }
-  #       format.json { render json: @venta.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end
+  # Elimina una venta especifica.
   def destroy
     @venta.destroy
     redirect_to ventas_path, notice: "Venta eliminada correctamente."
   end
 
-  # # DELETE /venta/1 or /venta/1.json
-  # def destroy
-  #   @venta.destroy!
-
-  #   respond_to do |format|
-  #     format.html { redirect_to ventas_path, notice: "venta was successfully destroyed.", status: :see_other }
-  #     format.json { head :no_content }
-  #   end
-  # end
-
-  # private
-  #   # Use callbacks to share common setup or constraints between actions.
-  #   def set_venta
-  #     @venta = Venta.find(params[:id])
-  #   end
-
+  # Aca lo que hace es buscar la venta por el id que viene en los parametros de la url.
   def set_venta
     @venta = Venta.find(params[:id])
   end
-  #
+
+  # venta_params lo que hace es permitir los parametros para crear o actualizar una venta, vienen del formulario.
   def venta_params
   params.require(:venta).permit(
     :fecha_hora,
@@ -106,4 +64,5 @@ class VentaController < ApplicationController
     detalle_ventas_attributes: [ :id, :producto_id, :cantidad, :precio, :_destroy ]
   )
   end
+
 end

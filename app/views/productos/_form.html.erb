@@ -68,9 +68,16 @@
 
   <div class="col-6">
     <%= form.label :estado, "Estado", class: "form-label" %>
-    <%= form.select :estado,
-          [["Activo", "activo"], ["Eliminado", "eliminado"]],
-          {}, class: "form-control" %>
+    <% if producto.new_record? %>
+      <%= form.select :estado,
+            [["Activo", "activo"]],
+            {}, class: "form-control", disabled: true %>
+      <%= form.hidden_field :estado, value: "activo" %>
+    <% else %>
+      <%= form.select :estado,
+            [["Activo", "activo"], ["Eliminado", "eliminado"]],
+            {}, class: "form-control" %>
+    <% end %>
   </div>
 
   <div class="col-6">

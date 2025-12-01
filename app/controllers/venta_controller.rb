@@ -2,9 +2,10 @@ class VentaController < ApplicationController
   before_action :set_venta, only: %i[ show edit update destroy ]
 
   # # GET /venta or /venta.json
-   def index
-     @ventas = Venta.all
-   end
+  def index
+    @ventas = Venta.includes(:empleado).order(created_at: :desc)
+  end
+
 
   # Aca lo que hace es mostrar una venta especifica.
    def show
@@ -24,7 +25,8 @@ class VentaController < ApplicationController
   # Aca lo que hace es crear una nueva venta con los parametros que vienen del formulario.
   def create
     @venta = Venta.new(venta_params)
-    @venta.empleado = current_usuario if @venta.empleado.nil?
+    @venta.empleado = current_usuario
+    @venta.fecha_hora = Time.now
 
     if @venta.save
       redirect_to @venta, notice: "Venta creada correctamente."
@@ -57,7 +59,6 @@ class VentaController < ApplicationController
   # venta_params lo que hace es permitir los parametros para crear o actualizar una venta, vienen del formulario.
   def venta_params
   params.require(:venta).permit(
-    :fecha_hora,
     :total,
     :comprador,
     :empleado_id,

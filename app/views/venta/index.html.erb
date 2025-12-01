@@ -9,13 +9,27 @@
     <table class="table-base table table-sm align-middle">
       <thead>
         <tr>
-          <th>Fecha y hora</th>
+          <th>ID</th>
+          <th>Vendedor</th>
+          <th>Rol</th>
+          <th>Hora inicio</th>
+          <th>Cliente</th>
           <th>Total</th>
-          <th>Comprador</th>
-          <th>Empleado</th>
-          <th>Acciones</th>
+          <th></th>
         </tr>
       </thead>
+      <tbody>
+        <% @ventas.each do |venta| %>
+          <tr>
+            <td><%= venta.id %></td>
+            <td><%= venta.empleado.nombre %></td>
+            <td><%= venta.empleado&.rol_label%></td>
+            <td><%= venta.fecha_hora.strftime("%Y-%m-%d %H:%M") %></td>
+            <td><%= venta.comprador %></td>
+            <td><%= number_to_currency(venta.total) %></td>
+          </tr>
+        <% end %>
+      </tbody>
     </table>
   </div>
 

@@ -8,6 +8,10 @@ Bundler.require(*Rails.groups)
 
 module TTPS
   class Application < Rails::Application
+
+    config.time_zone = "Buenos Aires"
+    config.active_record.default_timezone = :local
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
 

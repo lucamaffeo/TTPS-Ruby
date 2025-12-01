@@ -9,9 +9,9 @@ end
 
 puts "==> Creando usuarios"
 usuarios = [
-  { nombre: "Admin",    email: "admin@example.com",    dni: "10000001", rol: 2 }, # administrador
-  { nombre: "Gerente",  email: "gerente@example.com",  dni: "10000002", rol: 1 }, # gerente
-  { nombre: "Empleado", email: "empleado@example.com", dni: "10000003", rol: 0 }  # empleado
+  { nombre: "Luca",    email: "admin@example.com",    dni: "10000001", rol: 2 }, # administrador
+  { nombre: "Ale",  email: "gerente@example.com",  dni: "10000002", rol: 1 }, # gerente
+  { nombre: "Franco", email: "empleado@example.com", dni: "10000003", rol: 0 }  # empleado
 ]
 
 usuarios.each do |attrs|

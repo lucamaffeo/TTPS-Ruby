@@ -11,6 +11,24 @@ class Usuario < ApplicationRecord
     administrador: 2
   }.freeze
 
+  ROLE_LABELS = {
+    empleado: "Empleado",
+    gerente: "Gerente",
+    administrador: "Administrador"
+  }.freeze
+
+  # Devuelve el símbolo del rol (ej :empleado) o nil si no existe
+  def rol_sym
+    ROLES.key(rol)
+  end
+
+  # Devuelve la etiqueta legible, p. ej. "Empleado"
+  def rol_label
+    key = rol_sym
+    key ? ROLE_LABELS[key] : "Desconocido"
+  end
+
+
   # Helpers de rol (compatibles con lo que usan tus policies: administrador?, gerente?, etc.)
   def empleado?
     rol == ROLES[:empleado]

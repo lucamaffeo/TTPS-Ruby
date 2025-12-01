@@ -8,6 +8,7 @@ class Producto < ApplicationRecord
   validates :categoria, presence: true
   validates :tipo, presence: true
   validates :anio, numericality: { only_integer: true, greater_than: 1900, less_than_or_equal_to: Time.current.year }, allow_nil: true
+  validates :estado_fisico, inclusion: { in: %w[nuevo usado] }
  
   # Stock debe ser > 0 y entero
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 0 }

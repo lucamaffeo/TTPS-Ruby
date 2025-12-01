@@ -23,12 +23,12 @@
   </head>
   <body class="text-light custom-bg">
     <div class="app-overlay">
-      <% mostrar_nav = !(usuario_signed_in? && current_usuario.valid_password?("123456") && controller_name == "usuarios" && action_name == "edit" && current_usuario.id == @usuario&.id) %>
+      <% mostrar_nav = !(usuario_signed_in? && session[:require_password_change] == true && controller_name == "usuarios" && action_name == "edit" && current_usuario.id == @usuario&.id) %>
       <% if mostrar_nav %>
         <nav class="navbar navbar-expand-lg navbar-dark bg-black mb-4">
           <div class="container-fluid">
             <a class="navbar-brand" href="<%= root_path %>">
-              <%= image_tag "ActiveSound.png", alt: "ActiveSound Disquería", height: "48", width: "50", class: "d-inline-block align-text" %>  ActiveSound Disquería
+              <%= image_tag "ActiveSound.png", alt: "ActiveSound Disquería", height: "48", width: "50", class: "d-inline-block align-text" %> ActiveSound
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -40,20 +40,26 @@
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                   <%= link_to storefront_productos_path, class: "btn btn-dark btn-sm border-light me-2" do %>
-                    <i></i> Storefront
+                    StoreFront
                   <% end %>
                 </li>
                 <% if usuario_signed_in? %>
                   <li class="nav-item">
-                    <%= link_to "Productos", productos_path, class: "btn btn-dark btn-sm border-light me-2" %>
+                    <%= link_to productos_path, class: "btn btn-dark btn-sm border-light me-2" do %>
+                      Administración de productos
+                    <% end %>
                   </li>
                   <% unless current_usuario.empleado? %>
                     <li class="nav-item">
-                      <%= link_to "Usuarios", usuarios_path, class: "btn btn-dark btn-sm border-light me-2" %>
+                      <%= link_to usuarios_path, class: "btn btn-dark btn-sm border-light me-2" do %>
+                        Gestión de usuarios
+                      <% end %>
                     </li>
                   <% end %>
                   <li class="nav-item">
-                    <%= link_to "Ventas", venta_path, class: "btn btn-dark btn-sm border-light me-2" %>
+                    <%= link_to venta_path, class: "btn btn-dark btn-sm border-light me-2" do %>
+                      Administración de ventas
+                    <% end %>
                   </li>
                 <% end %>
               </ul>

@@ -67,7 +67,7 @@ def attach_audio_if_used!(record, path)
 end
 
 ActiveRecord::Base.transaction do
-  10.times do
+  15.times do
     p = Producto.new(
       titulo: Faker::Music.album,
       descripcion: Faker::Lorem.sentence(word_count: 10),

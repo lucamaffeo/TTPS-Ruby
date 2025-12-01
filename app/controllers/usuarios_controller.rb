@@ -50,6 +50,12 @@ class UsuariosController < ApplicationController
       upd.delete(:password_confirmation)
     end
     if @usuario.update(upd)
+      # Si el usuario cambió la contraseña inicial, limpia el flag y redirige correctamente
+      if @usuario.previous_changes.key?("encrypted_password") && !@usuario.valid_password?("123456")
+        session[:require_password_change] = false
+        bypass_sign_in(@usuario)
+        redirect_to(@usuario.administrador? ? usuarios_path : productos_path, notice: "Contraseña actualizada correctamente.") and return
+      end
       redirect_to @usuario, notice: "Usuario actualizado."
     else
       render :edit, status: :unprocessable_entity

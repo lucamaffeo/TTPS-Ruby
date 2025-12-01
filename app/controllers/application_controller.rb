@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :force_password_change
 
   rescue_from Pundit::NotAuthorizedError do
     redirect_back(fallback_location: root_path, alert: "No autorizado")
@@ -32,10 +33,26 @@ class ApplicationController < ActionController::Base
 
   # Redirección después de login
   def after_sign_in_path_for(resource)
-    if resource.administrador?
-      usuarios_path
-    else
-      productos_path
+    if resource.valid_password?("123456")
+      return edit_usuario_path(resource)
     end
+    resource.administrador? ? usuarios_path : productos_path
+  end
+
+  private
+
+  def force_password_change
+    return unless usuario_signed_in?
+    # Solo aplica en GET (no en PATCH/PUT/POST)
+    return unless request.get?
+    # Solo si la contraseña es la default
+    return unless current_usuario.valid_password?("123456")
+    # Permitir editar y actualizar sin redirigir
+    if controller_name == "usuarios" && action_name.in?(%w[edit update]) && params[:id].to_i == current_usuario.id
+      return
+    end
+    # Evitar interferir con Devise controllers
+    return if devise_controller?
+    redirect_to edit_usuario_path(current_usuario), alert: "Debes cambiar la contraseña inicial."
   end
 end

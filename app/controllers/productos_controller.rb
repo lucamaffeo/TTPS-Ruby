@@ -59,4 +59,15 @@ class ProductosController < ApplicationController
         { imagenes: [] }, :audio_muestra
       )
     end
+
+    def filtrados
+      scope = Producto.all
+      scope = scope.where(tipo: params[:tipo]) if params[:tipo].present?
+      scope = scope.where(genero: params[:genero]) if params[:genero].present?
+
+      productos = scope.order(:titulo).select(:id, :titulo, :precio)
+
+      render json: productos
+    end
+
 end

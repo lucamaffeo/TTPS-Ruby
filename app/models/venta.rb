@@ -4,8 +4,10 @@ class Venta < ApplicationRecord
   has_many :detalle_ventas, dependent: :destroy
   has_many :productos, through: :detalle_ventas
 
-  # === VALIDACIONES ===
   accepts_nested_attributes_for :detalle_ventas, allow_destroy: true
+
+  validates :fecha_hora, presence: true
+  validates :empleado, presence: true
   
   # attribute :cancelada, :boolean, default: false
   

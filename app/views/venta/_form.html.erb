@@ -15,46 +15,66 @@
       </div>
     <% end %>
 
+    <!-- Nombre del cliente -->
     <div class="mb-3">
-      <%= form.label :total, class: "form-label" %>
-      <%= form.number_field :total, step: "0.01", class: "form-control" %>
-    </div>
-
-    <div class="mb-3">
-      <%= form.label :comprador, class: "form-label" %>
+      <%= form.label :comprador, "Nombre del cliente", class: "form-label" %>
       <%= form.text_field :comprador, class: "form-control" %>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Empleado</label>
-      <input class="form-control" value="<%= current_usuario.nombre %>" disabled>
-    <%= form.hidden_field :empleado_id, value: current_usuario.id %>
+    <hr>
+    <h4>Productos de la venta</h4>
 
+    <!-- FILTROS: Tipo y Categoria (estos selects sirven para filtrar los productos vía JS;
+         no envían datos al servidor en el form de venta) -->
+    <div class="row g-2 mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Tipo</label>
+        <select id="filtro-tipo" class="form-control">
+          <option value="">Seleccioná tipo</option>
+          <% Producto.distinct.order(:tipo).pluck(:tipo).each do |t| %>
+            <option value="<%= t %>"><%= t %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Categoría</label>
+        <select id="filtro-categoria" class="form-control">
+          <option value="">Seleccioná categoría</option>
+          <% Producto.distinct.order(:categoria).pluck(:categoria).each do |c| %>
+            <option value="<%= c %>"><%= c %></option>
+          <% end %>
+        </select>
+      </div>
     </div>
 
-    <hr>
-    <h4>Producto de la venta</h4>
-
+    <!-- Detalle_ventas: usamos fields_for para que los nombres coincidan con nested_attributes -->
     <%= form.fields_for :detalle_ventas do |df| %>
-      <div class="mb-3">
-        <%= df.label :producto_id, "Producto", class: "form-label" %>
-        <%= df.collection_select :producto_id, (@productos || Producto.all), :id, :titulo, { include_blank: "Seleccioná un producto" }, { class: "form-control" } %>
-      </div>
+      <div class="card p-3 mb-3">
 
-      <div class="mb-3">
-        <%= df.label :cantidad, class: "form-label" %>
-        <%= df.number_field :cantidad, class: "form-control", min: 1, value: 1 %>
-      </div>
+        <!-- Producto: opciones vacías al inicio; JS las rellenará -->
+        <div class="mb-3">
+          <%= df.label :producto_id, "Producto", class: "form-label" %>
+          <%= df.select :producto_id, [], { include_blank: "Seleccioná un producto" }, { class: "form-control", id: "producto-select" } %>
+        </div>
 
-      <div class="mb-3">
-        <%= df.label :precio, "Precio unitario", class: "form-label" %>
-        <%= df.number_field :precio, step: "0.01", class: "form-control" %>
+        <!-- Cantidad -->
+        <div class="mb-3">
+          <%= df.label :cantidad, "Cantidad", class: "form-label" %>
+          <%= df.number_field :cantidad, class: "form-control", min: 1, value: (df.object.cantidad || 1), id: "cantidad-input" %>
+        </div>
+
+        <!-- Precio unitario (será rellenado por JS cuando el producto se elija) -->
+        <div class="mb-3">
+          <%= df.label :precio, "Precio unitario", class: "form-label" %>
+          <%= df.number_field :precio, step: "0.01", class: "form-control", id: "precio-input" %>
+        </div>
+
       </div>
     <% end %>
 
-
     <div class="mt-3">
-      <%= form.submit class: "btn btn-as-dark" %>
+      <%= form.submit (venta.persisted? ? "Actualizar venta" : "Guardar venta"), class: "btn btn-as-dark" %>
     </div>
   </div>
 <% end %>

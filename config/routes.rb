@@ -1,8 +1,12 @@
 Rails.application.routes.draw do
+  resources :productos
+
+  get '/productos_filtrados', to: 'productos#filtrados'
+  
   resources :venta
+
   devise_for :usuarios, controllers: { sessions: "usuarios/sessions" }, path: "auth"
 
-  resources :productos
   resources :usuarios
   # Root: storefront
   root "storefront/productos#index"

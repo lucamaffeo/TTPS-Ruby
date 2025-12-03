@@ -8,8 +8,13 @@ class VentaController < ApplicationController
 
 
   # Aca lo que hace es mostrar una venta especifica.
-   def show
-   end
+  def show
+  end
+
+  def edit
+    @venta = Venta.find(params[:id])
+    @venta.detalle_ventas.build if @venta.detalle_ventas.empty?
+  end
 
   # Aca lo que hace es inicializar una nueva venta y cargar los productos para el formulario.
   def new

@@ -45,10 +45,30 @@ class ProductosController < ApplicationController
     redirect_to productos_path, notice: "Producto eliminado lógicamente."
   end
 
+  # GET /productos_filtrados
+  def productos_filtrados
+    scope = Producto.all
+
+    if params[:tipo].present?
+      tipo = params[:tipo].to_s.strip
+      scope = scope.where('lower(tipo) = ?', tipo.downcase)
+    end
+
+    if params[:categoria].present?
+      categoria = params[:categoria].to_s.strip
+      scope = scope.where('lower(categoria) = ?', categoria.downcase)
+    end
+
+    productos = scope.order(:titulo).select(:id, :titulo, :precio)
+
+    render json: productos
+  end
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_producto
-      @producto = Producto.find(params[:id]) #params.expect(:id)
+      @producto = Producto.find(params[:id]) # params.expect(:id)
     end
 
     # Only allow a list of trusted parameters through.
@@ -58,16 +78,6 @@ class ProductosController < ApplicationController
         :categoria, :tipo, :estado_fisico, :anio, :estado,
         { imagenes: [] }, :audio_muestra
       )
-    end
-
-    def filtrados
-      scope = Producto.all
-      scope = scope.where(tipo: params[:tipo]) if params[:tipo].present?
-      scope = scope.where(genero: params[:genero]) if params[:genero].present?
-
-      productos = scope.order(:titulo).select(:id, :titulo, :precio)
-
-      render json: productos
     end
 
 end

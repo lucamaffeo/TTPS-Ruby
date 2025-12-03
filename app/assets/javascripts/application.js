@@ -15,8 +15,6 @@
 //= require bootstrap-sprockets
 //= require_tree .
 
-import "./ventas_form";
-
 document.addEventListener("DOMContentLoaded", function() {
   document.querySelectorAll('.producto-img-zoom').forEach(function(img) {
     img.addEventListener('mouseenter', function() {

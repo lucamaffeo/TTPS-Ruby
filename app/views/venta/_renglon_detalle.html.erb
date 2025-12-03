@@ -1,0 +1,30 @@
+<div class="renglon-venta" style="display:flex; gap:12px; align-items:end; border-bottom:1px solid #eee; padding:10px 0;">
+  <div style="flex: 2;">
+    <%= df.label :producto_id, "Producto", class: "form-label" %>
+    <%= df.select :producto_id, [],
+          { include_blank: "Seleccioná un producto" },
+          { class: "form-control producto-select",
+            data: { selected: df.object.producto_id, precio: df.object.precio } } %>
+  </div>
+
+  <div style="width:110px;">
+    <%= df.label :cantidad, "Cantidad", class: "form-label" %>
+    <%= df.number_field :cantidad, min: 1, value: (df.object.cantidad || 1),
+            class: "form-control cantidad-input" %>
+  </div>
+
+  <div style="width:140px;">
+    <%= df.label :precio, "Precio unitario", class: "form-label" %>
+    <%= df.number_field :precio, step: "0.01",
+            class: "form-control precio-input" %>
+  </div>
+
+  <div style="width:140px;">
+    <label class="form-label">Subtotal</label>
+    <input type="text" readonly class="form-control subtotal-input" value="<%= number_with_precision((df.object.cantidad || 0) * (df.object.precio || 0), precision: 2) %>">
+  </div>
+
+  <div style="width:90px; display:flex; align-items:flex-end;">
+    <button type="button" class="btn btn-danger eliminar-renglon">Eliminar</button>
+  </div>
+</div>

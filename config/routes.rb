@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   resources :productos
 
-  get '/productos_filtrados', to: 'productos#filtrados'
-  
+  get "productos_filtrados", to: "productos#productos_filtrados"
+
   resources :venta
 
   devise_for :usuarios, controllers: { sessions: "usuarios/sessions" }, path: "auth"

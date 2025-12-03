@@ -247,6 +247,50 @@ body.custom-bg {
   padding: 2rem;
 }
 
+/* Override / estilo amplio para el formulario de ventas */
+.form-panel.venta-form-wide {
+  width: 100%;
+  max-width: 1200px;      /* ancho máximo más generoso */
+  margin: 18px auto;      /* centrado horizontal con margen superior */
+  padding: 24px;          /* más espacio interior */
+  background: #fff;       /* fondo tipo tarjeta */
+  border-radius: 10px;
+  box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.08);
+}
+
+/* Asegurar que el panel de renglones use todo el ancho disponible del form */
+#panel-renglones {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Renglón: permitir que los elementos se estiren en pantallas grandes */
+.renglon-venta {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+/* Select producto más ancho cuando el form es amplio */
+.form-panel.venta-form-wide .producto-select {
+  width: 100%;            /* ocupa todo el espacio disponible dentro de su columna */
+  max-width: none;
+}
+
+/* Ajustes responsivos: en pantallas pequeñas mantener diseño compacto */
+@media (max-width: 768px) {
+  .form-panel.venta-form-wide {
+    padding: 16px;
+    margin: 8px;
+  }
+  .renglon-venta {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .form-panel.venta-form-wide .producto-select {
+    width: 100%;
+  }
+}
+
 /* Estilos para la paginación de Kaminari con Bootstrap 4 */
 .pagination {
   --bs-pagination-padding-x: 0.75rem;

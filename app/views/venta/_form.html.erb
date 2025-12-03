@@ -3,7 +3,8 @@
               method: (venta.persisted? ? :patch : :post),
               local: true) do |form| %>
 
-  <div class="form-panel">
+  <div class="form-panel venta-form-wide">
+
     <% if venta.errors.any? %>
       <div style="color: red" class="mb-3">
         <h5><%= pluralize(venta.errors.count, "error") %> impiden guardar esta venta:</h5>
@@ -15,21 +16,27 @@
       </div>
     <% end %>
 
-    <!-- Nombre del cliente -->
+    <!-- Cliente -->
     <div class="mb-3">
       <%= form.label :comprador, "Nombre del cliente", class: "form-label" %>
       <%= form.text_field :comprador, class: "form-control" %>
     </div>
 
     <hr>
+
     <h4>Productos de la venta</h4>
 
-    <!-- FILTROS: Tipo y Categoria (estos selects sirven para filtrar los productos vía JS;
-         no envían datos al servidor en el form de venta) -->
-    <div class="row g-2 mb-3">
+    <!-- Botón agregar -->
+    <button type="button" id="agregar-renglon" class="btn btn-success mb-3">
+      + Agregar producto
+    </button>
+
+   <!-- FILTROS (OCULTOS) -->
+    <div class="row g-2 mb-3 filtros-ocultos">
       <div class="col-md-6">
         <label class="form-label">Tipo</label>
-        <select id="filtro-tipo" class="form-control">
+        <select id="filtro-tipo" class="form-control"
+                data-selected="<%= @venta.detalle_ventas.first&.producto&.tipo %>">
           <option value="">Seleccioná tipo</option>
           <% Producto.distinct.order(:tipo).pluck(:tipo).each do |t| %>
             <option value="<%= t %>"><%= t %></option>
@@ -39,7 +46,8 @@
 
       <div class="col-md-6">
         <label class="form-label">Categoría</label>
-        <select id="filtro-categoria" class="form-control">
+        <select id="filtro-categoria" class="form-control"
+                data-selected="<%= @venta.detalle_ventas.first&.producto&.categoria %>">
           <option value="">Seleccioná categoría</option>
           <% Producto.distinct.order(:categoria).pluck(:categoria).each do |c| %>
             <option value="<%= c %>"><%= c %></option>
@@ -48,33 +56,438 @@
       </div>
     </div>
 
-    <!-- Detalle_ventas: usamos fields_for para que los nombres coincidan con nested_attributes -->
-    <%= form.fields_for :detalle_ventas do |df| %>
-      <div class="card p-3 mb-3">
 
-        <!-- Producto: opciones vacías al inicio; JS las rellenará -->
-        <div class="mb-3">
-          <%= df.label :producto_id, "Producto", class: "form-label" %>
-          <%= df.select :producto_id, [], { include_blank: "Seleccioná un producto" }, { class: "form-control", id: "producto-select" } %>
-        </div>
+    <!-- PANEL DE RENGLONES -->
+    <div id="panel-renglones" style="border:1px solid #ddd; padding:16px; border-radius:8px; background:#fff; margin-bottom:12px;">
 
-        <!-- Cantidad -->
-        <div class="mb-3">
-          <%= df.label :cantidad, "Cantidad", class: "form-label" %>
-          <%= df.number_field :cantidad, class: "form-control", min: 1, value: (df.object.cantidad || 1), id: "cantidad-input" %>
-        </div>
-
-        <!-- Precio unitario (será rellenado por JS cuando el producto se elija) -->
-        <div class="mb-3">
-          <%= df.label :precio, "Precio unitario", class: "form-label" %>
-          <%= df.number_field :precio, step: "0.01", class: "form-control", id: "precio-input" %>
-        </div>
-
+      <!-- ENCABEZADO -->
+      <div style="display:flex; gap:12px; font-weight:600; padding-bottom:8px; border-bottom:2px solid #f2f2f2; margin-bottom:8px;">
+        <div style="flex:2;">Producto</div>
+        <div style="width:110px;">Cantidad</div>
+        <div style="width:140px;">Precio unitario</div>
+        <div style="width:140px;">Subtotal</div>
+        <div style="width:90px;"></div>
       </div>
-    <% end %>
 
+      <!-- CONTENEDOR DE RENGLONES REAL -->
+      <div id="renglones-container">
+        <% if venta.persisted? %>
+          <%= form.fields_for :detalle_ventas do |df| %>
+            <%= render "renglon_detalle", df: df %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <!-- TOTAL -->
+      <div style="display:flex; justify-content:flex-end; align-items:center; padding-top:12px; gap:12px; border-top:2px solid #eee; margin-top:12px;">
+        <div style="font-weight:700; font-size:1.05rem;">Total:</div>
+        <div>
+          <input id="venta-total" type="text" readonly class="form-control" value="0.00"
+                 style="width:160px; text-align:right; font-weight:700;">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TEMPLATE OCULTO PARA NUEVOS RENGLONES -->
+    <template id="template-renglon">
+      <%= form.fields_for :detalle_ventas, DetalleVenta.new, child_index: "NEW_RECORD" do |df| %>
+        <%= render "renglon_detalle", df: df %>
+      <% end %>
+    </template>
+
+    <!-- Botón guardar -->
     <div class="mt-3">
-      <%= form.submit (venta.persisted? ? "Actualizar venta" : "Guardar venta"), class: "btn btn-as-dark" %>
+      <%= form.submit (venta.persisted? ? "Actualizar venta" : "Guardar venta"),
+                      class: "btn btn-as-dark" %>
+    </div>
+
+  </div>
+  <!-- MODAL SELECCIONAR PRODUCTO -->
+<div id="modal-seleccionar-producto" style="display:none; position:fixed; z-index:1050; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.4);">
+  <div style="background:#fff; margin:5% auto; padding:16px; width:90%; max-width:560px; border-radius:6px; position:relative;">
+    <button type="button" id="modal-close" style="position:absolute; right:8px; top:8px;">✖</button>
+    <h5 style="margin-top:0;">Seleccionar producto</h5>
+
+    <div class="row g-2 mb-3" style="display:flex; gap:8px; margin-bottom:10px;">
+      <div style="flex:1;">
+        <label>Tipo</label>
+        <select id="modal-filtro-tipo" class="form-control" style="width:100%;">
+          <option value="">Seleccioná tipo</option>
+          <% Producto.distinct.order(:tipo).pluck(:tipo).each do |t| %>
+            <option value="<%= t %>"><%= t %></option>
+          <% end %>
+        </select>
+      </div>
+      <div style="width:170px;">
+        <label>Categoría</label>
+        <select id="modal-filtro-categoria" class="form-control" style="width:100%;">
+          <option value="">Seleccioná categoría</option>
+          <% Producto.distinct.order(:categoria).pluck(:categoria).each do |c| %>
+            <option value="<%= c %>"><%= c %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <label>Producto</label>
+        <select id="modal-producto-select" class="form-control" style="width:100%;">
+          <option value="">Seleccioná un producto</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:12px; width:120px;">
+        <label>Cantidad</label>
+        <input id="modal-cantidad" type="number" min="1" value="1" class="form-control" />
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" id="modal-cancel" class="btn">Cancelar</button>
+        <button type="button" id="modal-add-confirm" class="btn btn-primary">Agregar</button>
+      </div>
     </div>
   </div>
+
+
+  <script>
+    (function() {
+      // utilidades
+      const q = id => document.getElementById(id);
+      const all = sel => Array.from(document.querySelectorAll(sel));
+
+      // --- recalculos ---
+      function recalcularSubtotalRenglon(card) {
+        if (!card) return;
+        const cantidadInput = card.querySelector('.cantidad-input');
+        const precioInput = card.querySelector('.precio-input');
+        const subtotalInput = card.querySelector('.subtotal-input');
+
+        const cantidad = parseFloat(cantidadInput?.value) || 0;
+        const precio = parseFloat(precioInput?.value) || 0;
+        const subtotal = cantidad * precio;
+        if (subtotalInput) subtotalInput.value = subtotal.toFixed(2);
+      }
+
+      function recalcularTotalVenta() {
+        const subtotales = all('.subtotal-input');
+        let total = 0;
+        subtotales.forEach(inp => {
+          total += parseFloat(inp.value) || 0;
+        });
+        const totalInput = q('venta-total');
+        if (totalInput) totalInput.value = total.toFixed(2);
+      }
+
+      // --- cargar productos para renglones (según filtros globales) ---
+      async function cargarProductosEnRenglones() {
+        const tipo = q('filtro-tipo')?.value;
+        const categoria = q('filtro-categoria')?.value;
+        const params = new URLSearchParams();
+        if (tipo) params.append('tipo', tipo);
+        if (categoria) params.append('categoria', categoria);
+
+        const selects = all('.producto-select');
+        if (selects.length === 0) return;
+
+        selects.forEach(s => s.innerHTML = '<option value="">Cargando...</option>');
+
+        try {
+          const resp = await fetch('/productos_filtrados?' + params.toString(), { headers: { 'Accept': 'application/json' }});
+          if (!resp.ok) { selects.forEach(s => s.innerHTML = '<option value="">Error</option>'); return; }
+          const productos = await resp.json();
+          if (!productos || productos.length === 0) { selects.forEach(s => s.innerHTML = '<option value="">No se encontraron productos</option>'); return; }
+
+          selects.forEach(s => {
+            const prev = s.dataset.selected || s.value || '';
+            s.innerHTML = '<option value="">Seleccioná un producto</option>';
+            productos.forEach(p => {
+              const opt = document.createElement('option');
+              opt.value = p.id;
+              opt.textContent = `${p.titulo} — $${p.precio}`;
+              opt.dataset.precio = p.precio;
+              if (String(p.id) === String(prev)) opt.selected = true;
+              s.appendChild(opt);
+            });
+            // set precio si corresponde
+            const card = s.closest('.renglon-venta');
+            const precioInput = card ? card.querySelector('.precio-input') : null;
+            const selectedOption = s.options[s.selectedIndex];
+            if (precioInput && selectedOption && selectedOption.dataset.precio) {
+              precioInput.value = selectedOption.dataset.precio;
+            } else if (precioInput && s.dataset.precio && !precioInput.value) {
+              precioInput.value = s.dataset.precio;
+            }
+          });
+
+          // después de poblar, recalcular subtotales y total
+          all('.renglon-venta').forEach(card => recalcularSubtotalRenglon(card));
+          recalcularTotalVenta();
+
+        } catch (err) {
+          console.error('error cargando productos:', err);
+          selects.forEach(s => s.innerHTML = '<option value="">Error</option>');
+        }
+      }
+
+      // --- cargar productos para modal ---
+      async function cargarProductosModal() {
+        const tipo = q('modal-filtro-tipo')?.value;
+        const categoria = q('modal-filtro-categoria')?.value;
+        const params = new URLSearchParams();
+        if (tipo) params.append('tipo', tipo);
+        if (categoria) params.append('categoria', categoria);
+
+        const sel = q('modal-producto-select');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Cargando...</option>';
+
+        try {
+          const resp = await fetch('/productos_filtrados?' + params.toString(), { headers: { 'Accept': 'application/json' }});
+          if (!resp.ok) { sel.innerHTML = '<option value="">Error</option>'; return; }
+          const productos = await resp.json();
+          if (!productos || productos.length === 0) { sel.innerHTML = '<option value="">No se encontraron productos</option>'; return; }
+
+          sel.innerHTML = '<option value="">Seleccioná un producto</option>';
+          productos.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = `${p.titulo} — $${p.precio}`;
+            opt.dataset.precio = p.precio;
+            sel.appendChild(opt);
+          });
+        } catch (err) {
+          console.error('modal: error cargando productos', err);
+          sel.innerHTML = '<option value="">Error</option>';
+        }
+      }
+
+      // --- modal open/close ---
+      function openModal() {
+        const m = q('modal-seleccionar-producto');
+        if (!m) return;
+        m.style.display = 'block';
+        // resetear modal
+        const sel = q('modal-producto-select');
+        if (sel) sel.innerHTML = '<option value="">Seleccioná un producto</option>';
+        const cant = q('modal-cantidad');
+        if (cant) cant.value = 1;
+        // cargar con los filtros del modal (inicialmente vacíos)
+        cargarProductosModal();
+      }
+      function closeModal() {
+        const m = q('modal-seleccionar-producto');
+        if (!m) return;
+        m.style.display = 'none';
+      }
+
+      // --- insertar renglon (y recalcular) ---
+      function insertarRenglon(prodId, prodText, precio, cantidad) {
+        const cont = q('renglones-container');
+        const tpl = q('template-renglon');
+        if (!cont || !tpl) { alert('No se pudo agregar renglón (template faltante)'); return; }
+
+        const html = tpl.innerHTML.replace(/NEW_RECORD/g, Date.now());
+        cont.insertAdjacentHTML('beforeend', html);
+
+        const renglones = cont.querySelectorAll('.renglon-venta');
+        const nuevo = renglones[renglones.length - 1];
+        if (!nuevo) return;
+
+        const sel = nuevo.querySelector('.producto-select');
+        const precioInput = nuevo.querySelector('.precio-input');
+        const cantidadInput = nuevo.querySelector('.cantidad-input');
+
+        if (sel) {
+          sel.innerHTML = '<option value="">Seleccioná un producto</option>';
+          const opt = document.createElement('option');
+          opt.value = prodId;
+          opt.textContent = prodText;
+          opt.dataset.precio = precio;
+          sel.appendChild(opt);
+          sel.value = prodId;
+        }
+        if (precioInput) precioInput.value = precio;
+        if (cantidadInput) cantidadInput.value = cantidad;
+
+        // recalcular subtotal y total
+        recalcularSubtotalRenglon(nuevo);
+        recalcularTotalVenta();
+      }
+
+      // --- eliminar renglón (delegado) ---
+      function eliminarRenglonElemento(button) {
+        const card = button.closest('.renglon-venta');
+        if (card) card.remove();
+        recalcularTotalVenta();
+      }
+
+      // --- init listeners ---
+      function initVentasForm() {
+        // set presets de filtros si vienen por data-selected
+        const t = q('filtro-tipo'); const c = q('filtro-categoria');
+        if (t && t.dataset && t.dataset.selected) t.value = t.dataset.selected;
+        if (c && c.dataset && c.dataset.selected) c.value = c.dataset.selected;
+
+        // listeners filtros globales
+        if (t) t.addEventListener('change', cargarProductosEnRenglones);
+        if (c) c.addEventListener('change', cargarProductosEnRenglones);
+
+        // delegación para seleccionar producto en renglón (actualiza precio y subtotal/total)
+        document.addEventListener('change', function(e) {
+          if (e.target.matches('.producto-select')) {
+            const sel = e.target;
+            const opt = sel.options[sel.selectedIndex];
+            const precio = opt?.dataset?.precio || '';
+            const card = sel.closest('.renglon-venta');
+            const precioInput = card ? card.querySelector('.precio-input') : null;
+            if (precioInput) precioInput.value = precio;
+            // recalcular
+            recalcularSubtotalRenglon(card);
+            recalcularTotalVenta();
+          }
+        });
+
+        // delegación para input (cantidad o precio) -> recalcular subtotal y total
+        document.addEventListener('input', function(e) {
+          if (e.target.matches('.cantidad-input') || e.target.matches('.precio-input')) {
+            const card = e.target.closest('.renglon-venta');
+            recalcularSubtotalRenglon(card);
+            recalcularTotalVenta();
+          }
+        });
+
+        // delegación para eliminar renglón
+        document.addEventListener('click', function(e) {
+          if (e.target.matches('.eliminar-renglon')) {
+            eliminarRenglonElemento(e.target);
+          }
+        });
+
+        // boton abrir modal
+        q('agregar-renglon')?.addEventListener('click', openModal);
+
+        // controles modal
+        q('modal-close')?.addEventListener('click', closeModal);
+        q('modal-cancel')?.addEventListener('click', closeModal);
+        q('modal-filtro-tipo')?.addEventListener('change', cargarProductosModal);
+        q('modal-filtro-categoria')?.addEventListener('change', cargarProductosModal);
+
+        // confirmar en modal: insertar renglón
+        q('modal-add-confirm')?.addEventListener('click', function() {
+          const sel = q('modal-producto-select');
+          const cant = q('modal-cantidad');
+          if (!sel) return;
+          const prodId = sel.value;
+          if (!prodId) { alert('Seleccioná un producto'); return; }
+          const opt = sel.options[sel.selectedIndex];
+          const prodText = opt.textContent;
+          const precio = opt.dataset.precio || '';
+          const cantidad = cant?.value || 1;
+          insertarRenglon(prodId, prodText, precio, cantidad);
+          closeModal();
+        });
+
+        // cargar initial
+        if (all('.producto-select').length > 0) {
+          cargarProductosEnRenglones();
+        }
+
+        // recalcular totales al inicio (edición)
+        all('.renglon-venta').forEach(card => recalcularSubtotalRenglon(card));
+        recalcularTotalVenta();
+      }
+
+      document.addEventListener('DOMContentLoaded', initVentasForm, { once: true });
+      document.addEventListener('turbo:load', initVentasForm, { once: true });
+
+    })();
+  </script>
+
+  <style>
+      .filtros-ocultos {
+        display: none !important;
+      }
+
+    /* Contenedor general */
+      .venta-card {
+        max-width: 850px;
+        margin: 20px auto;
+        padding: 18px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: #fafafa;
+      }
+
+      /* Título */
+      .venta-card h2 {
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+      }
+
+      /* Cada renglón de venta (más fino y horizontal) */
+      .renglon-venta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 0;
+        border-bottom: 1px solid #e5e5e5;
+      }
+
+      /* Último sin borde */
+      .renglon-venta:last-child {
+        border-bottom: none;
+      }
+
+      /* Selects pequeños y finos */
+      .renglon-venta select,
+      .renglon-venta input[type="number"],
+      .renglon-venta input[type="text"] {
+        padding: 4px 6px;
+        height: 32px;
+        font-size: 14px;
+      }
+
+      /* Select producto */
+      .producto-select {
+        width: 280px;
+      }
+
+      /* Cantidad */
+      .cantidad-input {
+        width: 65px;
+        text-align: center;
+      }
+
+      /* Precio */
+      .precio-input {
+        width: 90px;
+        text-align: right;
+      }
+
+      /* Total por renglón */
+      .total-renglon {
+        font-size: 15px;
+        font-weight: 600;
+        width: 90px;
+        text-align: right;
+      }
+
+      /* Botón agregar renglón */
+      #agregar-renglon {
+        margin-top: 12px;
+      }
+
+      /* Footer total */
+      .total-final-box {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: right;
+        padding: 12px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+  </style>
+
 <% end %>

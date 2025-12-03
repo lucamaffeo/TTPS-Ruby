@@ -105,3 +105,32 @@ ActiveRecord::Base.transaction do
 end
 
 puts "==> Listo: #{Producto.count} productos creados."
+
+puts "==> Creando ventas de prueba"
+
+empleado = Usuario.find_by(rol: 0)
+productos = Producto.limit(3).to_a
+
+if empleado && productos.size >= 2
+  Venta.create!(
+    fecha_hora: Time.current - 2.days,
+    comprador: "Juan Pérez",
+    empleado: empleado,
+    total: productos[0].precio * 2 + productos[1].precio,
+    detalle_ventas_attributes: [
+      { producto_id: productos[0].id, cantidad: 2, precio: productos[0].precio },
+      { producto_id: productos[1].id, cantidad: 1, precio: productos[1].precio }
+    ]
+  )
+  Venta.create!(
+    fecha_hora: Time.current - 1.day,
+    comprador: "Ana Gómez",
+    empleado: empleado,
+    total: productos[1].precio * 3,
+    detalle_ventas_attributes: [
+      { producto_id: productos[1].id, cantidad: 3, precio: productos[1].precio }
+    ]
+  )
+end
+
+puts "==> Listo: #{Venta.count} ventas creadas."

@@ -35,13 +35,9 @@
             <td><%= venta.comprador %></td>
             <td><%= number_to_currency(venta.total) %></td>
             <td class="text-end">
-              <%= link_to "#", class: "btn btn-sm btn-success me-2", title: "Agregar productos" do %>
-                <i class="bi bi-cart-plus"></i> Agregar
-              <% end %>
-
-              <%= link_to({ controller: 'venta', action: :edit, id: venta }, class: "btn btn-sm btn-warning", title: "Editar venta" ) do %>
-                <i class="bi bi-pencil"></i> Editar
-              <% end %>
+                <%= link_to({ controller: 'venta', action: :show, id: venta }, class: "btn btn-as-dark") do %>
+                  <i class="bi bi-search"></i> Ver venta
+                <% end %>
             </td>
           </tr>
         <% end %>

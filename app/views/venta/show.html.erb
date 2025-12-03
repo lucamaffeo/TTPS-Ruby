@@ -32,12 +32,12 @@
       <i class="bi bi-pencil"></i> Editar
     <% end %>
 
-    <%= link_to({ controller: 'venta', action: :index }, class: "btn btn-outline-secondary") do %>
-      <i class="bi bi-arrow-left"></i> Volver
+    <%= button_to({ controller: 'venta', action: :destroy, id: @venta }, method: :delete, data: { confirm: "¿Eliminar venta?" }, class: "btn btn-as-dark") do %>
+      <i class="bi bi-trash"></i> Eliminar
     <% end %>
 
-    <%= button_to({ controller: 'venta', action: :destroy, id: @venta }, method: :delete, data: { confirm: "¿Eliminar venta?" }, class: "btn btn-danger") do %>
-      <i class="bi bi-trash"></i> Eliminar
+    <%= link_to({ controller: 'venta', action: :index }, class: "btn btn-as-dark") do %>
+      <i class="bi bi-arrow-left"></i> Volver
     <% end %>
   </div>
 </div>

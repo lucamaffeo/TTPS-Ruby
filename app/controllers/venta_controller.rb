@@ -33,51 +33,48 @@ class VentaController < ApplicationController
     @venta.empleado = current_usuario
     @venta.fecha_hora = Time.now
 
-    # Construimos total a partir de los detalles enviados
     detalles_attrs = (venta_params[:detalle_ventas_attributes] || {}).values
-    calculated_total = detalles_attrs.sum do |d|
-      cantidad = d[:cantidad].to_i
-      precio   = d[:precio].to_f
-      cantidad * precio
+    if detalles_attrs.empty?
+      @venta.errors.add(:base, "Debe agregar al menos un producto a la venta")
+      @productos = Producto.order(:titulo).limit(200)
+      render :new, status: :unprocessable_entity and return
     end
+
+    calculated_total = detalles_attrs.sum { |d| d[:cantidad].to_i * d[:precio].to_f }
     @venta.total = calculated_total
 
-    
-    
-    # Transacción: validamos stock y guardamos todo o nada
     ActiveRecord::Base.transaction do
-    # 1) Validar existencia y stock antes de guardar
-    detalles_attrs.each do |d|
-      producto = Producto.lock.find_by(id: d[:producto_id])
-      if producto.nil?
-        @venta.errors.add(:base, "Producto no encontrado (id=#{d[:producto_id]})")
-        raise ActiveRecord::Rollback
+      detalles_attrs.each do |d|
+        producto = Producto.lock.find_by(id: d[:producto_id])
+        if producto.nil?
+          @venta.errors.add(:base, "Producto no encontrado (id=#{d[:producto_id]})")
+          raise ActiveRecord::Rollback
+        end
+        if producto.stock < d[:cantidad].to_i
+          @venta.errors.add(:base, "No hay stock suficiente para #{producto.titulo}")
+          raise ActiveRecord::Rollback
+        end
       end
 
-      if producto.stock < d[:cantidad].to_i
-        @venta.errors.add(:base, "No hay stock suficiente para #{producto.titulo}")
+      if @venta.save
+        begin
+          @venta.detalle_ventas.each do |dv|
+            prod = Producto.lock.find(dv.producto_id)
+            prod.update!(stock: prod.stock - dv.cantidad)
+          end
+        rescue ActiveRecord::RecordInvalid => e
+          @venta.errors.add(:base, "Error al actualizar stock: #{e.message}")
+          raise ActiveRecord::Rollback
+        end
+        redirect_to venta_path(@venta), notice: "Venta creada correctamente." and return
+      else
+        flash.now[:alert] = @venta.errors.full_messages.join(", ")
         raise ActiveRecord::Rollback
       end
     end
 
-    # 2) Guardar la venta (y los detailes via nested attributes)
-    if @venta.save
-      # 3) Descontar stock (ya validado)
-      @venta.detalle_ventas.each do |dv|
-        prod = Producto.lock.find(dv.producto_id)
-        prod.update!(stock: prod.stock - dv.cantidad)
-      end
-
-      redirect_to @venta, notice: "Venta creada correctamente." and return
-    else
-      # Falló alguna validación del modelo Venta o DetalleVenta
-      raise ActiveRecord::Rollback
-    end
-  end
-
-  # Si llegamos acá: hubo rollback
-  @productos = Producto.order(:titulo).limit(200)
-  render :new, status: :unprocessable_entity
+    @productos = Producto.order(:titulo).limit(200)
+    render :new, status: :unprocessable_entity
   end
   
   # Aca lo que hace es actualizar una venta especifica.

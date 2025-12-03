@@ -34,7 +34,7 @@ require "stringio"
 puts "==> Creando productos de prueba"
 
 img_default = Rails.root.join("app/assets/images/default.png")
-audio_default = Rails.root.join("app/assets/audios/default.mp3")
+audio_default = Rails.root.join("app/assets/audio/default.mp3")
 
 def fallback_png_io
   # PNG mínimo (1x1) en memoria

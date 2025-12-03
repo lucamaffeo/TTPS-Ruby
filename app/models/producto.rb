@@ -23,7 +23,7 @@ class Producto < ApplicationRecord
   before_update :set_update_date
 
   validate :stock_por_estado_fisico
-  validate :imagen_obligatoria
+  validate :imagen_obligatoria, on: :create
   validate :audio_solo_usado
 
   private
@@ -41,7 +41,8 @@ class Producto < ApplicationRecord
   end
 
   def imagen_obligatoria
-    if imagenes.blank? || !imagenes.attached?
+    # Solo exige imagen en creación si NO hay ninguna adjunta
+    if imagenes.attachments.blank? || imagenes.attachments.count == 0
       errors.add(:imagenes, "debe subir al menos una imagen")
     end
   end

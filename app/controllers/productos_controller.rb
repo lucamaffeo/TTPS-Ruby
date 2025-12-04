@@ -4,6 +4,53 @@ class ProductosController < ApplicationController
   # GET /productos or /productos.json
   def index
     @productos = Producto.all
+
+    # 1. Búsqueda General (Título, Autor)
+    if params[:q].present?
+      q = params[:q].to_s.downcase
+      @productos = @productos.where(
+        "LOWER(titulo) LIKE ? OR LOWER(autor) LIKE ?", 
+        "%#{q}%", "%#{q}%"
+      )
+    end
+
+    # 2. Categoría
+    if params[:categoria].present?
+      @productos = @productos.where(categoria: params[:categoria])
+    end
+
+    # 3.  Tipo (CD, Vinilo) ---
+    if params[:tipo].present?
+      @productos = @productos.where(tipo: params[:tipo])
+    end
+
+    # 4. Estado Físico
+    if params[:estado_fisico].present?
+      @productos = @productos.where(estado_fisico: params[:estado_fisico])
+    end
+
+    # 5. Filtro de Stock (Muy útil para admin)
+    if params[:stock_filter].present?
+      case params[:stock_filter]
+      when "sin_stock"
+        @productos = @productos.where(stock: 0)
+      when "bajo_stock"
+        @productos = @productos.where("stock > 0 AND stock <= 5")
+      when "con_stock"
+        @productos = @productos.where("stock > 0")
+      end
+    end
+
+    # Ordenamiento
+    sort_column = params[:sort] || "titulo"
+    sort_direction = params[:direction] || "asc"
+    
+    allowed_columns = %w[titulo autor precio stock anio]
+    if allowed_columns.include?(sort_column)
+      @productos = @productos.order("#{sort_column} #{sort_direction}")
+    end
+
+    @productos = @productos.page(params[:page]).per(10)
   end
 
   # GET /productos/1 or /productos/1.json

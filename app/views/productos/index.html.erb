@@ -1,44 +1,147 @@
-<% content_for :title, "Productos" %>
+<% content_for :title, "Gestión de Productos" %>
 
-<h1 class="mb-4"><i class="bi bi-disc"></i> Productos</h1>
-
-<div class="table-responsive">
-  <table class="table-base table table-sm align-middle">
-    <thead>
-      <tr>
-        <th>Título</th>
-        <th>Autor</th>
-        <th>Precio</th>
-        <th>Stock</th>
-        <th>Tipo</th>
-        <th>Estado</th>
-        <th>Estado físico</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @productos.each do |producto| %>
-        <tr>
-          <td><%= producto.titulo %></td>
-          <td><%= producto.autor %></td>
-          <td>$<%= producto.precio %></td>
-          <td><%= producto.stock %></td>
-          <td><%= producto.tipo %></td>
-          <td><%= producto.estado %></td>
-          <td><%= producto.estado_fisico.capitalize %></td>
-          <td>
-            <%= link_to producto_path(producto), class: "btn btn-sm btn-as-dark" do %>
-              <i class="bi bi-search"></i> Ver productos
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 text-dark fw-bold"><i class="bi bi-disc"></i> Gestión de Productos</h1>
+  <%= link_to new_producto_path, class: "btn btn-as-dark shadow-sm" do %>
+    <i class="bi bi-plus-lg"></i> Nuevo Producto
+  <% end %>
 </div>
 
-<p class="mt-3">
-  <%= link_to new_producto_path, class: "btn btn-as-dark" do %>
-    <i class="bi bi-plus-circle"></i> Nuevo producto
-  <% end %>
-</p>
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body bg-light rounded">
+    <%= form_with url: productos_path, method: :get, local: true, class: "row g-2 align-items-end" do |f| %>
+      
+      <div class="col-md-3">
+        <%= f.label :q, "Buscar", class: "form-label fw-semibold small" %>
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <%= f.text_field :q, value: params[:q], class: "form-control border-start-0", placeholder: "Título, Autor..." %>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <%= f.label :categoria, "Género", class: "form-label fw-semibold small" %>
+        <%= f.select :categoria, Producto.distinct.pluck(:categoria), { include_blank: "Todos" }, { class: "form-select", selected: params[:categoria] } %>
+      </div>
+
+      <div class="col-md-2">
+        <%= f.label :tipo, "Formato", class: "form-label fw-semibold small" %>
+        <%= f.select :tipo, Producto.distinct.pluck(:tipo), { include_blank: "Todos" }, { class: "form-select", selected: params[:tipo] } %>
+      </div>
+
+      <div class="col-md-2">
+        <%= f.label :estado_fisico, "Condición", class: "form-label fw-semibold small" %>
+        <%= f.select :estado_fisico, [["Nuevo", "nuevo"], ["Usado", "usado"]], { include_blank: "Todos" }, { class: "form-select", selected: params[:estado_fisico] } %>
+      </div>
+
+      <div class="col-md-1">
+        <%= f.label :stock_filter, "Stock", class: "form-label fw-semibold small" %>
+        <%= f.select :stock_filter, [["Falta", "sin_stock"], ["Bajo", "bajo_stock"], ["Ok", "con_stock"]], { include_blank: "Todos" }, { class: "form-select", selected: params[:stock_filter] } %>
+      </div>
+
+      <div class="col-md-2 d-flex gap-1">
+        <%= f.submit "Filtrar", class: "btn btn-as-dark w-100" %>
+        <%= link_to productos_path, class: "btn btn-outline-secondary", title: "Limpiar filtros" do %>
+          <i class="bi bi-x-lg"></i>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="bg-light">
+        <tr>
+          <th style="width: 80px;">Img</th>
+          <th>
+            <%= link_to request.params.merge(sort: "titulo", direction: params[:direction] == "asc" ? "desc" : "asc"), class: "text-dark text-decoration-none" do %>
+              Título <i class="bi bi-arrow-down-up small text-muted"></i>
+            <% end %>
+          </th>
+          <th>Autor</th>
+          <th>Info</th> <th>
+            <%= link_to request.params.merge(sort: "precio", direction: params[:direction] == "asc" ? "desc" : "asc"), class: "text-dark text-decoration-none" do %>
+              Precio <i class="bi bi-arrow-down-up small text-muted"></i>
+            <% end %>
+          </th>
+          <th>
+            <%= link_to request.params.merge(sort: "stock", direction: params[:direction] == "asc" ? "desc" : "asc"), class: "text-dark text-decoration-none" do %>
+              Stock <i class="bi bi-arrow-down-up small text-muted"></i>
+            <% end %>
+          </th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @productos.each do |producto| %>
+          <tr>
+            <td>
+              <div class="rounded overflow-hidden border bg-light" style="width: 50px; height: 50px;">
+                <% if producto.imagenes.attached? %>
+                  <%= image_tag producto.imagenes.first, class: "w-100 h-100", style: "object-fit: cover;" %>
+                <% else %>
+                  <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                    <i class="bi bi-image"></i>
+                  </div>
+                <% end %>
+              </div>
+            </td>
+
+            <td class="fw-semibold"><%= producto.titulo %></td>
+            
+            <td class="text-secondary"><%= producto.autor %></td>
+            
+            <td>
+              <span class="badge bg-tipo mb-1"><%= producto.tipo %></span>
+              <span class="badge bg-categoria"><%= producto.categoria %></span>
+              <% if producto.estado_fisico == "nuevo" %>
+                <span class="badge bg-estado-nuevo">NUEVO</span>
+              <% else %>
+                <span class="badge bg-estado-usado">USADO</span>
+              <% end %>
+            </td>
+
+            <td class="fw-bold">$<%= number_with_precision(producto.precio, precision: 2) %></td>
+
+            <td>
+              <% if producto.stock == 0 %>
+                <span class="badge bg-danger text-uppercase">Sin Stock</span>
+              <% elsif producto.stock <= 5 %>
+                <span class="text-danger fw-bold"><i class="bi bi-exclamation-circle"></i> <%= producto.stock %></span>
+              <% else %>
+                <span class="text-success fw-bold"><%= producto.stock %></span>
+              <% end %>
+            </td>
+
+            <td class="text-end">
+              <div class="btn-group">
+                <%= link_to producto_path(producto), class: "btn btn-sm btn-outline-dark", title: "Ver detalle" do %>
+                  <i class="bi bi-eye"></i>
+                <% end %>
+                <%= link_to edit_producto_path(producto), class: "btn btn-sm btn-outline-secondary", title: "Editar" do %>
+                  <i class="bi bi-pencil"></i>
+                <% end %>
+                <%= link_to producto, method: :delete, data: { confirm: '¿Seguro?' }, class: "btn btn-sm btn-outline-danger", title: "Eliminar" do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+        <% if @productos.empty? %>
+          <tr>
+            <td colspan="7" class="text-center py-4 text-muted fst-italic">
+              No se encontraron productos con estos filtros.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="card-footer bg-white border-0 py-3 d-flex justify-content-center">
+    <%= paginate @productos %>
+  </div>
+</div>

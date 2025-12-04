@@ -1,41 +1,117 @@
-<% content_for :title, "Venta" %>
+<% content_for :title, "Historial de Ventas" %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="mb-0"><i class="bi bi-receipt"></i> Ventas</h1>
+  <h1 class="h3 text-dark fw-bold"><i class="bi bi-receipt"></i> Historial de Ventas</h1>
+  <%= link_to new_venta_path, class: "btn btn-as-dark shadow-sm" do %>
+    <i class="bi bi-cart-plus"></i> Nueva Venta
+  <% end %>
+</div>
 
-  <div>
-    <%= link_to({ controller: 'venta', action: :new }, class: "btn btn-as-dark") do %>
-      <i class="bi bi-plus-circle"></i> Nueva venta
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body bg-light rounded">
+    <%= form_with url: ventas_path, method: :get, local: true, class: "row g-3 align-items-end" do |f| %>
+      
+      <div class="col-md-3">
+        <%= f.label :q, "Cliente", class: "form-label fw-semibold small" %>
+        <div class="input-group">
+           <span class="input-group-text bg-white border-end-0"><i class="bi bi-person text-muted"></i></span>
+           <%= f.text_field :q, value: params[:q], class: "form-control border-start-0", placeholder: "Nombre del comprador..." %>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <%= f.label :empleado_id, "Vendedor", class: "form-label fw-semibold small" %>
+        <%= f.collection_select :empleado_id, Usuario.all, :id, :email, # Ajusta :email si usas :nombre
+              { include_blank: "Todos los vendedores" }, 
+              { class: "form-select", selected: params[:empleado_id] } %>
+      </div>
+
+      <div class="col-md-2">
+        <%= f.label :fecha_inicio, "Desde", class: "form-label fw-semibold small" %>
+        <%= f.date_field :fecha_inicio, value: params[:fecha_inicio], class: "form-control" %>
+      </div>
+
+      <div class="col-md-2">
+        <%= f.label :fecha_fin, "Hasta", class: "form-label fw-semibold small" %>
+        <%= f.date_field :fecha_fin, value: params[:fecha_fin], class: "form-control" %>
+      </div>
+
+      <div class="col-md-2 d-flex gap-2">
+        <%= f.submit "Filtrar", class: "btn btn-as-dark w-100" %>
+        <%= link_to ventas_path, class: "btn btn-outline-secondary", title: "Limpiar" do %>
+          <i class="bi bi-x-lg"></i>
+        <% end %>
+      </div>
+
     <% end %>
   </div>
 </div>
-<div class="main-card">
+
+<div class="card border-0 shadow-sm">
   <div class="table-responsive">
-    <table class="table-base table table-sm align-middle">
-      <thead>
+    <table class="table table-hover align-middle mb-0">
+      <thead class="bg-light">
         <tr>
           <th>ID</th>
-          <th>Vendedor</th>
-          <th>Rol</th>
-          <th>Hora inicio</th>
+          <th>Fecha y Hora</th>
           <th>Cliente</th>
+          <th>Vendedor</th>
           <th>Total</th>
-          <th></th>
+          <th>Items</th>
+          <th class="text-end">Acciones</th>
         </tr>
       </thead>
       <tbody>
         <% @ventas.each do |venta| %>
           <tr>
-            <td><%= venta.id %></td>
-            <td><%= venta.empleado.nombre %></td>
-            <td><%= venta.empleado&.rol_label%></td>
-            <td><%= venta.fecha_hora.strftime("%Y-%m-%d %H:%M") %></td>
-            <td><%= venta.comprador %></td>
-            <td><%= number_to_currency(venta.total) %></td>
+            <td class="text-muted small">#<%= venta.id %></td>
+            
+            <td>
+              <div class="d-flex flex-column">
+                <span class="fw-semibold"><%= venta.fecha_hora.strftime("%d/%m/%Y") %></span>
+                <span class="small text-muted"><%= venta.fecha_hora.strftime("%H:%M") %> hs</span>
+              </div>
+            </td>
+
+            <td>
+              <span class="d-flex align-items-center gap-2">
+                <i class="bi bi-person-circle text-secondary"></i>
+                <%= venta.comprador %>
+              </span>
+            </td>
+
+            <td>
+              <% if venta.empleado %>
+                <span class="badge bg-light text-dark border">
+                  <%= venta.empleado.email.split('@').first.capitalize rescue "N/A" %>
+                </span>
+              <% else %>
+                <span class="text-muted fst-italic">Eliminado</span>
+              <% end %>
+            </td>
+
+            <td class="fw-bold text-success">
+              $<%= number_with_precision(venta.total, precision: 2) %>
+            </td>
+
+            <td>
+              <span class="badge bg-secondary rounded-pill">
+                <%= venta.detalle_ventas.sum(:cantidad) %> prod.
+              </span>
+            </td>
+
             <td class="text-end">
-                <%= link_to({ controller: 'venta', action: :show, id: venta }, class: "btn btn-as-dark") do %>
-                  <i class="bi bi-search"></i> Ver venta
-                <% end %>
+              <%= link_to venta_path(venta), class: "btn btn-sm btn-outline-dark" do %>
+                 Ver detalle <i class="bi bi-arrow-right"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        
+        <% if @ventas.empty? %>
+           <tr>
+            <td colspan="7" class="text-center py-4 text-muted fst-italic">
+              No hay ventas registradas con estos criterios.
             </td>
           </tr>
         <% end %>
@@ -43,4 +119,7 @@
     </table>
   </div>
 
+  <div class="card-footer bg-white border-0 py-3 d-flex justify-content-center">
+    <%= paginate @ventas %>
+  </div>
 </div>

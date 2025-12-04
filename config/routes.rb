@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   end
   get "productos_filtrados", to: "productos#productos_filtrados"
 
-  resources :venta
+  resources :ventas, controller: "venta"
 
   # Devise sin rutas de registro (sign_up deshabilitado)
   devise_for :usuarios, controllers: { sessions: "usuarios/sessions" }, path: "auth", skip: [:registrations]

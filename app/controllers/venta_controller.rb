@@ -3,7 +3,32 @@ class VentaController < ApplicationController
 
   # # GET /venta or /venta.json
   def index
-    @ventas = Venta.includes(:empleado).order(created_at: :desc)
+    @ventas = Venta.includes(:empleado).order(fecha_hora: :desc)
+
+    # 1. Búsqueda por Comprador (Texto libre)
+    if params[:q].present?
+      q = params[:q].to_s.downcase
+      @ventas = @ventas.where("LOWER(comprador) LIKE ?", "%#{q}%")
+    end
+
+    # 2. Filtro por Empleado (Usuario)
+    if params[:empleado_id].present?
+      @ventas = @ventas.where(empleado_id: params[:empleado_id])
+    end
+
+    # 3. Filtro por Rango de Fechas
+    if params[:fecha_inicio].present?
+      fecha_inicio = Date.parse(params[:fecha_inicio]) rescue nil
+      @ventas = @ventas.where("fecha_hora >= ?", fecha_inicio.beginning_of_day) if fecha_inicio
+    end
+
+    if params[:fecha_fin].present?
+      fecha_fin = Date.parse(params[:fecha_fin]) rescue nil
+      @ventas = @ventas.where("fecha_hora <= ?", fecha_fin.end_of_day) if fecha_fin
+    end
+
+    # Paginación
+    @ventas = @ventas.page(params[:page]).per(10)
   end
 
 

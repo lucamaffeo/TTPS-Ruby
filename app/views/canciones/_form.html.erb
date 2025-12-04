@@ -1,0 +1,36 @@
+<%= form_with(model: [@producto, @cancion], local: true, class: "row g-3") do |f| %>
+  <% if @cancion.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% @cancion.errors.full_messages.each { |m| %><li><%= m %></li><% } %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="col-12">
+    <%= f.label :nombre, "Nombre", class: "form-label" %>
+    <%= f.text_field :nombre, class: "form-control", required: true %>
+  </div>
+
+  <div class="col-6">
+    <%= f.label :duracion_segundos, "Duración (segundos)", class: "form-label" %>
+    <%= f.number_field :duracion_segundos, class: "form-control", min: 0 %>
+  </div>
+
+  <div class="col-6">
+    <%= f.label :orden, "Track (Ubicación dentro del disco 1 a 20)", class: "form-label" %>
+    <%= f.number_field :orden, class: "form-control", min: 1 %>
+  </div>
+
+  <div class="col-12">
+    <%= f.label :autor, "Autor (opcional)", class: "form-label" %>
+    <%= f.text_field :autor, class: "form-control" %>
+  </div>
+
+  <div class="col-12 mt-3">
+    <%= f.submit "Guardar", class: "btn btn-as-dark" %>
+    <%= link_to producto_canciones_path(@producto), class: "btn btn-as-dark" do %>
+      <i class="bi bi-arrow-left"></i> Volver
+    <% end %>
+  </div>
+<% end %>

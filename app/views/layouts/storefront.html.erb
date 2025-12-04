@@ -37,6 +37,26 @@
           </ul>
         </div>
       </nav>
+
+      <div class="container flash-wrapper">
+        <% shown = [] %>
+        <% flash.each do |key, value| %>
+          <% next if value.blank? %>
+          <% next if shown.include?(value.to_s) %>
+          <% shown << value.to_s %>
+          <% css =
+              case key.to_s
+              when "notice", "success" then "flash-success"
+              when "alert", "error"    then "flash-danger"
+              else "flash-success"
+              end %>
+          <div class="flash-message <%= css %> mb-2">
+            <%= value %>
+          </div>
+        <% end %>
+        <% flash.clear %>
+      </div>
+
       <main class="container my-4">
         <div class="main-card">
           <%= yield %>

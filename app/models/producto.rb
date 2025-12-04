@@ -2,6 +2,7 @@ class Producto < ApplicationRecord
   # === RELACIONES ===
   has_many :detalle_ventas
   has_many :ventas, through: :detalle_ventas
+  has_many :canciones, class_name: "Cancion"
   # === VALIDACIONES ===
   validates :titulo, presence: true
   validates :autor, presence: true

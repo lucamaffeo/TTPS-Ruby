@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
-  resources :productos
-
+  resources :productos do
+    # Gestión privada de canciones (CRUD)
+    resources :canciones, only: [:index, :new, :create, :edit, :update, :destroy]
+  end
   get "productos_filtrados", to: "productos#productos_filtrados"
   
   get '/buscar_cliente', to: 'clientes#buscar_por_dni'
@@ -8,16 +10,25 @@ Rails.application.routes.draw do
 
   resources :venta
 
-  devise_for :usuarios, controllers: { sessions: "usuarios/sessions" }, path: "auth"
+  # Devise sin rutas de registro (sign_up deshabilitado)
+  devise_for :usuarios, controllers: { sessions: "usuarios/sessions" }, path: "auth", skip: [:registrations]
 
-  resources :usuarios
+  resources :usuarios do
+    member do
+      patch :reset_password_default
+    end
+  end
+
   # Root: storefront
   root "storefront/productos#index"
-
-  # STORE FRONT (vista pública)
   namespace :storefront do
-    # La raíz del storefront ahora es la raíz principal de la app.
-    # Mantenemos las rutas de productos para el show.
-    resources :productos, only: [ :index, :show ]
+    resources :productos, only: [ :index, :show ] do
+      member do
+        get :canciones
+      end
+    end
   end
+
+  # Catch-all: cualquier URL inexistente va al storefront
+  match "*unmatched", to: "storefront/productos#index", via: :all
 end

@@ -1,0 +1,33 @@
+<div class="main-card">
+  <h2 class="mb-3 text-dark">
+    <i class="bi bi-music-note-list"></i>
+    Canciones de <%= @producto.titulo %> — <small class="text-muted"><%= @producto.autor %></small>
+  </h2>
+
+  <% if @canciones.any? %>
+    <% @canciones.each do |c| %>
+      <p class="mb-2">
+        <% if c.orden.present? %>
+          <span class="badge bg-secondary me-2"><%= c.orden %></span>
+        <% end %>
+        <strong><%= c.nombre %></strong>
+        <% if c.autor.present? && c.autor != @producto.autor %>
+          <span class="text-muted"> — <%= c.autor %></span>
+        <% end %>
+        <% dur = c.duracion_segundos.to_i
+           mm = (dur / 60)
+           ss = (dur % 60)
+           dur_str = dur > 0 ? format("%02d:%02d", mm, ss) : "—" %>
+        <span class="ms-2 badge bg-light text-dark"><i class="bi bi-clock"></i> <%= dur_str %></span>
+      </p>
+    <% end %>
+  <% else %>
+    <p class="text-muted fst-italic">No hay canciones cargadas para este producto.</p>
+  <% end %>
+
+  <hr>
+
+  <%= link_to storefront_producto_path(@producto), class: "btn btn-as-dark" do %>
+    <i class="bi bi-arrow-left"></i> Volver al producto
+  <% end %>
+</div>

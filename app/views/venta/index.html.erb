@@ -32,7 +32,7 @@
             <td><%= venta.empleado.nombre %></td>
             <td><%= venta.empleado&.rol_label%></td>
             <td><%= venta.fecha_hora.strftime("%Y-%m-%d %H:%M") %></td>
-            <td><%= venta.comprador %></td>
+            <td><%= venta.cliente&.nombre %></td>
             <td><%= number_to_currency(venta.total) %></td>
             <td class="text-end">
                 <%= link_to({ controller: 'venta', action: :show, id: venta }, class: "btn btn-as-dark") do %>

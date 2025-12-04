@@ -29,6 +29,15 @@ class VentaController < ApplicationController
 
   # Aca lo que hace es crear una nueva venta con los parametros que vienen del formulario.
   def create
+    if params[:venta][:cliente_id].blank?
+      cliente = Cliente.find_or_create_by(dni: params[:dni]) do |c|
+        c.nombre = params[:nombre]
+        c.telefono = params[:telefono]
+      end
+
+      params[:venta][:cliente_id] = cliente.id
+    end
+
     @venta = Venta.new(venta_params)
     @venta.empleado = current_usuario
     @venta.fecha_hora = Time.now

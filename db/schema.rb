@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_29_200138) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_04_185847) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -42,6 +42,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_29_200138) do
   create_table "categoria", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "nombre"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "clientes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "dni"
+    t.string "nombre"
+    t.string "telefono"
     t.datetime "updated_at", null: false
   end
 
@@ -108,12 +116,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_29_200138) do
   end
 
   create_table "venta", force: :cascade do |t|
-    t.string "comprador"
+    t.integer "cliente_id"
     t.datetime "created_at", null: false
     t.integer "empleado_id", null: false
     t.datetime "fecha_hora"
     t.decimal "total"
     t.datetime "updated_at", null: false
+    t.index ["cliente_id"], name: "index_venta_on_cliente_id"
     t.index ["empleado_id"], name: "index_venta_on_empleado_id"
   end
 
@@ -123,5 +132,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_29_200138) do
   add_foreign_key "detalle_venta", "venta", column: "venta_id"
   add_foreign_key "imagen_productos", "productos"
   add_foreign_key "muestra_audios", "productos"
+  add_foreign_key "venta", "clientes"
   add_foreign_key "venta", "usuarios", column: "empleado_id"
 end

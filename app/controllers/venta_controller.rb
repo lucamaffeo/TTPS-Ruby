@@ -68,7 +68,6 @@ class VentaController < ApplicationController
         end
         redirect_to venta_path(@venta), notice: "Venta creada correctamente." and return
       else
-        flash.now[:alert] = @venta.errors.full_messages.join(", ")
         raise ActiveRecord::Rollback
       end
     end

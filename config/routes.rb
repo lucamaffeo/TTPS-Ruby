@@ -1,8 +1,11 @@
 Rails.application.routes.draw do
   resources :productos
   get "productos_filtrados", to: "productos#productos_filtrados"
+
   resources :venta
-  devise_for :usuarios, controllers: { sessions: "usuarios/sessions" }, path: "auth"
+
+  # Devise sin rutas de registro (sign_up deshabilitado)
+  devise_for :usuarios, controllers: { sessions: "usuarios/sessions" }, path: "auth", skip: [:registrations]
 
   resources :usuarios do
     member do
@@ -15,4 +18,7 @@ Rails.application.routes.draw do
   namespace :storefront do
     resources :productos, only: [ :index, :show ]
   end
+
+  # Catch-all: cualquier URL inexistente va al storefront
+  match "*unmatched", to: "storefront/productos#index", via: :all
 end

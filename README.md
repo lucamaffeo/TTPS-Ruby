@@ -1,10 +1,9 @@
 # TTPS - Trabajo Ruby
 
 ## Requisitos técnicos
-- Ruby 3.4.x y Bundler
-- SQLite 3
-- Node opcional (solo si usás tooling adicional)
-- PowerShell/Terminal con `bundle exec` o `rails`
+- Ruby 3.4.x 
+- Bundler 2.7.x
+- rails 8.1.x
 
 ## Decisiones de diseño
 - Autenticación: Devise (email + password).
@@ -24,6 +23,7 @@ bundle exec rails db:migrate
 bundle exec rails db:seed
 bundle exec rails s
 ```
+* Puede ser solo rails.
 
 ## Gestión de base de datos
 - Migraciones pendientes:

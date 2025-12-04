@@ -50,4 +50,10 @@ class Usuario < ApplicationRecord
   validates :nombre, presence: true
   validates :dni, presence: true, uniqueness: { message: "ya está en uso" }
   validates :email, presence: true, uniqueness: { message: "ya está en uso" }
+
+  # Mensaje de confirmación de contraseña en español
+  validates :password, confirmation: { message: "no coincide con la confirmación" }, if: -> {
+    # Aplica cuando hay password cargada (en create o update con cambio)
+    password.present?
+  }
 end

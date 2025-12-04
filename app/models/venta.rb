@@ -10,7 +10,6 @@ class Venta < ApplicationRecord
   # === VALIDACIONES ===
   validates :fecha_hora, presence: true
   validates :empleado, presence: true
-  validates :comprador, presence: { message: "no puede estar vacío" }
   validates :total, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validate  :debe_tener_al_menos_un_detalle
   validates_associated :detalle_ventas

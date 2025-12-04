@@ -109,7 +109,7 @@ class VentaController < ApplicationController
   def venta_params
   params.require(:venta).permit(
     :total,
-    :comprador,
+    :cliente_id,
     :empleado_id,
     detalle_ventas_attributes: [ :id, :producto_id, :cantidad, :precio, :_destroy ]
   )

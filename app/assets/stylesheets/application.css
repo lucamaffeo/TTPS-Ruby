@@ -328,3 +328,28 @@ body.custom-bg {
   background-color: var(--bs-pagination-disabled-bg);
   border-color: var(--bs-pagination-disabled-border-color);
 }
+
+.btn-icon-square {
+  background-color: #111 !important;
+  border-color: #111 !important;
+  color: #f9fafb !important;
+  width: 40px;          /* cuadrado pequeño */
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.btn-icon-square:hover {
+  background-color: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
+}
+
+@media (max-width: 576px) {
+  .btn-icon-square {
+    width: 36px;
+    height: 34px;
+  }
+}

@@ -69,5 +69,10 @@ class Storefront::ProductosController < ApplicationController
       .limit(4)
   end
 
+  def canciones
+    @producto = Producto.find(params[:id])
+    @canciones = @producto.canciones.order(Arel.sql("COALESCE(orden, 999999), id"))
+  end
+
   # No requiere autenticación para index ni show
 end

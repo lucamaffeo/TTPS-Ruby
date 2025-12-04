@@ -106,6 +106,25 @@ end
 
 puts "==> Listo: #{Producto.count} productos creados."
 
+puts "==> Creando canciones por producto"
+if ActiveRecord::Base.connection.table_exists?(:canciones)
+  Producto.find_each do |prod|
+    track_count = rand(6..10)
+    (1..track_count).each do |n|
+      Cancion.create!(
+        producto_id: prod.id,
+        nombre: Faker::Music::GratefulDead.song,
+        duracion_segundos: rand(120..420),
+        orden: n,
+        autor: [nil, prod.autor, Faker::Music.band].sample
+      )
+    end
+  end
+  puts "==> Listo: Canciones generadas para #{Producto.count} productos."
+else
+  puts "==> Advertencia: La tabla 'canciones' no existe. Omitiendo creación de canciones."
+end
+
 puts "==> Creando ventas de prueba"
 
 empleado = Usuario.find_by(rol: 0)

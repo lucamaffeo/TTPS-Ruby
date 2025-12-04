@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  resources :productos
+  resources :productos do
+    # Gestión privada de canciones (CRUD)
+    resources :canciones, only: [:index, :new, :create, :edit, :update, :destroy]
+  end
   get "productos_filtrados", to: "productos#productos_filtrados"
 
   resources :venta
@@ -16,7 +19,11 @@ Rails.application.routes.draw do
   # Root: storefront
   root "storefront/productos#index"
   namespace :storefront do
-    resources :productos, only: [ :index, :show ]
+    resources :productos, only: [ :index, :show ] do
+      member do
+        get :canciones
+      end
+    end
   end
 
   # Catch-all: cualquier URL inexistente va al storefront

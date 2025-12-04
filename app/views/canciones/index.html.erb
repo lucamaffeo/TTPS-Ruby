@@ -1,0 +1,68 @@
+<div class="main-card">
+  <h2 class="mb-3">
+    <i class="bi bi-music-note-list"></i>
+    Canciones de <%= @producto.titulo %> — <small class="text-muted"><%= @producto.autor %></small>
+  </h2>
+
+  <% if @producto.canciones.any? %>
+    <div class="table-responsive">
+      <table class="table-base table table-sm align-middle">
+        <thead>
+          <tr>
+            <th style="width:70px;">Track</th>
+            <th>Nombre</th>
+            <th style="width:110px;">Duración</th>
+            <th style="width:70px;" class="text-end">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @producto.canciones.order(Arel.sql("COALESCE(orden, 999999), id")).each do |c| %>
+            <% dur = c.duracion_segundos.to_i
+               mm = (dur / 60)
+               ss = (dur % 60)
+               dur_str = dur > 0 ? format("%02d:%02d", mm, ss) : "—" %>
+            <tr>
+              <td>
+                <% if c.orden.present? %>
+                  <span class="badge bg-secondary"><%= c.orden %></span>
+                <% else %>
+                  —
+                <% end %>
+              </td>
+              <td>
+                <strong><%= c.nombre %></strong>
+                <% if c.autor.present? && c.autor != @producto.autor %>
+                  <span class="text-muted"> — <%= c.autor %></span>
+                <% end %>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark"><i class="bi bi-clock"></i> <%= dur_str %></span>
+              </td>
+              <td class="text-end">
+                <%= button_to producto_cancion_path(@producto, c),
+                              method: :delete,
+                              class: "btn btn-icon-square",
+                              data: { turbo_confirm: "¿Eliminar esta canción?" } do %>
+                  <i class="bi bi-trash3"></i>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-muted fst-italic">Este producto no tiene canciones cargadas.</p>
+  <% end %>
+
+  <hr>
+
+  <div class="d-flex gap-2 mt-2">
+    <%= link_to new_producto_cancion_path(@producto), class: "btn btn-as-dark btn-sm" do %>
+      <i class="bi bi-plus-circle"></i> Agregar canción
+    <% end %>
+    <%= link_to producto_path(@producto), class: "btn btn-as-dark btn-sm" do %>
+      <i class="bi bi-arrow-left"></i> Volver al producto
+    <% end %>
+  </div>
+</div>

@@ -109,28 +109,53 @@ puts "==> Listo: #{Producto.count} productos creados."
 puts "==> Creando ventas de prueba"
 
 empleado = Usuario.find_by(rol: 0)
-productos = Producto.limit(3).to_a
+productos_nuevos = Producto.where(estado_fisico: "nuevo").where("stock > 0").to_a
+productos_usados = Producto.where(estado_fisico: "usado").where("stock > 0").to_a
 
-if empleado && productos.size >= 2
-  Venta.create!(
-    fecha_hora: Time.current - 2.days,
-    comprador: "Juan Pérez",
-    empleado: empleado,
-    total: productos[0].precio * 2 + productos[1].precio,
-    detalle_ventas_attributes: [
-      { producto_id: productos[0].id, cantidad: 2, precio: productos[0].precio },
-      { producto_id: productos[1].id, cantidad: 1, precio: productos[1].precio }
-    ]
-  )
-  Venta.create!(
-    fecha_hora: Time.current - 1.day,
-    comprador: "Ana Gómez",
-    empleado: empleado,
-    total: productos[1].precio * 3,
-    detalle_ventas_attributes: [
-      { producto_id: productos[1].id, cantidad: 3, precio: productos[1].precio }
-    ]
-  )
+if empleado && productos_nuevos.size >= 1
+  20.times do
+    detalles = []
+    total = 0
+
+    # Siempre incluye al menos un producto nuevo
+    prod_nuevo = productos_nuevos.sample
+    max_cant_nuevo = [prod_nuevo.stock, rand(1..3)].min
+    next if max_cant_nuevo < 1
+    cantidad_nuevo = rand(1..max_cant_nuevo)
+    detalles << {
+      producto_id: prod_nuevo.id,
+      cantidad: cantidad_nuevo,
+      precio: prod_nuevo.precio
+    }
+    total += cantidad_nuevo * prod_nuevo.precio
+
+    # Opcionalmente agrega 0-2 productos usados distintos
+    otros_usados = productos_usados.reject { |p| p.id == prod_nuevo.id }.sample(rand(0..2))
+    Array(otros_usados).each do |prod|
+      max_cant = [prod.stock, rand(1..3)].min
+      next if max_cant < 1
+      cantidad = rand(1..max_cant)
+      next if cantidad < 1
+      detalles << {
+        producto_id: prod.id,
+        cantidad: cantidad,
+        precio: prod.precio
+      }
+      total += cantidad * prod.precio
+    end
+
+    next if detalles.empty?
+
+    venta = Venta.create(
+      fecha_hora: Faker::Time.backward(days: 30, period: :evening),
+      comprador: Faker::Name.name,
+      empleado: empleado,
+      total: total,
+      detalle_ventas_attributes: detalles
+    )
+
+    puts "Venta no creada: #{venta.errors.full_messages.join(', ')}" unless venta.persisted?
+  end
 end
 
 puts "==> Listo: #{Venta.count} ventas creadas."

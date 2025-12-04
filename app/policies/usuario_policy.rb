@@ -25,6 +25,10 @@ class UsuarioPolicy < ApplicationPolicy
     new?
   end
 
+  def reset_password_default?
+    user&.administrador? && record.id != user&.id
+  end
+
   def permitted_attributes
     attrs = [:email, :nombre, :dni, :password, :password_confirmation]
     attrs << :rol if user&.administrador?

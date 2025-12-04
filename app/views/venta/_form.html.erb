@@ -15,12 +15,25 @@
         </ul>
       </div>
     <% end %>
-
+    
     <!-- Cliente -->
     <div class="mb-3">
-      <%= form.label :comprador, "Nombre del cliente", class: "form-label" %>
-      <%= form.text_field :comprador, class: "form-control", required: true %>
+      <label>DNI del cliente</label>
+      <input type="text" id="dni-cliente" class="form-control">
     </div>
+
+    <div class="mb-3">
+      <label>Nombre</label>
+      <input type="text" id="nombre-cliente" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label>Teléfono (opcional)</label>
+      <input type="text" id="telefono-cliente" class="form-control">
+    </div>
+
+    <%= form.hidden_field :cliente_id, id: "venta-cliente-id" %>
+
 
     <hr>
 
@@ -401,6 +414,30 @@
       document.addEventListener('turbo:load', initVentasForm, { once: true });
 
     })();
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const dniInput = document.getElementById("dni-cliente");
+
+      dniInput.addEventListener("blur", async function() {
+        const dni = dniInput.value.trim();
+        if (!dni) return;
+
+        const resp = await fetch(`/buscar_cliente?dni=${dni}`);
+        const data = await resp.json();
+
+        if (data.existe) {
+          document.getElementById("nombre-cliente").value = data.nombre;
+          document.getElementById("telefono-cliente").value = data.telefono;
+          document.getElementById("venta-cliente-id").value = data.id;
+        } else {
+          // limpiar por si estuvo algo antes
+          document.getElementById("nombre-cliente").value = "";
+          document.getElementById("telefono-cliente").value = "";
+          document.getElementById("venta-cliente-id").value = "";
+        }
+      });
+    });
+
   </script>
 
   <style>

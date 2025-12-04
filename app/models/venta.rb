@@ -1,6 +1,7 @@
 class Venta < ApplicationRecord
   # === RELACIONES ===
   belongs_to :empleado, class_name: "Usuario"
+  belongs_to :cliente, optional: true
   has_many :detalle_ventas, dependent: :destroy
   has_many :productos, through: :detalle_ventas
 
@@ -8,6 +9,7 @@ class Venta < ApplicationRecord
 
   validates :fecha_hora, presence: true
   validates :empleado, presence: true
+  
   
   # attribute :cancelada, :boolean, default: false
   

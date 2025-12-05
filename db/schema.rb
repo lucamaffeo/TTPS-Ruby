@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_04_185847) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_06_000000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -132,6 +132,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_185847) do
     t.datetime "created_at", null: false
     t.integer "empleado_id", null: false
     t.datetime "fecha_hora"
+    t.string "pago", default: "efectivo", null: false
     t.decimal "total"
     t.datetime "updated_at", null: false
     t.index ["cliente_id"], name: "index_venta_on_cliente_id"

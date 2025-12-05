@@ -1,4 +1,5 @@
 <div class="renglon-venta" style="display:flex; gap:12px; align-items:end; border-bottom:1px solid #eee; padding:10px 0;">
+  <%= df.hidden_field :_destroy, value: 0, class: "destroy-flag" %>
   <div style="flex: 2;">
     <%= df.label :producto_id, "Producto", class: "form-label" %>
     <%= df.select :producto_id, [],

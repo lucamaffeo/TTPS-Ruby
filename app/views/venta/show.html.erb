@@ -8,20 +8,75 @@
     </div>
 
     <div class="col-md-6">
-      <strong>Total:</strong>
-      <div>$<%= number_with_precision(@venta.total, precision: 2) %></div>
+      <strong>Cliente:</strong>
+      <div><%= @venta.cliente.try(:nombre) || @venta.cliente_id %></div>
     </div>
 
     <div class="col-md-6">
-      <strong>Comprador:</strong>
-      <div><%= @venta.comprador %></div>
+      <strong>Teléfono del cliente:</strong>
+      <div><%= @venta.cliente.try(:telefono) || "N/A" %></div>
+    </div>
+
+    <div class="col-md-6">
+      <strong>DNI del cliente:</strong>
+      <div><%= @venta.cliente.try(:dni) || "N/A" %></div>
     </div>
 
     <div class="col-md-6">
       <strong>Empleado:</strong>
       <div><%= @venta.empleado.try(:nombre) || @venta.empleado_id %></div>
     </div>
+
+    <div class="col-md-6">
+      <strong>Medio de pago:</strong>
+      <div><%= @venta.pago.present? ? @venta.pago.humanize : "N/A" %></div>
+    </div>
+
+    <div class="col-12">
+      <strong>Productos vendidos:</strong>
+
+      <%# Reemplazamos la iteración por detalle_ventas para mostrar cantidad/precio/subtotal de forma robusta %>
+      <table class="table table-sm table-bordered mt-2">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th class="text-center">Cantidad</th>
+            <th class="text-end">Precio unitario</th>
+            <th class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% total_calculado = 0.0 %>
+          <% @venta.detalle_ventas.includes(:producto).each do |dv| %>
+            <% prod = dv.producto %>
+            <% # precio_confiable: primero dv.precio (valor guardado en el detalle), si no está presente usar producto.precio %>
+            <% precio_unit = (dv.precio.present? && dv.precio.to_f > 0) ? dv.precio.to_f : (prod&.precio.to_f || 0.0) %>
+            <% subtotal = dv.cantidad.to_i * precio_unit %>
+            <% total_calculado += subtotal %>
+            <tr>
+              <td>
+                <% if prod %>
+                  <%= link_to prod.titulo, producto_path(prod) rescue prod.titulo %>
+                <% else %>
+                  <em>Producto eliminado</em>
+                <% end %>
+              </td>
+              <td class="text-center"><%= dv.cantidad %></td>
+              <td class="text-end">$<%= number_with_precision(precio_unit, precision: 2) %></td>
+              <td class="text-end">$<%= number_with_precision(subtotal, precision: 2) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3" class="text-end">Total calculado:</th>
+            <th class="text-end">$<%= number_with_precision(total_calculado, precision: 2) %></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
   </div>
+  
 
   <hr>
 

@@ -1,5 +1,8 @@
 es:
   activerecord:
+    attributes:
+      venta:
+        empleado: "Empleado"
     errors:
       models:
         producto:

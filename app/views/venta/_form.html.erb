@@ -1,7 +1,8 @@
 <%= form_with(model: venta,
               url: (venta.persisted? ? { controller: 'venta', action: :update, id: venta } : { controller: 'venta', action: :create }),
               method: (venta.persisted? ? :patch : :post),
-              local: true) do |form| %>
+              local: true,
+              html: { id: "venta-form" }) do |form| %>
 
   <div class="form-panel venta-form-wide">
 
@@ -19,21 +20,28 @@
     <!-- Cliente -->
     <div class="mb-3">
       <label>DNI del cliente</label>
-      <input type="text" id="dni-cliente" class="form-control">
+      <input type="text" id="dni-cliente" name="dni" class="form-control" value="<%= @venta.cliente&.dni %>">
     </div>
 
     <div class="mb-3">
       <label>Nombre</label>
-      <input type="text" id="nombre-cliente" class="form-control">
+      <input type="text" id="nombre-cliente" name="nombre" class="form-control" value="<%= @venta.cliente&.nombre %>">
     </div>
 
     <div class="mb-3">
       <label>Teléfono (opcional)</label>
-      <input type="text" id="telefono-cliente" class="form-control">
+      <input type="text" id="telefono-cliente" name="telefono" class="form-control" value="<%= @venta.cliente&.telefono %>">
     </div>
 
     <%= form.hidden_field :cliente_id, id: "venta-cliente-id" %>
 
+    <!-- Medio de pago -->
+    <div class="mb-3">
+      <%= form.label :pago, "Medio de pago", class: "form-label" %>
+      <%= form.select :pago,
+            options_for_select([["Efectivo","efectivo"], ["Transferencia","transferencia"], ["Débito","debito"]], selected: (venta.pago || "efectivo")),
+            {}, class: "form-control" %>
+    </div>
 
     <hr>
 
@@ -185,6 +193,10 @@
         const subtotales = all('.subtotal-input');
         let total = 0;
         subtotales.forEach(inp => {
+          const card = inp.closest('.renglon-venta');
+          const destroyInput = card ? card.querySelector("input[type='hidden'][name*='[_destroy]']") : null;
+          // ignorar renglones marcados para borrado
+          if (destroyInput && (destroyInput.value === '1' || destroyInput.value === 'true')) return;
           total += parseFloat(inp.value) || 0;
         });
         const totalInput = q('venta-total');
@@ -330,7 +342,17 @@
       // --- eliminar renglón (delegado) ---
       function eliminarRenglonElemento(button) {
         const card = button.closest('.renglon-venta');
-        if (card) card.remove();
+        if (!card) return;
+        // buscar el input hidden _destroy generado por fields_for
+        const destroyInput = card.querySelector("input[type='hidden'][name*='[_destroy]']");
+        if (destroyInput) {
+          // marcar para borrado y ocultar visualmente (Rails procesará el borrado al submit)
+          destroyInput.value = '1';
+          card.style.display = 'none';
+        } else {
+          // renglón nuevo sin hidden -> eliminar del DOM
+          card.remove();
+        }
         recalcularTotalVenta();
       }
 

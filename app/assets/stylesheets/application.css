@@ -353,3 +353,22 @@ body.custom-bg {
     height: 34px;
   }
 }
+
+/* Ventas canceladas en listado */
+.venta-cancelada {
+  opacity: 0.6;
+  background-color: rgba(220, 53, 69, 0.04);
+}
+.venta-cancelada td {
+  color: #333;
+}
+.badge-cancelada {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  background: #e3342f;
+  color: #fff;
+  border-radius: 0.25rem;
+  vertical-align: middle;
+}

@@ -63,8 +63,12 @@
       </thead>
       <tbody>
         <% @ventas.each do |venta| %>
-          <tr>
-            <td class="text-muted small">#<%= venta.id %></td>
+          <tr class="<%= 'venta-cancelada' if venta.cancelada? %>">
+            <td class="text-muted small">#<%= venta.id %>
+              <% if venta.cancelada? %>
+                <span class="badge badge-cancelada">CANCELADA</span>
+              <% end %>
+            </td>
             
             <td>
               <div class="d-flex flex-column">
@@ -123,3 +127,19 @@
     <%= paginate @ventas %>
   </div>
 </div>
+
+<style>
+  .venta-cancelada {
+    opacity: 0.6;
+  }
+  
+  .badge-cancelada {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold;
+    padding: 0.5em 1em;
+    border-radius: 1.5rem;
+    font-size: 0.875rem;
+    margin-left: 0.5rem;
+  }
+</style>

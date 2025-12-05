@@ -1,23 +1,38 @@
-<div class="renglon-venta" style="display:flex; gap:12px; align-items:end; border-bottom:1px solid #eee; padding:10px 0;">
+<div class="renglon-venta" style="display:flex; gap:12px; align-items:center; border-bottom:1px solid #eee; padding:10px 0;">
   <%= df.hidden_field :_destroy, value: 0, class: "destroy-flag" %>
+
   <div style="flex: 2;">
-    <%= df.label :producto_id, "Producto", class: "form-label" %>
-    <%= df.select :producto_id, [],
-          { include_blank: "Seleccioná un producto" },
-          { class: "form-control producto-select",
-            data: { selected: df.object.producto_id, precio: df.object.precio } } %>
+    <% if df.object.persisted? %>
+      <%= df.hidden_field :producto_id, value: df.object.producto_id %>
+      <div class="producto-fijo"><%= df.object.producto&.titulo || "Producto eliminado" %></div>
+    <% else %>
+      <%= df.select :producto_id, [],
+            { include_blank: "Seleccioná un producto" },
+            { class: "form-control producto-select",
+              data: { selected: df.object.producto_id, precio: df.object.precio } } %>
+    <% end %>
   </div>
 
   <div style="width:110px;">
-    <%= df.label :cantidad, "Cantidad", class: "form-label" %>
-    <%= df.number_field :cantidad, min: 1, value: (df.object.cantidad || 1),
-            class: "form-control cantidad-input" %>
+    <% if df.object.persisted? %>
+      <%# enviar cantidad aunque se muestre como texto; añadir clase para que JS la use %>
+      <%= df.hidden_field :cantidad, value: df.object.cantidad, class: "cantidad-input d-none" %>
+      <div class="cantidad-fija text-center"><%= df.object.cantidad %></div>
+    <% else %>
+      <%= df.number_field :cantidad, min: 1, value: (df.object.cantidad || 1),
+              class: "form-control cantidad-input" %>
+    <% end %>
   </div>
 
   <div style="width:140px;">
-    <%= df.label :precio, "Precio unitario", class: "form-label" %>
-    <%= df.number_field :precio, step: "0.01",
-            class: "form-control precio-input" %>
+    <% if df.object.persisted? %>
+      <%# mostrar precio como texto y enviar hidden con clase para que JS lo lea %>
+      <div class="precio-fijo text-end">$<%= number_with_precision(df.object.precio.to_f, precision: 2) %></div>
+      <%= df.hidden_field :precio, value: df.object.precio, class: "precio-input d-none" %>
+    <% else %>
+      <%= df.number_field :precio, step: "0.01",
+              class: "form-control precio-input", value: (df.object.precio || "") %>
+    <% end %>
   </div>
 
   <div style="width:140px;">
@@ -26,6 +41,9 @@
   </div>
 
   <div style="width:90px; display:flex; align-items:flex-end;">
-    <button type="button" class="btn btn-danger eliminar-renglon">Eliminar</button>
+    <%# no mostrar botón eliminar para renglones persistidos; solo nuevos tienen botón (ya hecho) %>
+    <% unless df.object.persisted? %>
+      <button type="button" class="btn btn-danger eliminar-renglon">Eliminar</button>
+    <% end %>
   </div>
 </div>

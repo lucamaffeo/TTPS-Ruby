@@ -48,9 +48,11 @@
     <h4>Productos de la venta</h4>
 
     <!-- Botón agregar -->
-    <button type="button" id="agregar-renglon" class="btn btn-success mb-3">
-      + Agregar producto
-    </button>
+    <% unless venta.persisted? %>
+      <button type="button" id="agregar-renglon" class="btn btn-success mb-3">
+        + Agregar producto
+      </button>
+    <% end %>
 
    <!-- FILTROS (OCULTOS) -->
     <div class="row g-2 mb-3 filtros-ocultos">

@@ -195,7 +195,61 @@ class VentaController < ApplicationController
 
   # Aca lo que hace es actualizar una venta especifica.
   def update
+    # Tomamos los params permitidos de la venta
     incoming = venta_params.to_h
+
+    # --- Procesar campos de cliente enviados como top-level (dni/nombre/telefono) ---
+    dni = params[:dni].to_s.strip
+    nombre = params[:nombre].to_s.strip
+    telefono = params[:telefono].to_s.strip
+
+    begin
+      if dni.present?
+        # Si existe un cliente con ese DNI, asociarlo y actualizar datos si vienen
+        cliente_existente = Cliente.find_by(dni: dni)
+        if cliente_existente
+          cliente_existente.update(nombre: nombre) if nombre.present?
+          cliente_existente.update(telefono: telefono) if telefono.present?
+          incoming["cliente_id"] = cliente_existente.id
+        else
+          # No existe cliente con ese DNI:
+          if incoming["cliente_id"].present?
+            # si la venta ya apuntaba a un cliente, actualizamos ese cliente con el nuevo DNI/nombre/telefono
+            cli = Cliente.find_by(id: incoming["cliente_id"])
+            if cli
+              cli.update(dni: dni) if dni.present?
+              cli.update(nombre: nombre) if nombre.present?
+              cli.update(telefono: telefono) if telefono.present?
+            else
+              # crear nuevo cliente
+              nuevo = Cliente.create!(dni: dni, nombre: nombre.presence || "", telefono: telefono.presence || "")
+              incoming["cliente_id"] = nuevo.id
+            end
+          else
+            # crear nuevo cliente y asociarlo
+            nuevo = Cliente.create!(dni: dni, nombre: nombre.presence || "", telefono: telefono.presence || "")
+            incoming["cliente_id"] = nuevo.id
+          end
+        end
+      else
+        # no se envió dni; si hay cliente_id y vienen nombre/telefono, actualizarlos
+        if incoming["cliente_id"].present? && (nombre.present? || telefono.present?)
+          cli = Cliente.find_by(id: incoming["cliente_id"])
+          if cli
+            cli.update(nombre: nombre) if nombre.present?
+            cli.update(telefono: telefono) if telefono.present?
+          end
+        end
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      @venta.errors.add(:base, "No se pudo actualizar/crear cliente: #{e.record.errors.full_messages.join(', ')}")
+      @productos = Producto.order(:titulo)
+      return render :edit, status: :unprocessable_entity
+    rescue => e
+      @venta.errors.add(:base, "Error procesando cliente: #{e.message}")
+      @productos = Producto.order(:titulo)
+      return render :edit, status: :unprocessable_entity
+    end
 
     # normalizar incoming detalle hash
     detalles_incoming = incoming["detalle_ventas_attributes"].is_a?(Hash) ? incoming["detalle_ventas_attributes"] : {}
@@ -265,7 +319,7 @@ class VentaController < ApplicationController
         prod.update_column(:stock, new_stock)
       end
 
-      redirect_to @venta, notice: "Venta actualizada correctamente." and return
+      redirect_to venta_path(@venta), notice: "Venta actualizada correctamente." and return
     end
   rescue ActiveRecord::RecordInvalid => e
     detail_msg = (e.respond_to?(:record) && e.record && e.record.respond_to?(:errors)) ? e.record.errors.full_messages.join(", ") : e.message
@@ -295,12 +349,13 @@ class VentaController < ApplicationController
 
   # venta_params lo que hace es permitir los parametros para crear o actualizar una venta, vienen del formulario.
   def venta_params
-  params.require(:venta).permit(
-    :total,
-    :cliente_id,
-    :empleado_id,
-    detalle_ventas_attributes: [ :id, :producto_id, :cantidad, :precio, :_destroy ]
-  )
+    params.require(:venta).permit(
+      :total,
+      :pago,               # <-- permitir medio de pago
+      :cliente_id,
+      :empleado_id,
+      detalle_ventas_attributes: [ :id, :producto_id, :cantidad, :precio, :_destroy ]
+    )
   end
 
   private

@@ -72,3 +72,7 @@ gem "faker", "~> 3.4" # generación de datos de prueba(para seeds)
 # Gemas para generación de PDFs
 gem "wicked_pdf"
 gem "wkhtmltopdf-binary"
+
+# Gemas para graficos
+gem "chartkick"
+gem "groupdate" # útil para gráficos por día/mes/año en el futuro

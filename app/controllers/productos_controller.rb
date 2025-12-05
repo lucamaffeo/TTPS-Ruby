@@ -9,7 +9,7 @@ class ProductosController < ApplicationController
     if params[:q].present?
       q = params[:q].to_s.downcase
       @productos = @productos.where(
-        "LOWER(titulo) LIKE ? OR LOWER(autor) LIKE ?", 
+        "LOWER(titulo) LIKE ? OR LOWER(autor) LIKE ?",
         "%#{q}%", "%#{q}%"
       )
     end
@@ -44,7 +44,7 @@ class ProductosController < ApplicationController
     # Ordenamiento
     sort_column = params[:sort] || "titulo"
     sort_direction = params[:direction] || "asc"
-    
+
     allowed_columns = %w[titulo autor precio stock anio]
     if allowed_columns.include?(sort_column)
       @productos = @productos.order("#{sort_column} #{sort_direction}")
@@ -94,20 +94,22 @@ class ProductosController < ApplicationController
 
   # GET /productos_filtrados
   def productos_filtrados
-    scope = Producto.all
+    scope = Producto.where.not(estado: "eliminado")  # ...existing filters might querer ignorar eliminados
 
     if params[:tipo].present?
       tipo = params[:tipo].to_s.strip
-      scope = scope.where('lower(tipo) = ?', tipo.downcase)
+      scope = scope.where("lower(tipo) = ?", tipo.downcase)
     end
 
     if params[:categoria].present?
       categoria = params[:categoria].to_s.strip
-      scope = scope.where('lower(categoria) = ?', categoria.downcase)
+      scope = scope.where("lower(categoria) = ?", categoria.downcase)
     end
 
-    productos = scope.order(:titulo).select(:id, :titulo, :precio)
+    # Mostrar productos que tienen stock > 0 OR que sean usados (se venden aun cuando su stock pueda ser 0)
+    scope = scope.where("stock > 0 OR estado_fisico = ?", "usado")
 
+    productos = scope.order(:titulo).select(:id, :titulo, :precio, :stock, :estado_fisico)
     render json: productos
   end
 
@@ -126,5 +128,4 @@ class ProductosController < ApplicationController
         { imagenes: [] }, :audio_muestra
       )
     end
-
 end

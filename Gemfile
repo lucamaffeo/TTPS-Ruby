@@ -70,8 +70,8 @@ gem "mini_magick", "~> 5.3" # procesamiento de imágenes
 gem "faker", "~> 3.4" # generación de datos de prueba(para seeds)
 
 # Gemas para generación de PDFs
-gem "wicked_pdf"
-gem "wkhtmltopdf-binary"
+gem "prawn" # generación de PDFs
+gem "prawn-table"
 
 # Gemas para graficos
 gem "chartkick"

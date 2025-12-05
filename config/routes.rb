@@ -34,5 +34,4 @@ Rails.application.routes.draw do
   end
 
   # Catch-all: cualquier URL inexistente va al storefront
-  match "*unmatched", to: "storefront/productos#index", via: :all
 end

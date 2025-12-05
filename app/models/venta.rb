@@ -52,6 +52,34 @@ class Venta < ApplicationRecord
   #   end
   # end
 
+  # scope para ventas activas (no canceladas)
+  scope :activas, -> { where(cancelada: false) }
+
+  # Indica si la venta ya fue cancelada
+  def cancelada?
+    !!self.cancelada
+  end
+
+  # Cancela la venta: marca cancelada, setea fecha_cancelacion y repone stock.
+  # Operación en transacción para evitar inconsistencias.
+  def cancelar!(motivo: nil)
+    return false if cancelada?
+
+    ActiveRecord::Base.transaction do
+      # Reponer stock para cada detalle (usar lock para concurrencia)
+      detalle_ventas.each do |dv|
+        prod = Producto.lock.find_by(id: dv.producto_id)
+        next unless prod
+        # usar update_column para evitar validaciones que bloqueen la reposición
+        prod.update_column(:stock, prod.stock.to_i + dv.cantidad.to_i)
+      end
+
+      update!(cancelada: true, fecha_cancelacion: Time.current)
+    end
+
+    true
+  end
+
   private
 
   def debe_tener_al_menos_un_detalle

@@ -1,4 +1,14 @@
-<div class="main-card">
+<div class="main-card venta-card-wrapper" style="position:relative;">
+  
+  <% if @venta.cancelada? %>
+    <div class="cancelled-note mb-2">
+      <strong>Venta cancelada</strong>
+      <% if @venta.respond_to?(:fecha_cancelacion) && @venta.fecha_cancelacion.present? %>
+        — Fecha: <%= l(@venta.fecha_cancelacion, format: :long) rescue @venta.fecha_cancelacion %>
+      <% end %>
+    </div>
+  <% end %>
+
   <h2 class="mb-3">Venta #<%= @venta.id %></h2>
 
   <div class="row g-3">
@@ -86,11 +96,29 @@
     <% end %>
 
     <%= button_to({ controller: 'venta', action: :destroy, id: @venta }, method: :delete, data: { confirm: "¿Eliminar venta?" }, class: "btn btn-as-dark") do %>
-      <i class="bi bi-trash"></i> Eliminar
+      <i class="bi bi-trash"></i> Cancelar venta
     <% end %>
 
     <%= link_to({ controller: 'venta', action: :index }, class: "btn btn-as-dark") do %>
       <i class="bi bi-arrow-left"></i> Volver
     <% end %>
+    
+    <%= link_to venta_path(@venta, format: :pdf), class: "btn btn-as-dark" do %>
+      <i class="bi bi-file-earmark-pdf"></i> Descargar factura
+    <% end %>
   </div>
 </div>
+
+<style>
+  /* nota pequeña encima del contenido */
+  .cancelled-note {
+    position: relative;
+    z-index: 45;
+    background: rgba(255,230,230,0.9);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(200,0,0,0.12);
+    color: #6b0000;
+    display: inline-block;
+  }
+</style>

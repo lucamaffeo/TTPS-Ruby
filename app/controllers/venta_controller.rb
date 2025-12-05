@@ -1,4 +1,5 @@
 class VentaController < ApplicationController
+  before_action :authenticate_usuario!, only: %i[new create edit update destroy]
   before_action :set_venta, only: %i[ show edit update destroy ]
 
   # # GET /venta or /venta.json
@@ -54,6 +55,15 @@ class VentaController < ApplicationController
 
   # Aca lo que hace es crear una nueva venta con los parametros que vienen del formulario.
   def create
+    if params[:venta][:cliente_id].blank?
+      cliente = Cliente.find_or_create_by(dni: params[:dni]) do |c|
+        c.nombre = params[:nombre]
+        c.telefono = params[:telefono]
+      end
+
+      params[:venta][:cliente_id] = cliente.id
+    end
+
     @venta = Venta.new(venta_params)
     @venta.empleado = current_usuario
     @venta.fecha_hora = Time.now
@@ -100,20 +110,32 @@ class VentaController < ApplicationController
     @productos = Producto.order(:titulo).limit(200)
     render :new, status: :unprocessable_entity
   end
-  
+
   # Aca lo que hace es actualizar una venta especifica.
   def update
-    if @venta.update(venta_params)
+    # Sanitize nested detalle_ventas_attributes: remove entries that reference detalle ids
+    # that do not belong to this venta (avoids ActiveRecord::RecordNotFound).
+    incoming = venta_params.to_h
+    if incoming["detalle_ventas_attributes"].is_a?(Hash)
+      incoming["detalle_ventas_attributes"] =
+        sanitize_detalle_ventas_attributes(incoming["detalle_ventas_attributes"])
+    end
+
+    if @venta.update(incoming)
       redirect_to @venta, notice: "Venta actualizada correctamente."
     else
       @productos = Producto.order(:titulo)
       render :edit, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotFound => e
+    @venta.errors.add(:base, "Detalle no encontrado: #{e.message}")
+    @productos = Producto.order(:titulo)
+    render :edit, status: :unprocessable_entity
   end
   # Elimina una venta especifica.
   def destroy
     @venta.destroy
-    redirect_to ventas_path, notice: "Venta eliminada correctamente."
+    redirect_to({ controller: "venta", action: :index }, notice: "Venta eliminada correctamente.")
   end
 
   # Aca lo que hace es buscar la venta por el id que viene en los parametros de la url.
@@ -125,10 +147,23 @@ class VentaController < ApplicationController
   def venta_params
   params.require(:venta).permit(
     :total,
-    :comprador,
+    :cliente_id,
     :empleado_id,
     detalle_ventas_attributes: [ :id, :producto_id, :cantidad, :precio, :_destroy ]
   )
   end
 
+  private
+  # Filtra los atributos de detalle_ventas: mantiene elementos nuevos (sin id) y
+  # solo aquellos con id que efectivamente pertenecen a @venta.
+  def sanitize_detalle_ventas_attributes(hash_attrs)
+    hash_attrs.select do |key, det_attrs|
+      next true unless det_attrs.is_a?(Hash)
+      if det_attrs["id"].present?
+        DetalleVenta.exists?(id: det_attrs["id"].to_i, venta_id: @venta.id)
+      else
+        true
+      end
+    end
+  end
 end

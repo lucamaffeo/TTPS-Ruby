@@ -1,6 +1,7 @@
 class Venta < ApplicationRecord
   # === RELACIONES ===
   belongs_to :empleado, class_name: "Usuario"
+  belongs_to :cliente, optional: true
   has_many :detalle_ventas, dependent: :destroy
   has_many :productos, through: :detalle_ventas
 
@@ -9,13 +10,15 @@ class Venta < ApplicationRecord
   # === VALIDACIONES ===
   validates :fecha_hora, presence: true
   validates :empleado, presence: true
-  validates :comprador, presence: { message: "no puede estar vacío" }
   validates :total, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :pago, inclusion: { in: %w[efectivo transferencia debito] }, presence: true
   validate  :debe_tener_al_menos_un_detalle
-  validates_associated :detalle_ventas
+  # validates_associated :detalle_ventas
+  # Validamos manualmente los detalles, ignorando los marcados para borrado
+  validate :detalles_validos
 
   # attribute :cancelada, :boolean, default: false
-  
+
   # before_create :validar_stock
   # after_create :descontar_stock
   # after_update :revertir_stock, if: :cancelada?
@@ -54,6 +57,17 @@ class Venta < ApplicationRecord
   def debe_tener_al_menos_un_detalle
     if detalle_ventas.reject(&:marked_for_destruction?).blank?
       errors.add(:base, "Debe agregar al menos un producto a la venta")
+    end
+  end
+
+  # Valida los detalle_ventas que NO están marcados para destrucción.
+  # Agrega los mensajes de error de cada DetalleVenta al base del modelo Venta.
+  def detalles_validos
+    detalle_ventas.reject(&:marked_for_destruction?).each_with_index do |dv, idx|
+      next if dv.valid?
+      dv.errors.full_messages.each do |msg|
+        errors.add(:base, "Detalle #{idx + 1}: #{msg}")
+      end
     end
   end
 end

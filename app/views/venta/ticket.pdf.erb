@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #111; }
+    .ticket { width: 320px; margin: 0 auto; }
+    h2 { text-align: center; font-size: 16px; margin-bottom: 6px; }
+    .meta div { margin-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top:8px; }
+    td, th { padding: 4px 0; }
+    .text-right { text-align: right; }
+    .total { font-weight: bold; font-size: 13px; }
+    .small { font-size: 11px; color: #444; }
+  </style>
+</head>
+<body>
+  <div class="ticket">
+    <h2>Ticket - Venta #<%= venta.id %></h2>
+
+    <div class="meta small">
+      <div>Fecha: <%= (venta.fecha_hora || Time.current).strftime("%d/%m/%Y %H:%M") %></div>
+      <div>Empleado: <%= venta.empleado.try(:nombre) || "N/A" %></div>
+      <div>Cliente: <%= venta.cliente.try(:nombre) || (venta.comprador || "N/A") %></div>
+      <div>Pago: <%= venta.pago.present? ? venta.pago.humanize : "N/A" %></div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left;">Producto</th>
+          <th class="text-right">Cant</th>
+          <th class="text-right">P.unit</th>
+          <th class="text-right">Sub</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% venta.detalle_ventas.each do |dv| %>
+          <% prod = dv.producto %>
+          <% precio = (dv.precio.present? && dv.precio.to_f > 0) ? dv.precio.to_f : (prod&.precio.to_f || 0.0) %>
+          <tr>
+            <td><%= prod ? prod.titulo.truncate(20) : "Producto eliminado" %></td>
+            <td class="text-right"><%= dv.cantidad %></td>
+            <td class="text-right"><%= number_with_precision(precio, precision: 2) %></td>
+            <td class="text-right"><%= number_with_precision(dv.cantidad.to_i * precio, precision: 2) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="text-right total">Total:</td>
+          <td class="text-right total">$<%= number_with_precision(venta.total.to_f, precision: 2) %></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div style="text-align:center; margin-top:10px;" class="small">Gracias por su compra</div>
+  </div>
+</body>
+</html>

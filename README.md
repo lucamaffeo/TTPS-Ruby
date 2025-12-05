@@ -4,6 +4,7 @@
 - Ruby 3.4.x 
 - Bundler 2.7.x
 - rails 8.1.x
+- SQLite
 
 ## Decisiones de diseño
 - Autenticación: Devise (email + password).

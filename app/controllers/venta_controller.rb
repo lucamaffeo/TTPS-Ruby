@@ -159,14 +159,8 @@ class VentaController < ApplicationController
           raise ActiveRecord::Rollback
         end
 
-        # Para productos usados: cantidad debe ser 1 (ejemplar único)
-        if producto.estado_fisico == "usado" && d[:cantidad].to_i != 1
-          @venta.errors.add(:base, "El producto '#{producto.titulo}' es usado y sólo permite cantidad 1")
-          raise ActiveRecord::Rollback
-        end
-
-        # Para nuevos verificamos stock suficiente
-        if producto.estado_fisico != "usado" && producto.stock < d[:cantidad].to_i
+        # Rechazar si la cantidad solicitada excede el stock disponible
+        if producto.stock.to_i < d[:cantidad].to_i
           @venta.errors.add(:base, "No hay stock suficiente para #{producto.titulo}")
           raise ActiveRecord::Rollback
         end
@@ -176,22 +170,16 @@ class VentaController < ApplicationController
         begin
           @venta.detalle_ventas.each do |dv|
             prod = Producto.lock.find(dv.producto_id)
-            # Ajustar stock usando update_column para evitar validaciones que impidan poner 0 en usados
-            if prod.estado_fisico == "usado"
-              prod.update_column(:stock, 0)
-            else
-              new_stock = prod.stock.to_i - dv.cantidad.to_i
-              new_stock = 0 if new_stock < 0
-              prod.update_column(:stock, new_stock)
+            # Ajustar stock usando update_column (evita validaciones que impidan poner 0)
+            new_stock = prod.stock.to_i - dv.cantidad.to_i
+            if new_stock < 0
+              @venta.errors.add(:base, "No hay stock suficiente para #{prod.titulo}")
+              raise ActiveRecord::Rollback
             end
+            prod.update_column(:stock, new_stock)
           end
         rescue ActiveRecord::RecordInvalid => e
-          # Mostrar mensajes concretos de validación si existe el record
-          detail_msg = if e.respond_to?(:record) && e.record && e.record.respond_to?(:errors)
-                         e.record.errors.full_messages.join(", ")
-          else
-                         e.message
-          end
+          detail_msg = (e.respond_to?(:record) && e.record && e.record.respond_to?(:errors)) ? e.record.errors.full_messages.join(", ") : e.message
           @venta.errors.add(:base, "Error al actualizar stock: #{detail_msg}")
           raise ActiveRecord::Rollback
         end
@@ -207,22 +195,81 @@ class VentaController < ApplicationController
 
   # Aca lo que hace es actualizar una venta especifica.
   def update
-    # Sanitize nested detalle_ventas_attributes: remove entries that reference detalle ids
-    # that do not belong to this venta (avoids ActiveRecord::RecordNotFound).
     incoming = venta_params.to_h
-    if incoming["detalle_ventas_attributes"].is_a?(Hash)
-      incoming["detalle_ventas_attributes"] =
-        sanitize_detalle_ventas_attributes(incoming["detalle_ventas_attributes"])
-    end
 
-    if @venta.update(incoming)
-      redirect_to @venta, notice: "Venta actualizada correctamente."
-    else
-      @productos = Producto.order(:titulo)
-      render :edit, status: :unprocessable_entity
+    # normalizar incoming detalle hash
+    detalles_incoming = incoming["detalle_ventas_attributes"].is_a?(Hash) ? incoming["detalle_ventas_attributes"] : {}
+
+    ActiveRecord::Base.transaction do
+      # calcular cambios de stock (delta positivo = aumento stock, negativo = reducción)
+      stock_changes = []
+
+      detalles_incoming.each do |_key, attrs|
+        next unless attrs.is_a?(Hash)
+        # si marcan para borrado y tiene id, devolver stock del renglón actual
+        if attrs["_destroy"].to_s == "1"
+          if attrs["id"].present?
+            dv = @venta.detalle_ventas.find_by(id: attrs["id"].to_i)
+            if dv
+              stock_changes << { producto_id: dv.producto_id, delta: dv.cantidad.to_i } # repone stock
+            end
+          end
+          next
+        end
+
+        producto_id = attrs["producto_id"].to_i
+        cantidad_nueva = attrs["cantidad"].to_i
+
+        if attrs["id"].present?
+          dv = @venta.detalle_ventas.find_by(id: attrs["id"].to_i)
+          cantidad_ant = dv ? dv.cantidad.to_i : 0
+          delta_needed = cantidad_nueva - cantidad_ant
+        else
+          delta_needed = cantidad_nueva
+        end
+
+        # si no hay cambio neto, no toca stock
+        next if delta_needed == 0
+
+        prod = Producto.lock.find_by(id: producto_id)
+        if prod.nil?
+          @venta.errors.add(:base, "Producto no encontrado (id=#{producto_id})")
+          raise ActiveRecord::Rollback
+        end
+
+        # si delta_needed > 0 necesitamos disminuir stock; validamos disponibilidad
+        if delta_needed > 0
+          if prod.stock.to_i < delta_needed
+            @venta.errors.add(:base, "No hay stock suficiente para #{prod.titulo} (falta #{delta_needed})")
+            raise ActiveRecord::Rollback
+          end
+          stock_changes << { producto_id: producto_id, delta: -delta_needed } # reducir stock
+        else
+          # delta_needed < 0 -> aumentar stock (devolver unidades)
+          stock_changes << { producto_id: producto_id, delta: -delta_needed.abs } # aumenta stock
+        end
+      end
+
+      # aplicar update de la venta (raise si falla)
+      @venta.update!(incoming)
+
+      # aplicar cambios de stock calculados
+      stock_changes.each do |chg|
+        prod = Producto.lock.find_by(id: chg[:producto_id])
+        next unless prod
+        new_stock = prod.stock.to_i + chg[:delta]
+        if new_stock < 0
+          @venta.errors.add(:base, "No hay stock suficiente para #{prod.titulo}")
+          raise ActiveRecord::Rollback
+        end
+        prod.update_column(:stock, new_stock)
+      end
+
+      redirect_to @venta, notice: "Venta actualizada correctamente." and return
     end
-  rescue ActiveRecord::RecordNotFound => e
-    @venta.errors.add(:base, "Detalle no encontrado: #{e.message}")
+  rescue ActiveRecord::RecordInvalid => e
+    detail_msg = (e.respond_to?(:record) && e.record && e.record.respond_to?(:errors)) ? e.record.errors.full_messages.join(", ") : e.message
+    @venta.errors.add(:base, detail_msg)
     @productos = Producto.order(:titulo)
     render :edit, status: :unprocessable_entity
   end

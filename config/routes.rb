@@ -26,6 +26,10 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :admin do
+    get 'dashboard', to: 'dashboard#index', as: :dashboard
+  end
+
   # Catch-all: cualquier URL inexistente va al storefront
   match "*unmatched", to: "storefront/productos#index", via: :all
 end

@@ -6,42 +6,42 @@
 </div>
 
 <div class="card border-0 shadow-sm mb-4">
-  <div class="card-body bg-light rounded">
-    <%= form_with url: storefront_productos_path, method: :get, local: true, class: "row g-3 align-items-end" do %>
-      <div class="col-md-3">
+  <div class="card-body bg-light rounded px-2 py-3">
+    <%= form_with url: storefront_productos_path, method: :get, local: true, class: "row g-2 align-items-end" do %>
+      <div class="col-md-2 col-6">
         <%= label_tag :q, "Buscar:", class: "form-label fw-semibold small" %>
-        <div class="input-group">
-          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-          <%= text_field_tag :q, params[:q], class: "form-control border-start-0", placeholder: "Título, artista, año..." %>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white border-end-0 px-2"><i class="bi bi-search text-muted"></i></span>
+          <%= text_field_tag :q, params[:q], class: "form-control border-start-0", placeholder: "Título..." %>
         </div>
       </div>
 
-      <div class="col-md-2">
+      <div class="col-md-2 col-6">
         <%= label_tag :categoria, "Género:", class: "form-label fw-semibold small" %>
         <%= select_tag :categoria,
               options_for_select(Producto.distinct.pluck(:categoria), params[:categoria]),
               include_blank: "Todos",
-              class: "form-select" %>
+              class: "form-select form-select-sm" %>
       </div>
 
-      <div class="col-md-2">
+      <div class="col-md-2 col-6">
         <%= label_tag :tipo, "Formato:", class: "form-label fw-semibold small" %>
         <%= select_tag :tipo,
               options_for_select(Producto.distinct.pluck(:tipo), params[:tipo]),
               include_blank: "Todos",
-              class: "form-select" %>
+              class: "form-select form-select-sm" %>
       </div>
 
-      <div class="col-md-2">
+      <div class="col-md-2 col-6">
         <%= label_tag :estado_fisico, "Condición:", class: "form-label fw-semibold small" %>
         <%= select_tag :estado_fisico,
               options_for_select([["Nuevo", "nuevo"], ["Usado", "usado"]], params[:estado_fisico]),
               include_blank: "Todos",
-              class: "form-select" %>
+              class: "form-select form-select-sm" %>
       </div>
 
-      <div class="col-md-2">
-        <%= label_tag :orden, "Ordenar por:", class: "form-label fw-semibold small" %>
+      <div class="col-md-3 col-12">
+        <%= label_tag :orden, "Ordenar:", class: "form-label fw-semibold small" %>
         <%= select_tag :orden,
               options_for_select([
                 ["Precio: menor a mayor", "precio_asc"],
@@ -50,11 +50,13 @@
                 ["Título: Z-A", "nombre_desc"]
               ], params[:orden]),
               include_blank: "Más recientes",
-              class: "form-select" %>
+              class: "form-select form-select-sm" %>
       </div>
 
-      <div class="col-md-1 d-flex gap-1">
-        <%= submit_tag "Filtrar", class: "btn btn-as-dark w-100" %>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-as-dark btn-sm" title="Buscar">
+          <i class="bi bi-search"></i>
+        </button>
       </div>
     <% end %>
   </div>

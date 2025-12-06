@@ -31,13 +31,43 @@
           </a>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <%= link_to new_usuario_session_path, class: "btn btn-as-dark" do %>
+              <button type="button" class="btn btn-as-dark" data-bs-toggle="modal" data-bs-target="#modalLoginWarning">
                 <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
-              <% end %>
+              </button>
             </li>
           </ul>
         </div>
       </nav>
+
+      <!-- Modal de advertencia -->
+      <div class="modal fade" id="modalLoginWarning" tabindex="-1" aria-labelledby="modalLoginWarningLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+              <h5 class="modal-title fw-bold" id="modalLoginWarningLabel">
+                <i class="bi bi-shield-lock"></i> Zona Administrativa
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4" style="background: #f8f9fa;">
+              <i class="bi bi-info-circle text-primary" style="font-size: 3.5rem;"></i>
+              <h4 class="mt-3 fw-bold text-dark">¿Estás seguro de continuar?</h4>
+              <p class="text-secondary mt-3" style="font-size: 1.05rem;">
+                Estás a punto de acceder a la zona administrativa de ActiveSound.
+                <br><strong class="text-danger">Este acceso es exclusivo para empleados, gerentes y administradores.</strong>
+              </p>
+            </div>
+            <div class="modal-footer justify-content-center" style="background: #f8f9fa;">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </button>
+              <%= link_to new_usuario_session_path, class: "btn btn-as-dark" do %>
+                <i class="bi bi-box-arrow-in-right"></i> Continuar al Login
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="container flash-wrapper">
         <% shown = [] %>

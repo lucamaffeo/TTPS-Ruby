@@ -8,7 +8,7 @@ class UsuariosController < ApplicationController
   rescue_from Pundit::NotAuthorizedError, with: :usuario_not_authorized
 
   def index
-    @usuarios = policy_scope(Usuario)
+    @usuarios = policy_scope(Usuario).page(params[:page]).per(6)
     authorize Usuario
   end
 

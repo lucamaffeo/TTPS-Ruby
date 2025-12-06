@@ -61,7 +61,8 @@
             <% end %>
           </th>
           <th>Autor</th>
-          <th>Info</th> <th>
+          <th>Info</th>
+          <th>
             <%= link_to request.params.merge(sort: "precio", direction: params[:direction] == "asc" ? "desc" : "asc"), class: "text-dark text-decoration-none" do %>
               Precio <i class="bi bi-arrow-down-up small text-muted"></i>
             <% end %>
@@ -71,6 +72,7 @@
               Stock <i class="bi bi-arrow-down-up small text-muted"></i>
             <% end %>
           </th>
+          <th>Estado</th>
           <th class="text-end">Acciones</th>
         </tr>
       </thead>
@@ -115,6 +117,14 @@
               <% end %>
             </td>
 
+            <td>
+              <% if producto.estado == "activo" %>
+                <span class="badge bg-success">Activo</span>
+              <% else %>
+                <span class="badge bg-danger">Eliminado</span>
+              <% end %>
+            </td>
+
             <td class="text-end">
               <%= link_to producto_path(producto), class: "btn btn-sm btn-outline-dark" do %>
                 Ver detalle <i class="bi bi-arrow-right"></i>
@@ -124,7 +134,7 @@
         <% end %>
         <% if @productos.empty? %>
           <tr>
-            <td colspan="7" class="text-center py-4 text-muted fst-italic">
+            <td colspan="8" class="text-center py-4 text-muted fst-italic">
               No se encontraron productos con estos filtros.
             </td>
           </tr>

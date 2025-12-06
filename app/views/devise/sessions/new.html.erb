@@ -1,28 +1,54 @@
-<h2>Iniciar Sesión</h2>
+<div class="text-center mb-5">
+  <%= image_tag "ActiveSound.png", alt: "ActiveSound", width: "100", class: "mb-3" %>
+  <h2 class="fw-bold text-dark">Bienvenido a ActiveSound</h2>
+  <p class="text-muted">Ingresá con tu cuenta para continuar</p>
+</div>
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", required: true %>
+<div class="card border-0 shadow-sm mx-auto" style="max-width: 450px;">
+  <div class="card-body p-4">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "needs-validation" }) do |f| %>
+      <div class="mb-3">
+        <%= f.label :email, class: "form-label fw-semibold" %>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-envelope text-muted"></i>
+          </span>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control border-start-0", placeholder: "tu@email.com", required: true %>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :password, "Contraseña", class: "form-label fw-semibold" %>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-lock text-muted"></i>
+          </span>
+          <%= f.password_field :password, autocomplete: "current-password", class: "form-control border-start-0", placeholder: "Tu contraseña", required: true %>
+        </div>
+      </div>
+
+      <% if devise_mapping.rememberable? %>
+        <div class="form-check mb-3">
+          <%= f.check_box :remember_me, class: "form-check-input" %>
+          <%= f.label :remember_me, "Recordarme", class: "form-check-label" %>
+        </div>
+      <% end %>
+
+      <div class="d-grid gap-2 mb-3">
+        <%= f.submit "Iniciar Sesión", class: "btn btn-as-dark" %>
+      </div>
+
+      <%= render "devise/shared/links" %>
+    <% end %>
   </div>
+</div>
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password", required: true, minlength: 6 %>
-  </div>
-
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me, "Recuérdame" %>
-    </div>
-  <% end %>
-
-  <div class="actions">
-    <button type="submit" class="btn btn-as-dark">
-      <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
-    </button>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+<style>
+  .input-group-text {
+    background-color: #f8f9fa;
+  }
+  .form-control:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 0.2rem rgba(17, 17, 17, 0.15);
+  }
+</style>

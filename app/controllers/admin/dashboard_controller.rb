@@ -5,6 +5,12 @@ module Admin
                             .joins(:producto)
                             .group('productos.categoria')
                             .sum(:cantidad)
+
+      @top_empleados = Venta.where(fecha_hora: Time.current.all_month)
+      .joins(:empleado)
+      .group('usuarios.nombre')
+      .order('count_all DESC')
+      .count                      
       
       @total_ingresos = Venta.sum(:total)
       @total_ventas   = Venta.count

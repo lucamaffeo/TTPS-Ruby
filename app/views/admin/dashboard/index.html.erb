@@ -1,65 +1,109 @@
 <% content_for :title, "Dashboard Administrativo" %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="h3 text-dark fw-bold"><i class="bi bi-speedometer2"></i> Tablero Principal</h1>
+  <h1 class="h3 text-dark fw-bold"><i class="bi bi-speedometer2"></i> Tablero</h1>
 </div>
 
-<div class="row mb-4 g-3">
-  <div class="col-md-4">
-    <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
-      <div class="card-body">
-        <h6 class="text-uppercase text-muted small fw-bold">Ingresos Totales</h6>
-        <h3 class="text-dark fw-bold mb-0">$<%= number_with_precision(@total_ingresos, precision: 2) %></h3>
+<ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active fw-bold" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">
+      <i class="bi bi-bar-chart-line-fill"></i> Visión
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link fw-bold" id="empleados-tab" data-bs-toggle="tab" data-bs-target="#empleados" type="button" role="tab" aria-controls="empleados" aria-selected="false">
+      <i class="bi bi-people-fill"></i> Rendimiento Vendedores
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content" id="dashboardTabsContent">
+
+  <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+    
+    <div class="row mb-4 g-3">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
+          <div class="card-body">
+            <h6 class="text-uppercase text-muted small fw-bold">Ingresos Totales</h6>
+            <h3 class="text-dark fw-bold mb-0">$<%= number_with_precision(@total_ingresos, precision: 2) %></h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
+          <div class="card-body">
+            <h6 class="text-uppercase text-muted small fw-bold">Ventas Realizadas</h6>
+            <h3 class="text-dark fw-bold mb-0"><%= @total_ventas %></h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 border-start border-4 border-danger">
+          <div class="card-body">
+            <h6 class="text-uppercase text-muted small fw-bold">Productos Stock Bajo</h6>
+            <h3 class="text-danger fw-bold mb-0"><%= @stock_critico %></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white py-3">
+            <h6 class="m-0 fw-bold text-dark"><i class="bi bi-bar-chart-fill"></i> Unidades Vendidas por Género</h6>
+          </div>
+          <div class="card-body">
+            <%= column_chart @ventas_por_genero, colors: ["#0d6efd"], xtitle: "Género", ytitle: "Cantidad", height: "300px", empty: "Sin datos aún" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white py-3">
+            <h6 class="m-0 fw-bold text-dark"><i class="bi bi-pie-chart-fill"></i> Participación (%)</h6>
+          </div>
+          <div class="card-body">
+            <%= pie_chart @ventas_por_genero, 
+                  donut: true, 
+                  legend: "bottom", 
+                  colors: ["#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f", "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab", "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"], 
+                  height: "300px", 
+                  empty: "Sin datos aún" %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="col-md-4">
-    <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
-      <div class="card-body">
-        <h6 class="text-uppercase text-muted small fw-bold">Ventas Realizadas</h6>
-        <h3 class="text-dark fw-bold mb-0"><%= @total_ventas %></h3>
+  <div class="tab-pane fade" id="empleados" role="tabpanel" aria-labelledby="empleados-tab">
+    
+    <div class="row g-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3 d-flex align-items-center gap-2">
+            <i class="bi bi-people-fill text-success fs-5"></i>
+            <h6 class="m-0 fw-bold text-dark">Ranking de Vendedores (Mes Actual)</h6>
+          </div>
+          <div class="card-body">
+            <% if @top_empleados.present? %>
+              <%= bar_chart @top_empleados, 
+                    colors: ["#198754"], 
+                    xtitle: "Cantidad de Ventas", 
+                    height: "450px",
+                    empty: "Sin datos aún" %> 
+            <% else %>
+              <div class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                <p class="fst-italic mb-0">Aún no se han registrado ventas este mes.</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="col-md-4">
-    <div class="card border-0 shadow-sm h-100 border-start border-4 border-danger">
-      <div class="card-body">
-        <h6 class="text-uppercase text-muted small fw-bold">Productos Stock Bajo</h6>
-        <h3 class="text-danger fw-bold mb-0"><%= @stock_critico %></h3>
-      </div>
-    </div>
   </div>
-</div>
-
-<div class="row g-4">
-  
-  <div class="col-lg-8">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-header bg-white py-3">
-        <h6 class="m-0 fw-bold text-dark"><i class="bi bi-bar-chart-fill"></i> Unidades Vendidas por Género</h6>
-      </div>
-      <div class="card-body">
-        <%= column_chart @ventas_por_genero, colors: ["#0d6efd"], xtitle: "Género", ytitle: "Cantidad", height: "300px", empty: "Sin datos aún" %>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-lg-4">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-header bg-white py-3">
-        <h6 class="m-0 fw-bold text-dark"><i class="bi bi-pie-chart-fill"></i> Participación (%)</h6>
-      </div>
-      <div class="card-body">
-        <%= pie_chart @ventas_por_genero, 
-              donut: true, 
-              legend: "bottom", 
-              colors: ["#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f", "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab", "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"], 
-              height: "300px", 
-              empty: "Sin datos aún" %>
-      </div>
-    </div>
-  </div>
-
 </div>

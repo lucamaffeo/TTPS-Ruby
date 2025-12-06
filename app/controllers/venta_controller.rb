@@ -34,7 +34,7 @@ class VentaController < ApplicationController
     end
 
     # Paginación
-    @ventas = @ventas.page(params[:page]).per(10)
+    @ventas = @ventas.page(params[:page]).per(6) # 6 ventas por página
   end
 
 

@@ -1,46 +1,89 @@
 <div class="row mb-4">
   <div class="col-md-6">
     <% if @producto.imagenes.attached? %>
-      <%= image_tag @producto.imagenes.first, class: "img-fluid mb-3 rounded shadow producto-img-zoom" %>
-      <div class="d-flex gap-2">
+      <div class="mb-3">
+        <%= image_tag @producto.imagenes.first, class: "img-fluid rounded shadow-lg producto-img-zoom", style: "width: 100%; max-height: 500px; object-fit: cover;" %>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
         <% @producto.imagenes.each do |img| %>
-          <%= image_tag img, size: "80x80", class: "rounded border producto-img-zoom" %>
+          <%= image_tag img, class: "rounded border producto-img-zoom", style: "width: 80px; height: 80px; object-fit: cover; cursor: pointer;" %>
         <% end %>
       </div>
     <% else %>
-      <%= image_tag "ActiveSound.png", class: "img-fluid producto-img-zoom" %>
+      <%= image_tag "ActiveSound.png", class: "img-fluid rounded shadow-lg", style: "width: 100%; max-height: 500px; object-fit: cover;" %>
     <% end %>
-    <% if @producto.estado_fisico == "usado" %>
-    <% if @producto.audio_muestra.attached? %>
-      <h5 class="mt-4">Audio de muestra</h5>
-      <audio controls>
-        <source src="<%= url_for(@producto.audio_muestra) %>" />
-      </audio>
+    <% if @producto.estado_fisico == "usado" && @producto.audio_muestra.attached? %>
+      <div class="mt-4 p-3 bg-light rounded">
+        <h5 class="mb-3"><i class="bi bi-music-note-beamed"></i> Audio de muestra</h5>
+        <audio controls class="w-100">
+          <source src="<%= url_for(@producto.audio_muestra) %>" type="audio/mpeg" />
+        </audio>
+      </div>
     <% end %>
-<% end %>
   </div>
+
   <div class="col-md-6">
-    <h2 class="fw-bold text-dark"><%= @producto.titulo %></h2>
-    <h5 class="text-muted">Artista: <%= @producto.autor %></h5>
-    <p class="mt-3"><%= @producto.descripcion %></p>
-    <p><strong>Género:</strong> <%= @producto.categoria %></p>
-    <p><strong>Tipo:</strong> <%= @producto.tipo %></p>
-    <p><strong>Estado físico:</strong> <%= @producto.estado_fisico %></p>
-    <p><strong>Año:</strong> <%= @producto.anio %></p>
-    <h4 class="text-primary mt-3">$ <%= @producto.precio %></h4>
-    <p class="<%= @producto.stock > 0 ? 'text-success' : 'text-danger' %>">
-      <strong>Stock:</strong> <%= @producto.stock %>
-    </p>
-    <div class="mt-3 d-flex gap-2">
-      <%= link_to canciones_storefront_producto_path(@producto), class: "btn btn-as-dark" do %>
-        <i class="bi bi-music-note-list"></i> Ver canciones
+    <div class="mb-3">
+      <% if @producto.estado_fisico == "usado" %>
+        <span class="badge bg-estado-usado me-2">USADO</span>
+      <% else %>
+        <span class="badge bg-estado-nuevo me-2">NUEVO</span>
       <% end %>
-      <%= link_to "Volver al catálogo", storefront_productos_path, class: "btn btn-as-dark" %>
+      <span class="badge bg-tipo me-2"><%= @producto.tipo.upcase %></span>
+      <span class="badge bg-categoria"><%= @producto.categoria.upcase %></span>
+    </div>
+
+    <h1 class="fw-bold text-dark mb-2"><%= @producto.titulo %></h1>
+    <h4 class="text-muted mb-4"><i class="bi bi-person"></i> <%= @producto.autor %></h4>
+
+    <div class="mb-4">
+      <h2 class="text-success fw-bold mb-1">$<%= number_with_precision(@producto.precio, precision: 2) %></h2>
+      <p class="<%= @producto.stock > 0 ? 'text-success' : 'text-danger' %> fw-semibold">
+        <i class="bi bi-<%= @producto.stock > 0 ? 'check-circle' : 'x-circle' %>"></i>
+        <%= @producto.stock > 0 ? "En stock (#{@producto.stock} disponibles)" : "Sin stock" %>
+      </p>
+    </div>
+
+    <div class="mb-4">
+      <h5 class="fw-bold text-dark">Descripción</h5>
+      <p class="text-secondary"><%= @producto.descripcion || "Sin descripción disponible." %></p>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6">
+        <strong class="text-dark">Género:</strong>
+        <p class="text-secondary mb-0"><%= @producto.categoria.capitalize %></p>
+      </div>
+      <div class="col-6">
+        <strong class="text-dark">Formato:</strong>
+        <p class="text-secondary mb-0"><%= @producto.tipo.capitalize %></p>
+      </div>
+      <div class="col-6">
+        <strong class="text-dark">Año:</strong>
+        <p class="text-secondary mb-0"><%= @producto.anio %></p>
+      </div>
+      <div class="col-6">
+        <strong class="text-dark">Condición:</strong>
+        <p class="text-secondary mb-0"><%= @producto.estado_fisico.capitalize %></p>
+      </div>
+    </div>
+
+    <div class="d-flex flex-column gap-2">
+      <%= link_to canciones_storefront_producto_path(@producto), class: "btn btn-as-dark" do %>
+        <i class="bi bi-music-note-list"></i> Ver listado de canciones
+      <% end %>
+      <%= link_to storefront_productos_path, class: "btn btn-outline-dark" do %>
+        <i class="bi bi-arrow-left"></i> Volver al catálogo
+      <% end %>
     </div>
   </div>
 </div>
 
 <% if @relacionados.present? %>
-  <h2 class="mt-5 text-dark">Discos relacionados</h2>
+  <hr class="my-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold text-dark">Discos relacionados</h2>
+    <p class="text-muted">Otros productos que podrían interesarte</p>
+  </div>
   <%= render "related", relacionados: @relacionados %>
 <% end %>

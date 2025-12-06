@@ -1,33 +1,46 @@
-<%= render "bases/base_show",
-           title: @usuario.nombre,
-           fields: {
-             "Email" => @usuario.email,
-             "DNI" => @usuario.dni,
-             "Rol" => Usuario::ROLES.key(@usuario.rol)&.to_s&.capitalize
-           } %>
+<div class="main-card">
+  <h2 class="mb-3">Usuario: <%= @usuario.nombre %></h2>
 
-<div class="d-flex flex-row flex-wrap gap-2 mt-3">
-  <%= link_to edit_usuario_path(@usuario), class: "btn btn-as-dark btn-sm" do %>
-    <i class="bi bi-pencil-square"></i> Editar
-  <% end %>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <strong>Email:</strong>
+      <div><%= @usuario.email %></div>
+    </div>
 
-  <%= button_to usuario_path(@usuario),
-                method: :delete,
-                class: "btn btn-as-dark btn-sm",
-                onclick: "return confirm('¿Seguro que quieres eliminar este usuario?');" do %>
-    <i class="bi bi-trash3"></i> Eliminar
-  <% end %>
+    <div class="col-md-6">
+      <strong>DNI:</strong>
+      <div><%= @usuario.dni %></div>
+    </div>
 
-  <% if current_usuario&.administrador? && current_usuario.id != @usuario.id %>
-    <%= button_to reset_password_default_usuario_path(@usuario),
-                  method: :patch,
-                  class: "btn btn-as-dark btn-sm",
-                  data: { turbo_confirm: "¿Restablecer la contraseña a '123456'?" } do %>
-      <i class="bi bi-key"></i> Restablecer contraseña
+    <div class="col-md-6">
+      <strong>Rol:</strong>
+      <div>
+        <span class="badge bg-secondary">
+          <%= Usuario::ROLES.key(@usuario.rol)&.to_s&.capitalize || "—" %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="d-flex gap-2 mt-3">
+    <%= link_to edit_usuario_path(@usuario), class: usuario_edit_button_classes(@usuario) do %>
+      <i class="bi bi-pencil"></i> Editar
     <% end %>
-  <% end %>
 
-  <%= link_to usuarios_path, class: "btn btn-as-dark btn-sm" do %>
-    <i class="bi bi-arrow-left"></i> Volver
-  <% end %>
+    <%= button_to usuario_path(@usuario), method: :delete, data: { confirm: "¿Eliminar usuario?" }, class: usuario_destroy_button_classes(@usuario) do %>
+      <i class="bi bi-trash"></i> Eliminar
+    <% end %>
+
+    <% if current_usuario&.administrador? && current_usuario.id != @usuario.id %>
+      <%= button_to reset_password_default_usuario_path(@usuario), method: :patch, data: { turbo_confirm: "¿Restablecer la contraseña a '123456'?" }, class: "btn btn-as-dark" do %>
+        <i class="bi bi-key"></i> Restablecer contraseña
+      <% end %>
+    <% end %>
+
+    <%= link_to usuarios_path, class: "btn btn-as-dark" do %>
+      <i class="bi bi-arrow-left"></i> Volver
+    <% end %>
+  </div>
 </div>

@@ -4,7 +4,7 @@
   <td><%= Usuario::ROLES.key(item.rol)&.to_s&.capitalize || "—" %></td>
   <td>
     <%= link_to usuario_path(item), class: "btn btn-sm btn-as-dark" do %>
-      <i class="bi bi-search"></i> Ver
+      <i class="bi bi-search"></i> Ver usuario
     <% end %>
   </td>
 </tr>

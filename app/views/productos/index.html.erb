@@ -1,7 +1,7 @@
 <% content_for :title, "Gestión de Productos" %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="h3 text-dark fw-bold"><i class="bi bi-disc"></i> Gestión de Productos</h1>
+  <h1 class="h3 text-dark fw-bold"><i class="bi bi-disc"></i> Administración de Productos</h1>
   <%= link_to new_producto_path, class: "btn btn-as-dark shadow-sm" do %>
     <i class="bi bi-plus-lg"></i> Nuevo Producto
   <% end %>
@@ -116,17 +116,9 @@
             </td>
 
             <td class="text-end">
-              <div class="btn-group">
-                <%= link_to producto_path(producto), class: "btn btn-sm btn-outline-dark", title: "Ver detalle" do %>
-                  <i class="bi bi-eye"></i>
-                <% end %>
-                <%= link_to edit_producto_path(producto), class: "btn btn-sm btn-outline-secondary", title: "Editar" do %>
-                  <i class="bi bi-pencil"></i>
-                <% end %>
-                <%= link_to producto, method: :delete, data: { confirm: '¿Seguro?' }, class: "btn btn-sm btn-outline-danger", title: "Eliminar" do %>
-                  <i class="bi bi-trash"></i>
-                <% end %>
-              </div>
+              <%= link_to producto_path(producto), class: "btn btn-sm btn-outline-dark" do %>
+                Ver detalle <i class="bi bi-arrow-right"></i>
+              <% end %>
             </td>
           </tr>
         <% end %>

@@ -23,44 +23,45 @@
     <div class="app-overlay">
       <% mostrar_nav = !(usuario_signed_in? && session[:require_password_change] == true && controller_name == "usuarios" && action_name == "edit" && current_usuario.id == @usuario&.id) %>
       <% if mostrar_nav %>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-black mb-4">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-black mb-4 py-3">
           <div class="container-fluid">
-            <a class="navbar-brand" href="<%= root_path %>">
-              <%= image_tag "ActiveSound.png", alt: "ActiveSound Disquería", height: "48", width: "50", class: "d-inline-block align-text" %> ActiveSound
+            <a class="navbar-brand d-flex align-items-center" href="<%= root_path %>">
+              <%= image_tag "ActiveSound.png", alt: "ActiveSound", height: "48", width: "50", class: "me-2" %>
+              <span class="fw-bold">ActiveSound</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="collapse navbar-collapse" id="navbarContent">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <%= link_to storefront_productos_path, class: "btn btn-dark btn-sm border-light me-2" do %>
-                    StoreFront
+                <li class="nav-item mx-1">
+                  <%= link_to storefront_productos_path, class: "nav-link" do %>
+                    <i class="bi bi-shop fs-5"></i> <span class="d-none d-lg-inline">StoreFront</span>
                   <% end %>
                 </li>
                 
                 <% if usuario_signed_in? %>
-                  <li class="nav-item">
-                    <%= link_to admin_dashboard_path, class: "btn btn-dark btn-sm border-light me-2" do %>
-                      <i class="bi bi-speedometer2"></i> Dashboard
-                    <% end %>
-                  </li>
-                  <li class="nav-item">
-                    <%= link_to productos_path, class: "btn btn-dark btn-sm border-light me-2" do %>
-                      Administración de productos
+                  <li class="nav-item mx-1">
+                    <%= link_to productos_path, class: "nav-link" do %>
+                      <i class="bi bi-box-seam fs-5"></i> <span class="d-none d-lg-inline">Productos</span>
                     <% end %>
                   </li>
                   <% unless current_usuario.empleado? %>
-                    <li class="nav-item">
-                      <%= link_to usuarios_path, class: "btn btn-dark btn-sm border-light me-2" do %>
-                        Gestión de usuarios
+                    <li class="nav-item mx-1">
+                      <%= link_to usuarios_path, class: "nav-link" do %>
+                        <i class="bi bi-people fs-5"></i> <span class="d-none d-lg-inline">Usuarios</span>
                       <% end %>
                     </li>
                   <% end %>
-                  <li class="nav-item">
-                    <%= link_to ventas_path, class: "btn btn-dark btn-sm border-light me-2" do %>
-                      Administración de ventas
+                  <li class="nav-item mx-1">
+                    <%= link_to ventas_path, class: "nav-link" do %>
+                      <i class="bi bi-cart-check fs-5"></i> <span class="d-none d-lg-inline">Ventas</span>
+                    <% end %>
+                  </li>
+                  <li class="nav-item mx-1">
+                    <%= link_to admin_dashboard_path, class: "nav-link" do %>
+                      <i class="bi bi-speedometer2 fs-5"></i> <span class="d-none d-lg-inline">Reportes</span>
                     <% end %>
                   </li>
                 <% end %>
@@ -68,20 +69,27 @@
 
               <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <% if usuario_signed_in? %>
-                  <li class="nav-item">
-                    <%= link_to usuario_path(current_usuario), class: "btn btn-dark btn-sm border-light me-2" do %>
-                      <i class="bi bi-person-lines-fill"></i>&nbsp Ver <%= current_usuario.nombre %>
-                    <% end %>
-                  </li>
-                  <li class="nav-item">
-                    <%= button_to destroy_usuario_session_path, method: :delete, class: "btn btn-dark btn-sm border-light" do %>
-                      <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-                    <% end %>
+                  <li class="nav-item dropdown mx-1">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-person-circle fs-4 me-1"></i>
+                      <span class="d-none d-lg-inline"><%= current_usuario.nombre %></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                      <li><%= link_to usuario_path(current_usuario), class: "dropdown-item" do %>
+                        <i class="bi bi-person-lines-fill"></i> Perfil
+                      <% end %></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <%= button_to destroy_usuario_session_path, method: :delete, class: "dropdown-item" do %>
+                          <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                        <% end %>
+                      </li>
+                    </ul>
                   </li>
                 <% else %>
-                  <li class="nav-item">
-                    <%= link_to new_usuario_session_path, class: "btn btn-dark btn-sm border-light" do %>
-                      <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+                  <li class="nav-item mx-1">
+                    <%= link_to new_usuario_session_path, class: "nav-link" do %>
+                      <i class="bi bi-box-arrow-in-right fs-5"></i> <span class="d-none d-lg-inline">Iniciar sesión</span>
                     <% end %>
                   </li>
                 <% end %>

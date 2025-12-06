@@ -1,64 +1,80 @@
-<h2 class="mb-4 text-dark fw-bold">StoreFront</h2>
-
-<div class="bg-white rounded-3 p-3 mb-4 shadow-sm">
-  <%= form_with url: storefront_productos_path, method: :get, local: true, class: "row g-3 align-items-end" do %>
-    <div class="col-md-4">
-      <%= label_tag :q, "Buscar por título, artista o año:", class: "form-label fw-semibold" %>
-      <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "Ejemplo: Beatles, Thriller, 1980..." %>
-    </div>
-    <div class="col-md-2">
-      <%= label_tag :categoria, "Género:", class: "form-label fw-semibold" %>
-      <%= select_tag :categoria,
-            options_for_select(Producto.distinct.pluck(:categoria), params[:categoria]),
-            include_blank: "Todos",
-            class: "form-select" %>
-    </div>
-    <div class="col-md-2">
-      <%= label_tag :tipo, "Tipo:", class: "form-label fw-semibold" %>
-      <%= select_tag :tipo,
-            options_for_select(Producto.distinct.pluck(:tipo), params[:tipo]),
-            include_blank: "Todos",
-            class: "form-select" %>
-    </div>
-    <div class="col-md-2">
-      <%= label_tag :estado_fisico, "Estado:", class: "form-label fw-semibold" %>
-      <%= select_tag :estado_fisico,
-            options_for_select(
-              [
-                ["Nuevo", "nuevo"],
-                ["Usado", "usado"]
-              ],
-              params[:estado_fisico]
-            ),
-            include_blank: "Todos",
-            class: "form-select" %>
-    </div>
-    <div class="col-md-2">
-      <%= label_tag :orden, "Ordenar por:", class: "form-label fw-semibold" %>
-      <%= select_tag :orden,
-            options_for_select([
-              ["Precio (menor a mayor)", "precio_asc"],
-              ["Precio (mayor a menor)", "precio_desc"],
-              ["Nombre (A-Z)", "nombre_asc"],
-              ["Nombre (Z-A)", "nombre_desc"],
-            ], params[:orden]),
-            include_blank: "Sin orden",
-            class: "form-select" %>
-    </div>
-    <div class="col-md-2">
-      <%= submit_tag "Filtrar", class: "btn btn-as-dark w-100" %>
-    </div>
-  <% end %>
+<div class="text-center mb-5">
+  <h1 class="display-4 fw-bold text-dark mb-2">
+    <i class="bi bi-shop-window"></i> Catálogo de Discos
+  </h1>
+  <p class="lead text-muted">Explorá nuestra colección de vinilos y CDs</p>
 </div>
 
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-  <% @productos.each do |producto| %>
-    <div class="col">
-      <%= render "producto", producto: producto %>
-    </div>
-  <% end %>
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body bg-light rounded">
+    <%= form_with url: storefront_productos_path, method: :get, local: true, class: "row g-3 align-items-end" do %>
+      <div class="col-md-3">
+        <%= label_tag :q, "Buscar:", class: "form-label fw-semibold small" %>
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <%= text_field_tag :q, params[:q], class: "form-control border-start-0", placeholder: "Título, artista, año..." %>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <%= label_tag :categoria, "Género:", class: "form-label fw-semibold small" %>
+        <%= select_tag :categoria,
+              options_for_select(Producto.distinct.pluck(:categoria), params[:categoria]),
+              include_blank: "Todos",
+              class: "form-select" %>
+      </div>
+
+      <div class="col-md-2">
+        <%= label_tag :tipo, "Formato:", class: "form-label fw-semibold small" %>
+        <%= select_tag :tipo,
+              options_for_select(Producto.distinct.pluck(:tipo), params[:tipo]),
+              include_blank: "Todos",
+              class: "form-select" %>
+      </div>
+
+      <div class="col-md-2">
+        <%= label_tag :estado_fisico, "Condición:", class: "form-label fw-semibold small" %>
+        <%= select_tag :estado_fisico,
+              options_for_select([["Nuevo", "nuevo"], ["Usado", "usado"]], params[:estado_fisico]),
+              include_blank: "Todos",
+              class: "form-select" %>
+      </div>
+
+      <div class="col-md-2">
+        <%= label_tag :orden, "Ordenar por:", class: "form-label fw-semibold small" %>
+        <%= select_tag :orden,
+              options_for_select([
+                ["Precio: menor a mayor", "precio_asc"],
+                ["Precio: mayor a menor", "precio_desc"],
+                ["Título: A-Z", "nombre_asc"],
+                ["Título: Z-A", "nombre_desc"]
+              ], params[:orden]),
+              include_blank: "Más recientes",
+              class: "form-select" %>
+      </div>
+
+      <div class="col-md-1 d-flex gap-1">
+        <%= submit_tag "Filtrar", class: "btn btn-as-dark w-100" %>
+      </div>
+    <% end %>
+  </div>
 </div>
 
-<div class="d-flex justify-content-center mt-4">
-  <%= paginate @productos %>
-</div>
+<% if @productos.any? %>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
+    <% @productos.each do |producto| %>
+      <div class="col">
+        <%= render "producto", producto: producto %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="d-flex justify-content-center mt-4">
+    <%= paginate @productos %>
+  </div>
+<% else %>
+  <div class="text-center py-5">
+    <i class="bi bi-inbox display-1 text-muted"></i>
+    <p class="lead text-muted mt-3">No se encontraron productos con estos criterios.</p>
+  </div>
+<% end %>

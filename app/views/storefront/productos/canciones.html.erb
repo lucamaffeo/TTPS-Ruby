@@ -1,32 +1,47 @@
-<div class="main-card">
-  <h2 class="mb-3 text-dark">
-    <i class="bi bi-music-note-list"></i>
-    Canciones de <%= @producto.titulo %> — <small class="text-muted"><%= @producto.autor %></small>
+<div class="text-center mb-4">
+  <h2 class="fw-bold text-dark mb-2">
+    <i class="bi bi-music-note-list"></i> <%= @producto.titulo %>
   </h2>
+  <p class="text-muted lead"><%= @producto.autor %></p>
+</div>
 
-  <% if @canciones.any? %>
-    <% @canciones.each do |c| %>
-      <p class="mb-2">
-        <% if c.orden.present? %>
-          <span class="badge bg-secondary me-2"><%= c.orden %></span>
-        <% end %>
-        <strong><%= c.nombre %></strong>
-        <% if c.autor.present? && c.autor != @producto.autor %>
-          <span class="text-muted"> — <%= c.autor %></span>
-        <% end %>
-        <% dur = c.duracion_segundos.to_i
-           mm = (dur / 60)
-           ss = (dur % 60)
-           dur_str = dur > 0 ? format("%02d:%02d", mm, ss) : "—" %>
-        <span class="ms-2 badge bg-light text-dark"><i class="bi bi-clock"></i> <%= dur_str %></span>
-      </p>
-    <% end %>
-  <% else %>
-    <p class="text-muted fst-italic">No hay canciones cargadas para este producto.</p>
-  <% end %>
+<% if @canciones.any? %>
+  <div class="card border-0 shadow-sm">
+    <div class="list-group list-group-flush">
+      <% @canciones.each_with_index do |c, idx| %>
+        <div class="list-group-item <%= idx.even? ? 'bg-light' : '' %>">
+          <div class="d-flex align-items-center">
+            <% if c.orden.present? %>
+              <span class="badge bg-dark me-3" style="min-width: 40px;"><%= c.orden %></span>
+            <% else %>
+              <span class="badge bg-secondary me-3" style="min-width: 40px;">—</span>
+            <% end %>
+            <div class="flex-grow-1">
+              <strong class="text-dark"><%= c.nombre %></strong>
+              <% if c.autor.present? && c.autor != @producto.autor %>
+                <span class="text-muted small"> — <%= c.autor %></span>
+              <% end %>
+            </div>
+            <% dur = c.duracion_segundos.to_i
+               mm = (dur / 60)
+               ss = (dur % 60)
+               dur_str = dur > 0 ? format("%02d:%02d", mm, ss) : "—" %>
+            <span class="badge bg-light text-dark border">
+              <i class="bi bi-clock"></i> <%= dur_str %>
+            </span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <div class="text-center py-5">
+    <i class="bi bi-music-note-beamed display-1 text-muted"></i>
+    <p class="text-muted mt-3">No hay canciones cargadas para este producto.</p>
+  </div>
+<% end %>
 
-  <hr>
-
+<div class="text-center mt-4">
   <%= link_to storefront_producto_path(@producto), class: "btn btn-as-dark" do %>
     <i class="bi bi-arrow-left"></i> Volver al producto
   <% end %>

@@ -50,7 +50,7 @@ class ProductosController < ApplicationController
       @productos = @productos.order("#{sort_column} #{sort_direction}")
     end
 
-    @productos = @productos.page(params[:page]).per(10)
+    @productos = @productos.page(params[:page]).per(6) # 6 por página
   end
 
   # GET /productos/1 or /productos/1.json

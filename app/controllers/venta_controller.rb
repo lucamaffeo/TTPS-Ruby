@@ -34,7 +34,7 @@ class VentaController < ApplicationController
     end
 
     # Paginación
-    @ventas = @ventas.page(params[:page]).per(6) # 6 ventas por página
+    @ventas = @ventas.page(params[:page]).per(10)
   end
 
 
@@ -128,15 +128,52 @@ class VentaController < ApplicationController
 
   # Aca lo que hace es crear una nueva venta con los parametros que vienen del formulario.
   def create
+    # Validar datos del cliente cuando no se seleccionó uno existente
     if params[:venta][:cliente_id].blank?
-      cliente = Cliente.find_or_create_by(dni: params[:dni]) do |c|
-        c.nombre = params[:nombre]
-        c.telefono = params[:telefono]
+      dni     = params[:dni].to_s.strip
+      nombre  = params[:nombre].to_s.strip
+      telefono = params[:telefono].to_s.strip
+
+      @venta = Venta.new(venta_params)
+      @venta.empleado = current_usuario
+      @venta.fecha_hora = Time.now
+
+      if dni.blank? || nombre.blank?
+        @venta.errors.add(:base, "DNI y nombre del cliente son obligatorios.")
+        @productos = Producto.order(:titulo).limit(200)
+        return render :new, status: :unprocessable_entity
+      end
+
+      # DNI: exactamente 8 dígitos numéricos
+      unless dni =~ /\A\d{8}\z/
+        @venta.errors.add(:base, "DNI inválido. Debe contener exactamente 8 dígitos numéricos.")
+        @productos = Producto.order(:titulo).limit(200)
+        return render :new, status: :unprocessable_entity
+      end
+
+      # Nombre: sólo letras y espacios, máximo 20 caracteres
+      unless nombre =~ /\A[[:alpha:]\s]{1,20}\z/
+        @venta.errors.add(:base, "Nombre inválido. Sólo letras y espacios, máximo 20 caracteres.")
+        @productos = Producto.order(:titulo).limit(200)
+        return render :new, status: :unprocessable_entity
+      end
+
+      # Teléfono: opcional, pero si viene debe ser solo números y hasta 20 caracteres
+      if telefono.present? && !(telefono =~ /\A\d{1,20}\z/)
+        @venta.errors.add(:base, "Teléfono inválido. Sólo números y máximo 20 dígitos.")
+        @productos = Producto.order(:titulo).limit(200)
+        return render :new, status: :unprocessable_entity
+      end
+
+      cliente = Cliente.find_or_create_by(dni: dni) do |c|
+        c.nombre   = nombre
+        c.telefono = telefono
       end
 
       params[:venta][:cliente_id] = cliente.id
     end
 
+    # construir la venta normalmente (si arriba ya se creó @venta, se recrea pero con cliente_id seteado)
     @venta = Venta.new(venta_params)
     @venta.empleado = current_usuario
     @venta.fecha_hora = Time.now

@@ -87,6 +87,7 @@ class ProductosController < ApplicationController
   end
 
   # DELETE /productos/1 or /productos/1.json
+  # Borrado lógico: No borra el registro, lo marca como "eliminado".
   def destroy
     @producto.update(estado: "eliminado", fecha_baja: Date.today)
     redirect_to productos_path, notice: "Producto eliminado lógicamente."
@@ -115,12 +116,12 @@ class ProductosController < ApplicationController
 
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+    # Usa llamadas para compartir configuraciones o restricciones comunes entre acciones.
     def set_producto
       @producto = Producto.find(params[:id]) # params.expect(:id)
     end
 
-    # Only allow a list of trusted parameters through.
+    # Permitir únicamente una lista de parámetros confiables.
     def producto_params
       params.require(:producto).permit(
         :titulo, :descripcion, :autor, :precio, :stock,

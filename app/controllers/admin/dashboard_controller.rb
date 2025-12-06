@@ -1,11 +1,13 @@
 module Admin
   class DashboardController < BaseController
     def index
+      # DATOS PARA GRÁFICO DE GÉNEROS 
       @ventas_por_genero = DetalleVenta
                             .joins(:producto)
                             .group('productos.categoria')
                             .sum(:cantidad)
 
+      #. RANKING DE EMPLEADOS (MES ACTUAL)                      
       @top_empleados = Venta.where(fecha_hora: Time.current.all_month)
       .joins(:empleado)
       .group('usuarios.nombre')

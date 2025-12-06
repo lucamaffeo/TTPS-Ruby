@@ -2,11 +2,13 @@ class UsuariosController < ApplicationController
   include Pundit
 
   before_action :set_usuario, only: %i[show edit update destroy reset_password_default]
+  # Verifica permisos después de cada acción
   after_action :verify_authorized, except: :index
   after_action :verify_policy_scoped, only: :index
 
   rescue_from Pundit::NotAuthorizedError, with: :usuario_not_authorized
 
+  # Muestra solo lo que el usuario puede ver.
   def index
     @usuarios = policy_scope(Usuario).page(params[:page]).per(6)
     authorize Usuario

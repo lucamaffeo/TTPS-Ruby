@@ -1,5 +1,6 @@
 class Producto < ApplicationRecord
   # === RELACIONES ===
+  # Un producto aparece en muchas ventas a través de la tabla de detalles.
   has_many :detalle_ventas
   has_many :ventas, through: :detalle_ventas
   has_many :canciones, class_name: "Cancion"
@@ -17,6 +18,7 @@ class Producto < ApplicationRecord
   # Precio debe ser > 0
   validates :precio, numericality: { greater_than: 0 }
 
+  # Permite subir fotos y un audio de muestra.
   has_many_attached :imagenes
   has_one_attached :audio_muestra
 
@@ -24,11 +26,12 @@ class Producto < ApplicationRecord
   before_update :set_update_date
 
   validate :stock_por_estado_fisico
-  validate :imagen_obligatoria, on: :create
+  validate :imagen_obligatoria, on: :create # Solo valida imagen al crear
   validate :audio_solo_usado
 
   private
 
+  # Setea valores si estan nulos
   def set_default_values
     self.estado = "activo" if self.estado.blank?
     self.fecha_ingreso = Time.current
@@ -36,6 +39,7 @@ class Producto < ApplicationRecord
     self.fecha_baja ||= nil
   end
 
+  # Actualiza la fecha de modificación
   def set_update_date
     self.fecha_modificacion = Time.current
     # No modificar self.estado aquí

@@ -11,6 +11,7 @@ class CancionesController < ApplicationController
   end
 
   def create
+    # Crea la canción ASOCIADA al producto
     @cancion = @producto.canciones.build(cancion_params)
     if @cancion.save
       redirect_to producto_canciones_path(@producto), notice: "Canción creada."

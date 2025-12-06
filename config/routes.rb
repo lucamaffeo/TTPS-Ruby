@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
   resources :ventas, controller: "venta"
 
-  # Devise sin rutas de registro (sign_up deshabilitado)
+  # Devise sin rutas de registro (sign_up deshabilitado) login/logout
   devise_for :usuarios, controllers: { sessions: "usuarios/sessions" }, path: "auth", skip: [:registrations]
 
   resources :usuarios do

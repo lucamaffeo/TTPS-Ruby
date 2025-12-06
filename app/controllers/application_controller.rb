@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  # para manejar permisos
   include Pundit::Authorization
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
@@ -7,6 +8,7 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :force_password_change
 
+  # si no esta autorizado Pundit dice que no esta autorizado
   rescue_from Pundit::NotAuthorizedError do
     redirect_back(fallback_location: root_path, alert: "No autorizado")
   end

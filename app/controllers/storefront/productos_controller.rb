@@ -62,13 +62,14 @@ class Storefront::ProductosController < ApplicationController
   def show
     @producto = Producto.find(params[:id])
 
-    # Productos relacionados
+    # Productos relacionados. Busca 4 productos de la misma categoría
     @relacionados = Producto
       .where(categoria: @producto.categoria)
       .where.not(id: @producto.id)
       .limit(4)
   end
 
+  # Muestra la lista de temas de un disco
   def canciones
     @producto = Producto.find(params[:id])
     @canciones = @producto.canciones.order(Arel.sql("COALESCE(orden, 999999), id"))

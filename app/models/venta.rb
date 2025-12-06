@@ -2,9 +2,10 @@ class Venta < ApplicationRecord
   # === RELACIONES ===
   belongs_to :empleado, class_name: "Usuario"
   belongs_to :cliente, optional: true
+  # Si borro la venta, se borran sus detalles
   has_many :detalle_ventas, dependent: :destroy
   has_many :productos, through: :detalle_ventas
-
+  # Guarda la venta y sus items en un solo formulario.
   accepts_nested_attributes_for :detalle_ventas, allow_destroy: true
 
   # === VALIDACIONES ===

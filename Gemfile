@@ -67,7 +67,7 @@ gem "ransack", "~> 4.4" # búsquedas avanzadas (filtros y ordenamiento)
 gem "kaminari", "~> 1.2" # paginación
 gem "devise", "~> 4.9" # autenticación (manejo de usuarios)
 gem "mini_magick", "~> 5.3" # procesamiento de imágenes
-gem "faker", "~> 3.4" # generación de datos de prueba(para seeds)
+gem "faker", "~> 3.5" # generación de datos de prueba(para seeds)
 
 # Gemas para generación de PDFs
 gem "prawn" # generación de PDFs

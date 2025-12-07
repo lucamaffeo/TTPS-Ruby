@@ -69,7 +69,8 @@ class Venta < ApplicationRecord
       # Reponer stock para cada detalle (usar lock para concurrencia)
       detalle_ventas.each do |dv|
         prod = Producto.lock.find_by(id: dv.producto_id)
-        next unless prod
+        # Si el producto no existe o fue eliminado lógicamente, no reponemos stock
+        next unless prod && prod.estado != "eliminado"
         # usar update_column para evitar validaciones que bloqueen la reposición
         prod.update_column(:stock, prod.stock.to_i + dv.cantidad.to_i)
       end

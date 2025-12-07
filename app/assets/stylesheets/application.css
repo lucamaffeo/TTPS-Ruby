@@ -129,19 +129,19 @@ body.custom-bg {
   padding: .75rem 1rem;
   font-weight: 500;
   box-shadow: 0 .25rem .75rem rgba(0,0,0,.2);
-  border-left: 6px solid #ffe066;
+  border-left: 6px solid #198754; /* borde verde */
 }
 
 .flash-success {
-  background: #e7e7e7;
-  color: #1f1f1f;
-  border: 1px solid #cfcfcf;
+  background: #d1e7dd;              /* verde claro */
+  color: #0f5132;                   /* texto verde oscuro */
+  border: 1px solid #badbcc;
 }
 
 .flash-danger {
-  background: #f3f3f3;
-  color: #3b0000;
-  border: 1px solid #d8d8d8;
+  background: #f8d7da;              /* rojo muy claro, pero sigue contrastando */
+  color: #842029;                   /* texto rojo oscuro */
+  border: 1px solid #f5c2c7;
 }
 
 /* Storefront tarjetas y etiquetas */

@@ -32,7 +32,7 @@
 
   <div class="col-6">
     <%= form.label :stock, "Stock", class: "form-label" %>
-    <%= form.number_field :stock, class: "form-control", min: 1, id: "stock_field", value: producto.stock || 1 %>
+    <%= form.number_field :stock, class: "form-control", min: 0, id: "stock_field", value: producto.stock || 1 %>
   </div>
 
   <div class="col-6">

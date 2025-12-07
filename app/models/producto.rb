@@ -10,10 +10,16 @@ class Producto < ApplicationRecord
   validates :tipo, presence: true
   validates :anio, numericality: { only_integer: true, greater_than: 1900, less_than_or_equal_to: Time.current.year }, allow_nil: true
   validates :estado_fisico, inclusion: { in: %w[nuevo usado] }
- 
-  # Stock debe ser > 0 y entero
-  validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
- 
+
+  # Stock: obligatorio, entero >= 0 para cualquier producto
+  validates :stock,
+            presence: { message: "no puede estar vacío" },
+            numericality: {
+              only_integer: true,
+              greater_than_or_equal_to: 0,
+              message: "debe ser un número entero mayor o igual a 0"
+            }
+
   # Precio debe ser > 0
   validates :precio, numericality: { greater_than: 0 }
 
@@ -57,8 +63,6 @@ class Producto < ApplicationRecord
   def stock_por_estado_fisico
     if estado_fisico == "usado"
       errors.add(:stock, "debe ser 1 para productos usados") unless stock == 1
-    elsif estado_fisico == "nuevo"
-      errors.add(:stock, "debe ser mayor a 0 para productos nuevos") unless stock.present? && stock > 0
     end
   end
 end

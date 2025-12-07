@@ -90,7 +90,7 @@ productos = []
     tipo: %w[vinilo cd].sample,
     estado_fisico: "nuevo",
     anio: rand(1975..2023),
-    estado: "activo"
+    estado: "activo" # seguirá siendo activo (no eliminado)
   )
   attach_image!(p, img_default)
   p.save!
@@ -126,7 +126,7 @@ productos.each do |prod|
       nombre: Faker::Music::GratefulDead.song,
       duracion_segundos: rand(120..420),
       orden: n + 1,
-      autor: [nil, prod.autor, Faker::Music.band].sample
+      autor: [ nil, prod.autor, Faker::Music.band ].sample
     )
   end
 end
@@ -153,7 +153,7 @@ puts "==> Creando ventas activas"
   usados = productos_usados.sample(rand(0..2))
   nuevos = productos_nuevos.sample(rand(1..2))
   (nuevos + usados).uniq.each do |prod|
-    cantidad = prod.estado_fisico == "usado" ? 1 : rand(1..[prod.stock, 3].min)
+    cantidad = prod.estado_fisico == "usado" ? 1 : rand(1..[ prod.stock, 3 ].min)
     detalles << { producto_id: prod.id, cantidad: cantidad, precio: prod.precio }
     total += cantidad * prod.precio
   end
@@ -176,7 +176,7 @@ puts "==> Creando ventas canceladas"
   usados = productos_usados.sample(rand(0..2))
   nuevos = productos_nuevos.sample(rand(1..2))
   (nuevos + usados).uniq.each do |prod|
-    cantidad = prod.estado_fisico == "usado" ? 1 : rand(1..[prod.stock, 3].min)
+    cantidad = prod.estado_fisico == "usado" ? 1 : rand(1..[ prod.stock, 3 ].min)
     detalles << { producto_id: prod.id, cantidad: cantidad, precio: prod.precio }
     total += cantidad * prod.precio
   end

@@ -47,13 +47,21 @@ class Usuario < ApplicationRecord
             inclusion: { in: ROLES.values },
             allow_nil: true
 
-  validates :nombre, presence: true
-  validates :dni, presence: true, uniqueness: { message: "ya está en uso" }
-  validates :email, presence: true, uniqueness: { message: "ya está en uso" }
+  validates :nombre, presence: { message: "no puede estar vacío" }, length: { minimum: 2, maximum: 50 }, format: { with: /\A[[:alpha:]\s]+\z/, message: "solo puede contener letras y espacios" }
+  validates :dni, presence: { message: "no puede estar vacío" }, uniqueness: { message: "ya está en uso" }, format: { with: /\A\d{7,8}\z/, message: "debe tener 7 u 8 dígitos" }
+  validates :email, presence: { message: "no puede estar vacío" }, uniqueness: { message: "ya está en uso" }, format: { with: URI::MailTo::EMAIL_REGEXP, message: "debe ser un email válido" }
+  validates :rol, inclusion: { in: ROLES.values, message: "rol inválido" }, allow_nil: false
+  validates :password, confirmation: { message: "no coincide con la confirmación" }, length: { minimum: 6, message: "debe tener al menos 6 caracteres" }, if: :password_required?
 
   # Mensaje de confirmación de contraseña en español
   validates :password, confirmation: { message: "no coincide con la confirmación" }, if: -> {
     # Aplica cuando hay password cargada (en create o update con cambio)
     password.present?
   }
+
+  private
+
+  def password_required?
+    password.present?
+  end
 end

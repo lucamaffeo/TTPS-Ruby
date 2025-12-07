@@ -69,12 +69,25 @@ def attach_audio_if_used!(producto, path)
   )
 end
 
+descripciones_es = [
+  "Edición remasterizada con sonido mejorado.",
+  "Incluye temas inéditos y versiones en vivo.",
+  "Clásico infaltable para amantes de la buena música.",
+  "Versión especial con arte de tapa exclusivo.",
+  "Grabado en estudio analógico para un sonido más cálido.",
+  "Ideal para coleccionistas y fanáticos del artista.",
+  "Contiene los grandes éxitos de la banda.",
+  "Edición limitada, pocas unidades disponibles.",
+  "Incluye libreto con letras y fotos originales.",
+  "Recomendado para quienes buscan un sonido vintage."
+]
+
 puts "==> Creando productos"
 productos = []
 15.times do
   p = Producto.new(
     titulo: Faker::Music.album,
-    descripcion: Faker::Lorem.sentence(word_count: 10),
+    descripcion: descripciones_es.sample,
     autor: Faker::Music.band,
     precio: rand(500..5000),
     stock: rand(10..50), # Mayor stock para productos nuevos
@@ -92,7 +105,7 @@ end
 5.times do
   p = Producto.new(
     titulo: Faker::Music.album,
-    descripcion: Faker::Lorem.sentence(word_count: 8),
+    descripcion:descripciones_es.sample,
     autor: Faker::Music.band,
     precio: rand(500..5000),
     stock: 1,

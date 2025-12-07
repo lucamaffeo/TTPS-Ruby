@@ -16,7 +16,7 @@ class UsuarioPolicy < ApplicationPolicy
 
   # admin puede eliminar usuarios
   def destroy?
-    user&.administrador?
+    user&.administrador? && record.id != user&.id
   end
 
   def new?

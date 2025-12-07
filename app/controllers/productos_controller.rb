@@ -4,7 +4,6 @@ class ProductosController < ApplicationController
   # GET /productos or /productos.json
   def index
     @productos = Producto.all
-
     # 1. Búsqueda General (Título, Autor)
     if params[:q].present?
       q = params[:q].to_s.downcase
@@ -70,6 +69,12 @@ class ProductosController < ApplicationController
   def create
     @producto = Producto.new(producto_params)
 
+    # Validar que se hayan subido imágenes
+    if params[:producto][:imagenes].blank? || params[:producto][:imagenes].reject(&:blank?).empty?
+      @producto.errors.add(:imagenes, "debe subir al menos una imagen")
+      return render :new, status: :unprocessable_entity
+    end
+
     if @producto.save
       redirect_to @producto, notice: "Producto creado correctamente."
     else
@@ -79,6 +84,7 @@ class ProductosController < ApplicationController
 
   # PATCH/PUT /productos/1 or /productos/1.json
   def update
+    # Permitir actualización sin requerir nuevas imágenes si ya existen
     if @producto.update(producto_params)
       redirect_to @producto, notice: "Producto actualizado correctamente."
     else
@@ -89,13 +95,20 @@ class ProductosController < ApplicationController
   # DELETE /productos/1 or /productos/1.json
   # Borrado lógico: No borra el registro, lo marca como "eliminado".
   def destroy
-    @producto.update(estado: "eliminado", fecha_baja: Date.today)
-    redirect_to productos_path, notice: "Producto eliminado lógicamente."
+    # Forzar borrado lógico y stock=0 ignorando validaciones que puedan fallar
+    @producto.update_columns(
+      estado:      "eliminado",
+      fecha_baja:  Date.today,
+      stock:       0,
+      updated_at:  Time.current
+    )
+    redirect_to productos_path, notice: "Producto eliminado lógicamente y stock puesto en 0."
   end
 
   # GET /productos_filtrados
   def productos_filtrados
-    scope = Producto.where.not(estado: "eliminado")  # ...existing filters might querer ignorar eliminados
+    # No incluir productos eliminados ni con stock 0 (para storefront / selects)
+    scope = Producto.where.not(estado: "eliminado")
 
     if params[:tipo].present?
       tipo = params[:tipo].to_s.strip
@@ -107,8 +120,8 @@ class ProductosController < ApplicationController
       scope = scope.where("lower(categoria) = ?", categoria.downcase)
     end
 
-    # Mostrar productos que tienen stock > 0 OR que sean usados (se venden aun cuando su stock pueda ser 0)
-    scope = scope.where("stock > 0 OR estado_fisico = ?", "usado")
+    # Para storefront: solo productos con stock > 0
+    scope = scope.where("stock > 0")
 
     productos = scope.order(:titulo).select(:id, :titulo, :precio, :stock, :estado_fisico)
     render json: productos

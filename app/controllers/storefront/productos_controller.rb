@@ -4,7 +4,7 @@ class Storefront::ProductosController < ApplicationController
   # GET /storefront/productos
   # Muestra el catálogo de productos
   def index
-    @productos = Producto.all
+    @productos = Producto.where.not(estado: "eliminado").where("stock > 0")
 
     # FILTRO POR BÚSQUEDA (título, artista o año)
     if params[:q].present?
@@ -49,9 +49,9 @@ class Storefront::ProductosController < ApplicationController
       when "estado_asc"
         @productos = @productos.order(estado_fisico: :asc)
       when "estado_desc"
-        @productos = @productos.order(estado_fisico: :desc)  
+        @productos = @productos.order(estado_fisico: :desc)
       end
-    end
+     end
 
     # PAGINACIÓN
     @productos = @productos.page(params[:page]).per(8) # 8 productos por página

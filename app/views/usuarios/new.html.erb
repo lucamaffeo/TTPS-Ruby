@@ -14,17 +14,20 @@
   <%= form_with(model: @usuario, local: true, class: "row g-3") do |form| %>
     <div class="col-12">
       <%= form.label :nombre, class: "form-label" %>
-      <%= form.text_field :nombre, class: "form-control", required: true, minlength: 2 %>
+      <%= form.text_field :nombre, class: "form-control", required: true, minlength: 2, maxlength: 50, pattern: "[A-Za-zÁÉÍÓÚáéíóúÑñ ]+", title: "Solo letras y espacios" %>
+      <small class="text-muted">Mínimo 2 caracteres, solo letras</small>
     </div>
 
     <div class="col-12">
       <%= form.label :email, class: "form-label" %>
-      <%= form.email_field :email, class: "form-control", required: true %>
+      <%= form.email_field :email, class: "form-control", required: true, maxlength: 100 %>
+      <small class="text-muted">Debe ser un email válido</small>
     </div>
 
     <div class="col-12">
       <%= form.label :dni, class: "form-label" %>
-      <%= form.text_field :dni, class: "form-control", required: true, minlength: 7 %>
+      <%= form.text_field :dni, class: "form-control", required: true, pattern: "[0-9]{7,8}", minlength: 7, maxlength: 8, title: "7 u 8 dígitos numéricos" %>
+      <small class="text-muted">Entre 7 y 8 dígitos numéricos</small>
     </div>
 
     <% if policy(@usuario).permitted_attributes.include?(:rol) %>

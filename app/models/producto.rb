@@ -4,24 +4,15 @@ class Producto < ApplicationRecord
   has_many :ventas, through: :detalle_ventas
   has_many :canciones, class_name: "Cancion"
   # === VALIDACIONES ===
-  validates :titulo, presence: true
-  validates :autor, presence: true
-  validates :categoria, presence: true
-  validates :tipo, presence: true
-  validates :anio, numericality: { only_integer: true, greater_than: 1900, less_than_or_equal_to: Time.current.year }, allow_nil: true
-  validates :estado_fisico, inclusion: { in: %w[nuevo usado] }
-
-  # Stock: obligatorio, entero >= 0 para cualquier producto
-  validates :stock,
-            presence: { message: "no puede estar vacío" },
-            numericality: {
-              only_integer: true,
-              greater_than_or_equal_to: 0,
-              message: "debe ser un número entero mayor o igual a 0"
-            }
-
-  # Precio debe ser > 0
-  validates :precio, numericality: { greater_than: 0 }
+  validates :titulo, presence: { message: "no puede estar vacío" }, length: { minimum: 2, maximum: 100 }
+  validates :autor, presence: { message: "no puede estar vacío" }, length: { minimum: 2, maximum: 100 }
+  validates :categoria, presence: { message: "debe seleccionar un género" }
+  validates :tipo, presence: { message: "debe seleccionar un tipo" }, inclusion: { in: %w[vinilo cd] }
+  validates :anio, numericality: { only_integer: true, greater_than_or_equal_to: 1900, less_than_or_equal_to: Time.current.year }, allow_nil: false
+  validates :estado_fisico, inclusion: { in: %w[nuevo usado], message: "debe ser 'nuevo' o 'usado'" }
+  validates :descripcion, length: { maximum: 500 }, allow_blank: true
+  validates :stock, presence: { message: "no puede estar vacío" }, numericality: { only_integer: true, greater_than_or_equal_to: 0, message: "debe ser un número entero >= 0" }
+  validates :precio, presence: { message: "no puede estar vacío" }, numericality: { greater_than: 0, message: "debe ser mayor a 0" }
 
   has_many_attached :imagenes
   has_one_attached :audio_muestra
@@ -30,7 +21,7 @@ class Producto < ApplicationRecord
   before_update :set_update_date
 
   validate :stock_por_estado_fisico
-  validate :imagen_obligatoria, on: :create
+  validate :imagen_obligatoria_en_creacion
   validate :audio_solo_usado
 
   private
@@ -47,10 +38,12 @@ class Producto < ApplicationRecord
     # No modificar self.estado aquí
   end
 
-  def imagen_obligatoria
-    # Solo exige imagen en creación si NO hay ninguna adjunta
-    if imagenes.attachments.blank? || imagenes.attachments.count == 0
+  def imagen_obligatoria_en_creacion
+    # Solo valida en creación (new_record?) o si se intenta guardar sin imágenes
+    if new_record? && !imagenes.attached?
       errors.add(:imagenes, "debe subir al menos una imagen")
+    elsif persisted? && imagenes.count == 0
+      errors.add(:imagenes, "el producto debe tener al menos una imagen")
     end
   end
 

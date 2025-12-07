@@ -69,6 +69,12 @@ class ProductosController < ApplicationController
   def create
     @producto = Producto.new(producto_params)
 
+    # Validar que se hayan subido imágenes
+    if params[:producto][:imagenes].blank? || params[:producto][:imagenes].reject(&:blank?).empty?
+      @producto.errors.add(:imagenes, "debe subir al menos una imagen")
+      return render :new, status: :unprocessable_entity
+    end
+
     if @producto.save
       redirect_to @producto, notice: "Producto creado correctamente."
     else
@@ -78,6 +84,7 @@ class ProductosController < ApplicationController
 
   # PATCH/PUT /productos/1 or /productos/1.json
   def update
+    # Permitir actualización sin requerir nuevas imágenes si ya existen
     if @producto.update(producto_params)
       redirect_to @producto, notice: "Producto actualizado correctamente."
     else

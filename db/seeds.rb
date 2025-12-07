@@ -4,9 +4,9 @@ require "stringio"
 
 puts "==> Reseteando datos"
 Usuario.delete_all
-Cliente.delete_all
+Cliente.delete_all if defined?(Cliente)
 Producto.delete_all
-Cancion.delete_all
+Cancion.delete_all if defined?(Cancion)
 Venta.delete_all
 DetalleVenta.delete_all
 
@@ -14,12 +14,7 @@ puts "==> Creando usuarios"
 usuarios = [
   { nombre: "Luca",    email: "admin@example.com",    dni: "10000001", rol: 2 },
   { nombre: "Ale",     email: "gerente@example.com",  dni: "10000002", rol: 1 },
-  { nombre: "Juan",    email: "gerente2@example.com", dni: "10000003", rol: 1 },
-  { nombre: "Franco",  email: "empleado@example.com", dni: "10000004", rol: 0 },
-  { nombre: "Sofia",   email: "empleado2@example.com", dni: "10000005", rol: 0 },
-  { nombre: "Mia",     email: "empleado3@example.com", dni: "10000006", rol: 0 },
-  { nombre: "Valentina", email: "empleado4@example.com", dni: "10000007", rol: 0 },
-  { nombre: "Matias",  email: "empleado5@example.com", dni: "10000008", rol: 0 }
+  { nombre: "Franco",  email: "empleado@example.com", dni: "10000003", rol: 0 }
 ]
 usuarios.each do |attrs|
   Usuario.create!(
@@ -70,14 +65,27 @@ def attach_audio_if_used!(producto, path)
 end
 
 puts "==> Creando productos"
+descripciones_es = [
+  "Edición remasterizada con sonido mejorado.",
+  "Incluye temas inéditos y versiones en vivo.",
+  "Clásico infaltable para amantes de la buena música.",
+  "Versión especial con arte de tapa exclusivo.",
+  "Grabado en estudio analógico para un sonido más cálido.",
+  "Ideal para coleccionistas y fanáticos del artista.",
+  "Contiene los grandes éxitos de la banda.",
+  "Edición limitada, pocas unidades disponibles.",
+  "Incluye libreto con letras y fotos originales.",
+  "Recomendado para quienes buscan un sonido vintage."
+]
+
 productos = []
 15.times do
   p = Producto.new(
     titulo: Faker::Music.album,
-    descripcion: Faker::Lorem.sentence(word_count: 10),
+    descripcion: descripciones_es.sample,
     autor: Faker::Music.band,
     precio: rand(500..5000),
-    stock: rand(10..50), # Mayor stock para productos nuevos
+    stock: rand(2..15),
     categoria: %w[rock pop jazz metal electronica reggae blues clasica hiphop].sample,
     tipo: %w[vinilo cd].sample,
     estado_fisico: "nuevo",
@@ -92,7 +100,7 @@ end
 5.times do
   p = Producto.new(
     titulo: Faker::Music.album,
-    descripcion: Faker::Lorem.sentence(word_count: 8),
+    descripcion: descripciones_es.sample,
     autor: Faker::Music.band,
     precio: rand(500..5000),
     stock: 1,
@@ -126,7 +134,7 @@ puts "==> Listo: Canciones generadas para #{productos.count} productos."
 
 puts "==> Creando clientes de prueba"
 clientes = []
-20.times do
+10.times do
   clientes << Cliente.create!(
     nombre: Faker::Name.name,
     dni: Faker::Number.unique.number(digits: 8).to_s,
@@ -134,47 +142,15 @@ clientes = []
   )
 end
 
-empleados = Usuario.where(rol: 0).to_a
+empleado = Usuario.find_by(rol: 0)
 productos_nuevos = productos.select { |p| p.estado_fisico == "nuevo" && p.stock > 0 }
 productos_usados = productos.select { |p| p.estado_fisico == "usado" && p.stock > 0 }
 
-# Distribución desigual de ventas por empleado (este mes)
-puts "==> Creando ventas activas (distribución desigual entre empleados)"
-ventas_por_empleado = {
-  empleados[0] => 8,  # Franco hace 8 ventas
-  empleados[1] => 12, # Sofia hace 12 ventas
-  empleados[2] => 5   # Mia hace 5 ventas
-}
-
-ventas_por_empleado.each do |empleado, cantidad|
-  cantidad.times do
-    detalles = []
-    total = 0
-    usados = productos_usados.sample(rand(0..1))
-    nuevos = productos_nuevos.sample(rand(1..3))
-    (nuevos + usados).uniq.each do |prod|
-      cantidad_prod = prod.estado_fisico == "usado" ? 1 : rand(1..[prod.stock, 5].min)
-      detalles << { producto_id: prod.id, cantidad: cantidad_prod, precio: prod.precio }
-      total += cantidad_prod * prod.precio
-    end
-    next if detalles.empty?
-    Venta.create!(
-      fecha_hora: Faker::Time.between(from: Time.current.beginning_of_month, to: Time.current),
-      cliente: clientes.sample,
-      empleado: empleado,
-      total: total,
-      pago: %w[efectivo transferencia debito].sample,
-      cancelada: false,
-      detalle_ventas_attributes: detalles
-    )
-  end
-end
-
-puts "==> Creando ventas canceladas (este mes)"
-5.times do
+puts "==> Creando ventas activas"
+15.times do
   detalles = []
   total = 0
-  usados = productos_usados.sample(rand(0..1))
+  usados = productos_usados.sample(rand(0..2))
   nuevos = productos_nuevos.sample(rand(1..2))
   (nuevos + usados).uniq.each do |prod|
     cantidad = prod.estado_fisico == "usado" ? 1 : rand(1..[prod.stock, 3].min)
@@ -183,19 +159,38 @@ puts "==> Creando ventas canceladas (este mes)"
   end
   next if detalles.empty?
   Venta.create!(
-    fecha_hora: Faker::Time.between(from: Time.current.beginning_of_month, to: Time.current),
+    fecha_hora: Faker::Time.backward(days: 30, period: :evening),
     cliente: clientes.sample,
-    empleado: empleados.sample,
+    empleado: empleado,
+    total: total,
+    pago: %w[efectivo transferencia debito].sample,
+    cancelada: false,
+    detalle_ventas_attributes: detalles
+  )
+end
+
+puts "==> Creando ventas canceladas"
+5.times do
+  detalles = []
+  total = 0
+  usados = productos_usados.sample(rand(0..2))
+  nuevos = productos_nuevos.sample(rand(1..2))
+  (nuevos + usados).uniq.each do |prod|
+    cantidad = prod.estado_fisico == "usado" ? 1 : rand(1..[prod.stock, 3].min)
+    detalles << { producto_id: prod.id, cantidad: cantidad, precio: prod.precio }
+    total += cantidad * prod.precio
+  end
+  next if detalles.empty?
+  v = Venta.create!(
+    fecha_hora: Faker::Time.backward(days: 30, period: :morning),
+    cliente: clientes.sample,
+    empleado: empleado,
     total: total,
     pago: %w[efectivo transferencia debito].sample,
     cancelada: true,
-    fecha_cancelacion: Faker::Time.between(from: Time.current.beginning_of_month, to: Time.current),
+    fecha_cancelacion: Faker::Time.backward(days: 10, period: :morning),
     detalle_ventas_attributes: detalles
   )
 end
 
 puts "==> Listo: #{Venta.count} ventas creadas (#{Venta.where(cancelada: true).count} canceladas, #{Venta.where(cancelada: false).count} activas)."
-puts "==> Distribución de ventas activas por empleado:"
-ventas_por_empleado.each do |emp, cant|
-  puts "   - #{emp.nombre}: #{cant} ventas"
-end

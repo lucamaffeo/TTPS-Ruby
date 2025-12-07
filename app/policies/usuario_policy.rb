@@ -14,7 +14,7 @@ class UsuarioPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user&.administrador?
+    user&.administrador? && record.id != user&.id
   end
 
   def new?

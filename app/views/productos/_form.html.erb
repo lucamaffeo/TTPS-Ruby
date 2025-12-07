@@ -66,19 +66,17 @@
           {}, class: "form-control", id: "estado_fisico_select" %>
   </div>
 
-  <div class="col-6">
-    <%= form.label :estado, "Estado", class: "form-label" %>
-    <% if producto.new_record? %>
-      <%= form.select :estado,
-            [["Activo", "activo"]],
-            {}, class: "form-control", disabled: true %>
-      <%= form.hidden_field :estado, value: "activo" %>
-    <% else %>
+  <% if producto.persisted? && producto.estado == "eliminado" %>
+    <div class="col-6">
+      <%= form.label :estado, "Estado", class: "form-label" %>
       <%= form.select :estado,
             [["Activo", "activo"], ["Eliminado", "eliminado"]],
             {}, class: "form-control" %>
-    <% end %>
-  </div>
+      <small class="text-muted">Este producto está eliminado. Puedes reactivarlo.</small>
+    </div>
+  <% elsif producto.new_record? %>
+    <%= form.hidden_field :estado, value: "activo" %>
+  <% end %>
 
   <div class="col-6">
     <%= form.label :anio, "Año", class: "form-label" %>

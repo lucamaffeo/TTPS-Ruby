@@ -3,14 +3,7 @@ class ProductosController < ApplicationController
 
   # GET /productos or /productos.json
   def index
-    # Por defecto, no mostramos productos eliminados en el listado
-    @productos = Producto.where.not(estado: "eliminado")
-
-    # Filtro opcional para ver sólo eliminados (por si lo necesitás en el admin)
-    if params[:estado_filter] == "eliminado"
-      @productos = Producto.where(estado: "eliminado")
-    end
-
+    @productos = Producto.all
     # 1. Búsqueda General (Título, Autor)
     if params[:q].present?
       q = params[:q].to_s.downcase

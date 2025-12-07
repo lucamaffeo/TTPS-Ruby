@@ -33,7 +33,8 @@
       <%= form.text_field :dni, class: "form-control", required: true, minlength: 7, disabled: current_usuario.id == @usuario.id %>
     </div>
 
-    <% if policy(@usuario).permitted_attributes.include?(:rol) %>
+    <%# Solo mostrar el select de rol si NO estoy editando mi propio perfil %>
+    <% if current_usuario.id != @usuario.id && policy(@usuario).permitted_attributes.include?(:rol) %>
       <div class="col-12">
         <%= form.label :rol, class: "form-label" %>
         <%= form.select :rol,

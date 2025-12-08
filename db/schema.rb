@@ -114,6 +114,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_001000) do
     t.string "dni", null: false
     t.string "email", null: false
     t.string "encrypted_password", default: "", null: false
+    t.integer "estado", default: 0, null: false
     t.string "nombre", null: false
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
@@ -122,6 +123,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_001000) do
     t.datetime "updated_at", null: false
     t.index ["dni"], name: "index_usuarios_on_dni", unique: true
     t.index ["email"], name: "index_usuarios_on_email", unique: true
+    t.index ["estado"], name: "index_usuarios_on_estado"
     t.index ["reset_password_token"], name: "index_usuarios_on_reset_password_token", unique: true
     t.index ["rol"], name: "index_usuarios_on_rol"
     t.check_constraint "rol IN (0,1,2)", name: "usuarios_rol_in_range"

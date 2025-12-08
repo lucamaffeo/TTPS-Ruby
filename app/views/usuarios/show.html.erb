@@ -20,23 +20,36 @@
         </span>
       </div>
     </div>
+
+    <div class="col-md-6">
+      <strong>Estado:</strong>
+      <div>
+        <span class="badge <%= @usuario.activo? ? 'bg-success' : 'bg-danger' %>">
+          <%= @usuario.estado_label %>
+        </span>
+      </div>
+    </div>
   </div>
 
   <hr>
 
   <div class="d-flex gap-2 mt-3">
-    <%= link_to edit_usuario_path(@usuario), class: usuario_edit_button_classes(@usuario) do %>
-      <i class="bi bi-pencil"></i> Editar
-    <% end %>
-
-    <%= button_to usuario_path(@usuario), method: :delete, data: { confirm: "¿Eliminar usuario?" }, class: usuario_destroy_button_classes(@usuario) do %>
-      <i class="bi bi-trash"></i> Eliminar
-    <% end %>
-
-    <% if current_usuario&.administrador? && current_usuario.id != @usuario.id %>
-      <%= button_to reset_password_default_usuario_path(@usuario), method: :patch, data: { turbo_confirm: "¿Restablecer la contraseña a '123456'?" }, class: "btn btn-as-dark" do %>
-        <i class="bi bi-key"></i> Restablecer contraseña
+    <% if @usuario.activo? %>
+      <%= link_to edit_usuario_path(@usuario), class: usuario_edit_button_classes(@usuario) do %>
+        <i class="bi bi-pencil"></i> Editar
       <% end %>
+
+      <%= button_to usuario_path(@usuario), method: :delete, data: { confirm: "¿Eliminar usuario?" }, class: usuario_destroy_button_classes(@usuario) do %>
+        <i class="bi bi-trash"></i> Eliminar
+      <% end %>
+
+      <% if current_usuario&.administrador? && current_usuario.id != @usuario.id %>
+        <%= button_to reset_password_default_usuario_path(@usuario), method: :patch, data: { turbo_confirm: "¿Restablecer la contraseña a '123456'?" }, class: "btn btn-as-dark" do %>
+          <i class="bi bi-key"></i> Restablecer contraseña
+        <% end %>
+      <% end %>
+    <% else %>
+      <p class="text-danger fst-italic">Este usuario ha sido eliminado.</p>
     <% end %>
 
     <%= link_to usuarios_path, class: "btn btn-as-dark" do %>

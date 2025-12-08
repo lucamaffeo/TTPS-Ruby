@@ -66,8 +66,11 @@ class UsuariosController < ApplicationController
 
   def destroy
     authorize @usuario
-    @usuario.destroy
-    redirect_to usuarios_path, notice: "Usuario eliminado."
+    if @usuario.eliminar_logicamente
+      redirect_to usuarios_path, notice: "Usuario eliminado correctamente."
+    else
+      redirect_to usuarios_path, alert: "No se pudo eliminar el usuario."
+    end
   end
 
   def reset_password_default
@@ -91,7 +94,7 @@ class UsuariosController < ApplicationController
   private
 
   def set_usuario
-    @usuario = Usuario.find(params[:id])
+    @usuario = Usuario.unscoped.find(params[:id])
   end
 
   def usuario_params

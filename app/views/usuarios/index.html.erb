@@ -16,6 +16,7 @@
           <th>Email</th>
           <th>DNI</th>
           <th>Rol</th>
+          <th>Estado</th>
           <th class="text-end">Acciones</th>
         </tr>
       </thead>
@@ -30,6 +31,11 @@
                 <%= Usuario::ROLES.key(usuario.rol)&.to_s&.capitalize || "—" %>
               </span>
             </td>
+            <td>
+              <span class="badge <%= usuario.activo? ? 'bg-success' : 'bg-danger' %>">
+                <%= usuario.estado_label %>
+              </span>
+            </td>
             <td class="text-end">
               <%= link_to usuario_path(usuario), class: "btn btn-sm btn-outline-dark" do %>
                 Ver detalle <i class="bi bi-arrow-right"></i>
@@ -39,7 +45,7 @@
         <% end %>
         <% if @usuarios.empty? %>
           <tr>
-            <td colspan="5" class="text-center py-4 text-muted fst-italic">
+            <td colspan="6" class="text-center py-4 text-muted fst-italic">
               No hay usuarios registrados.
             </td>
           </tr>

@@ -14,9 +14,19 @@ class UsuarioPolicy < ApplicationPolicy
     user&.id == record.id || user&.gerente? # Uno mismo se puede editar, o un gerente.
   end
 
-  # admin puede eliminar usuarios
+  # admin puede eliminar usuarios (excepto a sí mismo)
+  # gerente puede eliminar solo empleados
   def destroy?
-    user&.administrador? && record.id != user&.id
+    return false if record.id == user&.id # No puede eliminarse a sí mismo
+    return false if record.eliminado? # No puede eliminar un usuario ya eliminado
+    
+    if user&.administrador?
+      true # Admin puede eliminar cualquier usuario (empleados, gerentes, otros admins)
+    elsif user&.gerente?
+      record.empleado? && !record.gerente? && !record.administrador? # Gerente solo puede eliminar empleados
+    else
+      false
+    end
   end
 
   def new?
@@ -42,9 +52,9 @@ class UsuarioPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       if user&.administrador? || user&.gerente?
-        scope.all # Muestra todos los usuarios".
+        scope.unscoped # Muestra todos los usuarios (activos y eliminados)
       else
-        scope.where(id: user&.id) # Se muestra a si mismo
+        scope.unscoped.where(id: user&.id, estado: Usuario::ESTADOS[:activo]) # Se muestra a sí mismo si está activo
       end
     end
   end

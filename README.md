@@ -1,4 +1,9 @@
-# TTPS - Trabajo Ruby
+# TTPS - Trabajo Ruby ActiveSound Disqueria.
+
+## INTEGRANTES
+# Franco Bof
+# Luca Maffeo
+# Alejandro Proia
 
 ## Requisitos técnicos
 - Ruby 3.4.x 
@@ -47,3 +52,26 @@ Notas:
 - admin@example.com / password (rol: administrador)
 - gerente@example.com / password (rol: gerente)
 - empleado@example.com / password (rol: empleado)
+
+## Gemas utilizadas.
+# Autenticación y Autorización
+devise: Maneja el sistema(registro, login, recuperación de contraseña)
+pundit: Control de permisos basado en roles
+
+# Búsqueda y Filtrado
+ransack: Crea filtros y búsquedas avanzadas.
+kaminari: Para la paginacion.
+
+# Procesamiento de Imágenes
+mini_magick: Redimensiona, convierte y manipula imágenes subidas por usuarios
+
+# Datos de Prueba
+faker: Genera nombres, emails, direcciones ficticias automáticamente para rellenar tu base de datos en desarrollo
+
+# PDFs
+prawn: Crea documentos PDF(para crear facturas).
+prawn-table: Añade tablas formateadas a los PDFs
+
+# Gráficos
+chartkick: Genera gráficos interactivos (líneas, barras, etc.) con datos-
+groupdate: Agrupa datos por períodos de tiempo (útil para mostrar estadísticas diarias/mensuales en gráficos)

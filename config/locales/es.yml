@@ -4,11 +4,53 @@ es:
       venta:
         empleado: "Empleado"
     errors:
+      messages:
+        blank: "no puede estar vacío"
+        too_short: "es demasiado corto (mínimo %{count} caracteres)"
+        too_long: "es demasiado largo (máximo %{count} caracteres)"
+        not_a_number: "debe ser un número"
+        greater_than: "debe ser mayor que %{count}"
+        greater_than_or_equal_to: "debe ser mayor o igual a %{count}"
+        less_than_or_equal_to: "debe ser menor o igual a %{count}"
+        inclusion: "no está incluido en la lista"
+        required: "debe existir"
+        taken: "ya está en uso"
       models:
+        usuario:
+          attributes:
+            email:
+              blank: "no puede estar vacío"
+              invalid: "debe ser un email válido"
+            nombre:
+              blank: "no puede estar vacío"
+              too_short: "debe tener al menos %{count} caracteres"
+            dni:
+              blank: "no puede estar vacío"
+        venta:
+          attributes:
+            empleado:
+              required: "debe asignarse un vendedor"
+        detalle_venta:
+          attributes:
+            venta:
+              required: "debe estar asociado a una venta"
+            producto:
+              required: "debe seleccionarse un producto"
+              blank: "debe seleccionarse un producto"
+            cantidad:
+              not_a_number: "debe ser un número"
+            precio:
+              not_a_number: "debe ser un número"
         producto:
           attributes:
-            stock:
-              greater_than: "debe ser mayor que %{count}"
+            titulo:
+              too_short: "debe tener al menos %{count} caracteres"
+            autor:
+              too_short: "debe tener al menos %{count} caracteres"
+            tipo:
+              inclusion: "debe ser vinilo, cd o cassette"
+            anio:
+              not_a_number: "debe ser un número válido"
   productos:
     destroy:
       success: "Producto eliminado correctamente."

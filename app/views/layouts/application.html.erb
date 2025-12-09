@@ -59,11 +59,13 @@
                       <i class="bi bi-cart-check fs-5"></i> <span class="d-none d-lg-inline">Ventas</span>
                     <% end %>
                   </li>
+                  <% unless current_usuario.empleado? %>
                   <li class="nav-item mx-1">
                     <%= link_to admin_dashboard_path, class: "nav-link" do %>
                       <i class="bi bi-speedometer2 fs-5"></i> <span class="d-none d-lg-inline">Reportes</span>
                     <% end %>
                   </li>
+                  <% end %>
                 <% end %>
               </ul>
 

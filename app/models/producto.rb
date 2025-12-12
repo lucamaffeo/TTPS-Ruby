@@ -26,6 +26,31 @@ class Producto < ApplicationRecord
   validate :imagen_obligatoria_en_creacion
   validate :audio_solo_usado
 
+  # Scopes para búsqueda y filtrado
+  scope :activos, -> { where.not(estado: "eliminado") }
+  scope :con_stock, -> { where("stock > 0") }
+  scope :sin_stock, -> { where(stock: 0) }
+  scope :bajo_stock, -> { where("stock > 0 AND stock <= 5") }
+  scope :buscar, ->(query) {
+    return none if query.blank?
+    q = query.to_s.downcase
+    where("LOWER(titulo) LIKE ? OR LOWER(autor) LIKE ? OR CAST(anio AS TEXT) LIKE ?", "%#{q}%", "%#{q}%", "%#{q}%")
+  }
+  scope :por_categoria, ->(categoria) { where(categoria: categoria) if categoria.present? }
+  scope :por_tipo, ->(tipo) { where(tipo: tipo) if tipo.present? }
+  scope :por_estado_fisico, ->(estado_fisico) { where(estado_fisico: estado_fisico) if estado_fisico.present? }
+  scope :por_anio, ->(anio) { where(anio: anio) if anio.present? }
+
+  # LÓGICA DE NEGOCIO: Eliminación lógica
+  def eliminar_logicamente
+    update_columns(
+      estado: "eliminado",
+      fecha_baja: Date.today,
+      stock: 0,
+      updated_at: Time.current
+    )
+  end
+
   private
 
   # Setea valores si estan nulos

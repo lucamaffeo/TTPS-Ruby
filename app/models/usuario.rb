@@ -4,6 +4,8 @@ class Usuario < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  DEFAULT_PASSWORD = "123456".freeze
+
   # Definición de roles sin usar enum (evita conflicto ActiveRecord::Enum)
   ROLES = {
     empleado: 0,
@@ -107,6 +109,67 @@ class Usuario < ApplicationRecord
 
   def inactive_message
     activo? ? super : :deleted_account
+  end
+
+  # Construye un usuario con la contraseña default
+  def self.con_contraseña_default(attrs)
+    usuario = new(attrs)
+    usuario.password = DEFAULT_PASSWORD
+    usuario.password_confirmation = DEFAULT_PASSWORD
+    usuario
+  end
+
+  # Aplica la actualización respetando reglas de dominio.
+  # Devuelve [ok(boolean), password_cambiada(boolean)]
+  def aplicar_actualizacion(attrs, actor)
+    upd = attrs.to_h
+
+    # Si se está editando a sí mismo, no puede cambiar email ni dni
+    if actor.id == id
+      upd.delete("email")
+      upd.delete("dni")
+      upd.delete(:email)
+      upd.delete(:dni)
+    end
+
+    # Si password viene en blanco, no tocarla
+    if (upd["password"].blank? && upd["password_confirmation"].blank?) &&
+       (upd[:password].blank? && upd[:password_confirmation].blank?)
+      upd.delete("password")
+      upd.delete("password_confirmation")
+      upd.delete(:password)
+      upd.delete(:password_confirmation)
+    end
+
+    if update(upd)
+      password_cambiada =
+        previous_changes.key?("encrypted_password") &&
+        !valid_password?(DEFAULT_PASSWORD)
+      [ true, password_cambiada ]
+    else
+      [ false, false ]
+    end
+  end
+
+  # Resetea la contraseña a la default, con reglas de dominio.
+  # Devuelve [:ok/:forbidden/:error, mensaje]
+  def resetear_a_contraseña_default(actor)
+    unless actor.administrador?
+      return [ :forbidden, "No tenés permisos para esta acción." ]
+    end
+
+    if actor.id == id
+      return [ :forbidden, "No podés restablecer tu propia contraseña." ]
+    end
+
+    self.password = DEFAULT_PASSWORD
+    self.password_confirmation = DEFAULT_PASSWORD
+
+    if save
+      [ :ok, "Contraseña restablecida a default. Deberá cambiarla al próximo ingreso." ]
+    else
+      [ :error, errors.full_messages.join(", ") ]
+    end
   end
 
   private

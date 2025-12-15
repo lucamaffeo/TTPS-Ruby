@@ -25,6 +25,7 @@ class Producto < ApplicationRecord
   validate :stock_por_estado_fisico
   validate :imagen_obligatoria_en_creacion
   validate :audio_solo_usado
+  validate :imagenes_presentes, on: :create
 
   # Scopes para búsqueda y filtrado
   scope :activos, -> { where.not(estado: "eliminado") }
@@ -49,6 +50,37 @@ class Producto < ApplicationRecord
       stock: 0,
       updated_at: Time.current
     )
+  end
+
+  def self.filtrar(params)
+    productos = all
+
+    # Búsquedas / filtros usando scopes ya existentes
+    productos = productos.buscar(params[:q])                    if params[:q].present?
+    productos = productos.por_categoria(params[:categoria])     if params[:categoria].present?
+    productos = productos.por_tipo(params[:tipo])               if params[:tipo].present?
+    productos = productos.por_estado_fisico(params[:estado_fisico]) if params[:estado_fisico].present?
+
+    if params[:stock_filter].present?
+      productos = case params[:stock_filter]
+      when "sin_stock"  then productos.sin_stock
+      when "bajo_stock" then productos.bajo_stock
+      when "con_stock"  then productos.con_stock
+      else productos
+      end
+    end
+
+    # Ordenamiento
+    sort_column    = params[:sort]      || "titulo"
+    sort_direction = params[:direction] || "asc"
+    allowed_columns    = %w[titulo autor precio stock anio]
+    allowed_directions = %w[asc desc]
+
+    if allowed_columns.include?(sort_column) && allowed_directions.include?(sort_direction)
+      productos = productos.order("#{sort_column} #{sort_direction}")
+    end
+
+    productos
   end
 
   private
@@ -86,5 +118,12 @@ class Producto < ApplicationRecord
     if estado_fisico == "usado"
       errors.add(:stock, "debe ser 1 para productos usados") unless stock == 1
     end
+  end
+
+  def imagenes_presentes
+    # Asumiendo ActiveStorage: has_many_attached :imagenes
+    return if respond_to?(:imagenes) && imagenes.respond_to?(:attached?) && imagenes.attached?
+
+    errors.add(:imagenes, "debe subir al menos una imagen")
   end
 end

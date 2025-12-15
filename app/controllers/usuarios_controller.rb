@@ -24,10 +24,9 @@ class UsuariosController < ApplicationController
   end
 
   def create
-    @usuario = Usuario.new(usuario_params)
-    @usuario.password = "123456"
-    @usuario.password_confirmation = "123456"
+    @usuario = Usuario.con_contraseña_default(usuario_params)
     authorize @usuario
+
     if @usuario.save
       redirect_to @usuario, notice: "Usuario creado correctamente."
     else
@@ -42,21 +41,15 @@ class UsuariosController < ApplicationController
 
   def update
     authorize @usuario
-    upd = usuario_params
-    if current_usuario.id == @usuario.id
-      upd.delete(:email)
-      upd.delete(:dni)
-    end
-    if upd[:password].blank? && upd[:password_confirmation].blank?
-      upd.delete(:password)
-      upd.delete(:password_confirmation)
-    end
-    if @usuario.update(upd)
-      # Si el usuario cambió la contraseña inicial, limpia el flag y redirige correctamente
-      if @usuario.previous_changes.key?("encrypted_password") && !@usuario.valid_password?("123456")
+
+    ok, password_cambiada = @usuario.aplicar_actualizacion(usuario_params, current_usuario)
+
+    if ok
+      if password_cambiada
         session[:require_password_change] = false
         bypass_sign_in(@usuario)
-        redirect_to(@usuario.administrador? ? usuarios_path : productos_path, notice: "Contraseña actualizada correctamente.") and return
+        redirect_to(@usuario.administrador? ? usuarios_path : productos_path,
+                    notice: "Contraseña actualizada correctamente.") and return
       end
       redirect_to @usuario, notice: "Usuario actualizado."
     else
@@ -75,19 +68,14 @@ class UsuariosController < ApplicationController
 
   def reset_password_default
     authorize @usuario
-    unless current_usuario.administrador?
-      return redirect_to @usuario, alert: "No tenés permisos para esta acción."
-    end
-    if @usuario.id == current_usuario.id
-      return redirect_to @usuario, alert: "No podés restablecer tu propia contraseña."
-    end
 
-    @usuario.password = "123456"
-    @usuario.password_confirmation = "123456"
-    if @usuario.save
-      redirect_to @usuario, notice: "Contraseña restablecida a default. Deberá cambiarla al próximo ingreso."
+    estado, mensaje = @usuario.resetear_a_contraseña_default(current_usuario)
+
+    case estado
+    when :ok
+      redirect_to @usuario, notice: mensaje
     else
-      redirect_to @usuario, alert: @usuario.errors.full_messages.join(", ")
+      redirect_to @usuario, alert: mensaje
     end
   end
 

@@ -22,7 +22,7 @@ class Venta < ApplicationRecord
 
   # Indica si la venta ya fue cancelada
   def cancelada?
-    !!self.cancelada
+    self.cancelada
   end
 
   # Cancela la venta: marca cancelada, setea fecha_cancelacion y repone stock.
@@ -51,7 +51,7 @@ class Venta < ApplicationRecord
     return { success: false, error: "DNI y nombre son obligatorios." } if dni.blank? || nombre.blank?
     return { success: false, error: "DNI inválido. Debe contener exactamente 8 dígitos numéricos." } unless dni =~ /\A\d{8}\z/
     return { success: false, error: "Nombre inválido. Sólo letras y espacios, máximo 20 caracteres." } unless nombre =~ /\A[[:alpha:]\s]{1,20}\z/
-    
+
     if telefono.present? && !(telefono =~ /\A\d{1,20}\z/)
       return { success: false, error: "Teléfono inválido. Sólo números y máximo 20 dígitos." }
     end
@@ -75,7 +75,7 @@ class Venta < ApplicationRecord
     ActiveRecord::Base.transaction do
       detalle_ventas.each do |dv|
         next if dv.marked_for_destruction?
-        
+
         producto = Producto.lock.find_by(id: dv.producto_id)
         unless producto
           errors.add(:base, "Producto no encontrado (id=#{dv.producto_id})")
@@ -94,12 +94,12 @@ class Venta < ApplicationRecord
         next if dv.marked_for_destruction?
         prod = Producto.lock.find(dv.producto_id)
         new_stock = prod.stock.to_i - dv.cantidad.to_i
-        
+
         if new_stock < 0
           errors.add(:base, "No hay stock suficiente para #{prod.titulo}")
           raise ActiveRecord::Rollback
         end
-        
+
         prod.update_column(:stock, new_stock)
       end
 
@@ -116,7 +116,7 @@ class Venta < ApplicationRecord
 
     detalles_incoming.each do |_key, attrs|
       next unless attrs.is_a?(Hash)
-      
+
       if attrs["_destroy"].to_s == "1"
         if attrs["id"].present?
           dv = detalle_ventas.find_by(id: attrs["id"].to_i)
@@ -164,7 +164,7 @@ class Venta < ApplicationRecord
         errors.add(:base, "No hay stock suficiente para #{prod.titulo}")
         raise ActiveRecord::Rollback
       end
-      
+
       prod.update_column(:stock, new_stock)
     end
   end

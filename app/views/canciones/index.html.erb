@@ -16,11 +16,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @producto.canciones.order(Arel.sql("COALESCE(orden, 999999), id")).each do |c| %>
-            <% dur = c.duracion_segundos.to_i
-               mm = (dur / 60)
-               ss = (dur % 60)
-               dur_str = dur > 0 ? format("%02d:%02d", mm, ss) : "—" %>
+          <% @canciones.each do |c| %>
             <tr>
               <td>
                 <% if c.orden.present? %>
@@ -36,7 +32,7 @@
                 <% end %>
               </td>
               <td>
-                <span class="badge bg-light text-dark"><i class="bi bi-clock"></i> <%= dur_str %></span>
+                <span class="badge bg-light text-dark"><i class="bi bi-clock"></i> <%= c.duracion_hhmmss %></span>
               </td>
               <td class="text-end">
                 <%= button_to producto_cancion_path(@producto, c),

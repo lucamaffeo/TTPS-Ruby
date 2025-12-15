@@ -6,3 +6,58 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 # # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
 # Layout/SpaceInsideArrayLiteralBrackets:
 #   Enabled: false
+
+require:
+  - rubocop-rails
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'db/schema.rb'
+    - 'db/migrate/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'bin/**/*'
+
+# Permitir líneas más largas
+Layout/LineLength:
+  Max: 120
+
+# No forzar documentación en clases/módulos
+Style/Documentation:
+  Enabled: false
+
+# Permitir strings con comillas simples y dobles
+Style/StringLiterals:
+  Enabled: false
+
+# Permitir bloques de una línea sin llaves
+Style/BlockDelimiters:
+  Enabled: false
+
+# No forzar freeze en constantes
+Style/MutableConstant:
+  Enabled: false
+
+# Permitir números mágicos
+Style/NumericLiterals:
+  Enabled: false
+
+# Permitir métodos con muchos parámetros
+Metrics/ParameterLists:
+  Max: 7
+
+# Permitir métodos más largos
+Metrics/MethodLength:
+  Max: 30
+
+# Permitir clases más largas
+Metrics/ClassLength:
+  Max: 250
+
+# Permitir bloques más largos
+Metrics/BlockLength:
+  Exclude:
+    - 'config/routes.rb'
+    - 'config/environments/*'
+    - 'spec/**/*'

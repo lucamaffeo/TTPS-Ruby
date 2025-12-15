@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_06_001000) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_06_002100) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -49,6 +49,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_001000) do
     t.datetime "updated_at", null: false
     t.index ["producto_id", "orden"], name: "index_canciones_on_producto_id_and_orden"
     t.index ["producto_id"], name: "index_canciones_on_producto_id"
+    t.check_constraint "duracion_segundos >= 0", name: "duracion_positiva"
+    t.check_constraint "orden > 0", name: "orden_positivo"
   end
 
   create_table "categoria", force: :cascade do |t|
@@ -59,21 +61,25 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_001000) do
 
   create_table "clientes", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "dni"
-    t.string "nombre"
+    t.string "dni", null: false
+    t.string "nombre", null: false
     t.string "telefono"
     t.datetime "updated_at", null: false
+    t.index ["dni"], name: "index_clientes_on_dni", unique: true
+    t.check_constraint "LENGTH(dni) >= 7 AND LENGTH(dni) <= 8", name: "dni_longitud_valida"
   end
 
   create_table "detalle_venta", force: :cascade do |t|
-    t.integer "cantidad"
+    t.integer "cantidad", null: false
     t.datetime "created_at", null: false
-    t.decimal "precio"
+    t.decimal "precio", null: false
     t.integer "producto_id", null: false
     t.datetime "updated_at", null: false
     t.integer "venta_id", null: false
     t.index ["producto_id"], name: "index_detalle_venta_on_producto_id"
     t.index ["venta_id"], name: "index_detalle_venta_on_venta_id"
+    t.check_constraint "cantidad > 0", name: "cantidad_positiva"
+    t.check_constraint "precio > 0", name: "precio_unitario_positivo"
   end
 
   create_table "imagen_productos", force: :cascade do |t|
@@ -92,21 +98,30 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_001000) do
   end
 
   create_table "productos", force: :cascade do |t|
-    t.integer "anio"
-    t.string "autor"
-    t.string "categoria"
+    t.integer "anio", null: false
+    t.string "autor", null: false
+    t.string "categoria", null: false
     t.datetime "created_at", null: false
     t.text "descripcion"
     t.string "estado"
-    t.string "estado_fisico"
+    t.string "estado_fisico", null: false
     t.date "fecha_baja"
     t.date "fecha_ingreso"
     t.date "fecha_modificacion"
-    t.decimal "precio"
-    t.integer "stock"
-    t.string "tipo"
-    t.string "titulo"
+    t.decimal "precio", null: false
+    t.integer "stock", null: false
+    t.string "tipo", null: false
+    t.string "titulo", null: false
     t.datetime "updated_at", null: false
+    t.index ["categoria"], name: "index_productos_on_categoria"
+    t.index ["estado"], name: "index_productos_on_estado"
+    t.index ["estado_fisico"], name: "index_productos_on_estado_fisico"
+    t.index ["tipo"], name: "index_productos_on_tipo"
+    t.check_constraint "anio >= 1900 AND anio <= 2100", name: "anio_valido"
+    t.check_constraint "estado_fisico IN ('nuevo', 'usado')", name: "estado_fisico_valido"
+    t.check_constraint "precio > 0", name: "precio_positivo"
+    t.check_constraint "stock >= 0", name: "stock_no_negativo"
+    t.check_constraint "tipo IN ('vinilo', 'cd')", name: "tipo_valido"
   end
 
   create_table "usuarios", force: :cascade do |t|
@@ -135,13 +150,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_001000) do
     t.datetime "created_at", null: false
     t.integer "empleado_id", null: false
     t.datetime "fecha_cancelacion", precision: nil
-    t.datetime "fecha_hora"
+    t.datetime "fecha_hora", null: false
     t.string "pago", default: "efectivo", null: false
-    t.decimal "total"
+    t.decimal "total", null: false
     t.datetime "updated_at", null: false
     t.index ["cancelada"], name: "index_venta_on_cancelada"
     t.index ["cliente_id"], name: "index_venta_on_cliente_id"
     t.index ["empleado_id"], name: "index_venta_on_empleado_id"
+    t.check_constraint "total >= 0", name: "total_no_negativo"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

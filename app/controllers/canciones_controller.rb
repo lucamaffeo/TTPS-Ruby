@@ -3,7 +3,7 @@ class CancionesController < ApplicationController
   before_action :set_cancion, only: [:edit, :update, :destroy]
 
   def index
-    @canciones = @producto.canciones.order(Arel.sql("COALESCE(orden, 999999), id"))
+    @canciones = @producto.canciones.ordenadas
   end
 
   def new

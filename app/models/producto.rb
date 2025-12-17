@@ -1,33 +1,40 @@
 class Producto < ApplicationRecord
-  # === RELACIONES ===
-  # Un producto aparece en muchas ventas a través de la tabla de detalles.
+  # === ASOCIACIONES ===
   has_many :detalle_ventas
   has_many :ventas, through: :detalle_ventas
   has_many :canciones, class_name: "Cancion"
-  # === VALIDACIONES ===
-  validates :titulo, presence: { message: "no puede estar vacío" }, length: { minimum: 2, maximum: 100 }
-  validates :autor, presence: { message: "no puede estar vacío" }, length: { minimum: 2, maximum: 100 }
-  validates :categoria, presence: { message: "debe seleccionar un género" }
-  validates :tipo, presence: { message: "debe seleccionar un tipo" }, inclusion: { in: %w[vinilo cd] }
-  validates :anio, numericality: { only_integer: true, greater_than_or_equal_to: 1900, less_than_or_equal_to: Time.current.year }, allow_nil: false
-  validates :estado_fisico, inclusion: { in: %w[nuevo usado], message: "debe ser 'nuevo' o 'usado'" }
-  validates :descripcion, length: { maximum: 500 }, allow_blank: true
-  validates :stock, presence: { message: "no puede estar vacío" }, numericality: { only_integer: true, greater_than_or_equal_to: 0, message: "debe ser un número entero >= 0" }
-  validates :precio, presence: { message: "no puede estar vacío" }, numericality: { greater_than: 0, message: "debe ser mayor a 0" }
-
-  # Permite subir fotos y un audio de muestra.
   has_many_attached :imagenes
   has_one_attached :audio_muestra
 
-  before_create :set_default_values
-  before_update :set_update_date
-
+  # === VALIDACIONES ===
+  validates :titulo, presence: { message: "no puede estar vacío" }, 
+            length: { minimum: 2, maximum: 100 }
+  validates :autor, presence: { message: "no puede estar vacío" }, 
+            length: { minimum: 2, maximum: 100 }
+  validates :categoria, presence: { message: "debe seleccionar un género" }
+  validates :tipo, presence: { message: "debe seleccionar un tipo" }, 
+            inclusion: { in: %w[vinilo cd] }
+  validates :anio, numericality: { 
+    only_integer: true, 
+    greater_than_or_equal_to: 1900, 
+    less_than_or_equal_to: Time.current.year 
+  }, allow_nil: false
+  validates :estado_fisico, inclusion: { in: %w[nuevo usado], message: "debe ser 'nuevo' o 'usado'" }
+  validates :descripcion, length: { maximum: 500 }, allow_blank: true
+  validates :stock, presence: { message: "no puede estar vacío" }, 
+            numericality: { only_integer: true, greater_than_or_equal_to: 0, message: "debe ser un número entero >= 0" }
+  validates :precio, presence: { message: "no puede estar vacío" }, 
+            numericality: { greater_than: 0, message: "debe ser mayor a 0" }
   validate :stock_por_estado_fisico
   validate :imagen_obligatoria_en_creacion
   validate :audio_solo_usado
   validate :imagenes_presentes, on: :create
 
-  # Scopes para búsqueda y filtrado
+  # === CALLBACKS ===
+  before_create :set_default_values
+  before_update :set_update_date
+
+  # === SCOPES ===
   scope :activos, -> { where.not(estado: "eliminado") }
   scope :con_stock, -> { where("stock > 0") }
   scope :sin_stock, -> { where(stock: 0) }
@@ -41,24 +48,23 @@ class Producto < ApplicationRecord
   scope :por_tipo, ->(tipo) { where(tipo: tipo) if tipo.present? }
   scope :por_estado_fisico, ->(estado_fisico) { where(estado_fisico: estado_fisico) if estado_fisico.present? }
   scope :por_anio, ->(anio) { where(anio: anio) if anio.present? }
+  
+  # Scope para productos filtrados disponibles en ventas (devuelve solo campos necesarios)
+  scope :para_ventas, ->(tipo: nil, categoria: nil) {
+    scope = activos.con_stock
+    scope = scope.por_tipo(tipo) if tipo.present?
+    scope = scope.por_categoria(categoria) if categoria.present?
+    scope.order(:titulo).select(:id, :titulo, :precio, :stock, :estado_fisico)
+  }
 
-  # LÓGICA DE NEGOCIO: Eliminación lógica
-  def eliminar_logicamente
-    update_columns(
-      estado: "eliminado",
-      fecha_baja: Date.today,
-      stock: 0,
-      updated_at: Time.current
-    )
-  end
-
+  # === MÉTODOS DE CLASE ===
   def self.filtrar(params)
     productos = all
 
     # Búsquedas / filtros usando scopes ya existentes
-    productos = productos.buscar(params[:q])                    if params[:q].present?
-    productos = productos.por_categoria(params[:categoria])     if params[:categoria].present?
-    productos = productos.por_tipo(params[:tipo])               if params[:tipo].present?
+    productos = productos.buscar(params[:q]) if params[:q].present?
+    productos = productos.por_categoria(params[:categoria]) if params[:categoria].present?
+    productos = productos.por_tipo(params[:tipo]) if params[:tipo].present?
     productos = productos.por_estado_fisico(params[:estado_fisico]) if params[:estado_fisico].present?
 
     if params[:stock_filter].present?
@@ -71,9 +77,9 @@ class Producto < ApplicationRecord
     end
 
     # Ordenamiento
-    sort_column    = params[:sort]      || "titulo"
+    sort_column = params[:sort] || "titulo"
     sort_direction = params[:direction] || "asc"
-    allowed_columns    = %w[titulo autor precio stock anio]
+    allowed_columns = %w[titulo autor precio stock anio]
     allowed_directions = %w[asc desc]
 
     if allowed_columns.include?(sort_column) && allowed_directions.include?(sort_direction)
@@ -81,6 +87,16 @@ class Producto < ApplicationRecord
     end
 
     productos
+  end
+
+  # === MÉTODOS DE INSTANCIA ===
+  def eliminar_logicamente
+    update_columns(
+      estado: "eliminado",
+      fecha_baja: Date.today,
+      stock: 0,
+      updated_at: Time.current
+    )
   end
 
   private
@@ -100,11 +116,9 @@ class Producto < ApplicationRecord
   end
 
   def imagen_obligatoria_en_creacion
-    # Solo valida en creación (new_record?) o si se intenta guardar sin imágenes
+    # Solo valida en creación si no hay imágenes
     if new_record? && !imagenes.attached?
       errors.add(:imagenes, "debe subir al menos una imagen")
-    elsif persisted? && imagenes.count == 0
-      errors.add(:imagenes, "el producto debe tener al menos una imagen")
     end
   end
 

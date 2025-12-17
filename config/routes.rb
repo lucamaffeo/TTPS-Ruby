@@ -2,8 +2,13 @@ Rails.application.routes.draw do
   resources :productos do
     # Gestión privada de canciones (CRUD)
     resources :canciones, only: [:index, :new, :create, :edit, :update, :destroy]
+    # Eliminar imagen individual
+    member do
+      delete :eliminar_imagen
+    end
   end
   get "productos_filtrados", to: "productos#productos_filtrados"
+  get "buscar_productos", to: "productos#buscar_productos"
   
   get '/buscar_cliente', to: 'clientes#buscar_por_dni'
 

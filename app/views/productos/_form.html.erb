@@ -88,8 +88,33 @@
 
   <div class="col-12">
     <%= form.label :imagenes, "Imágenes", class: "form-label" %>
+    
+    <% if producto.persisted? && producto.imagenes.attached? %>
+      <div class="mb-2">
+        <p class="text-muted mb-2">Imágenes actuales:</p>
+        <div class="row g-2">
+          <% producto.imagenes.each do |imagen| %>
+            <div class="col-md-3">
+              <div class="card">
+                <%= image_tag imagen, class: "card-img-top", style: "height: 150px; object-fit: cover;" %>
+                <div class="card-body p-2 text-center">
+                  <%= button_to "Eliminar", eliminar_imagen_producto_path(producto, imagen_id: imagen.id), 
+                      method: :delete, 
+                      data: { confirm: "¿Seguro que deseas eliminar esta imagen?" }, 
+                      class: "btn btn-sm btn-danger" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    
     <%= form.file_field :imagenes, multiple: true, accept: "image/png,image/jpeg,image/jpg", class: "form-control", required: producto.new_record? %>
-    <small class="text-muted">Al menos una imagen es obligatoria. Formatos: PNG, JPG, JPEG</small>
+    <small class="text-muted">
+      <%= producto.new_record? ? "Al menos una imagen es obligatoria." : "Agregar más imágenes (opcional)." %>
+      Formatos: PNG, JPG, JPEG
+    </small>
   </div>
 
   <div class="col-12" id="audio-muestra-field" style="<%= producto.estado_fisico == "usado" ? "" : "display:none;" %>">

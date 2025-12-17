@@ -21,22 +21,22 @@
 
       <div class="col-md-2">
         <%= f.label :categoria, "Género", class: "form-label fw-semibold small" %>
-        <%= f.select :categoria, Producto.distinct.pluck(:categoria), { include_blank: "Todos" }, { class: "form-select", selected: params[:categoria] } %>
+        <%= f.select :categoria, Producto.distinct.pluck(:categoria), { include_blank: "Todos", selected: params[:categoria] }, { class: "form-select" } %>
       </div>
 
       <div class="col-md-2">
         <%= f.label :tipo, "Formato", class: "form-label fw-semibold small" %>
-        <%= f.select :tipo, Producto.distinct.pluck(:tipo), { include_blank: "Todos" }, { class: "form-select", selected: params[:tipo] } %>
+        <%= f.select :tipo, Producto.distinct.pluck(:tipo), { include_blank: "Todos", selected: params[:tipo] }, { class: "form-select" } %>
       </div>
 
       <div class="col-md-2">
         <%= f.label :estado_fisico, "Condición", class: "form-label fw-semibold small" %>
-        <%= f.select :estado_fisico, [["Nuevo", "nuevo"], ["Usado", "usado"]], { include_blank: "Todos" }, { class: "form-select", selected: params[:estado_fisico] } %>
+        <%= f.select :estado_fisico, [["Nuevo", "nuevo"], ["Usado", "usado"]], { include_blank: "Todos", selected: params[:estado_fisico] }, { class: "form-select" } %>
       </div>
 
       <div class="col-md-1">
         <%= f.label :stock_filter, "Stock", class: "form-label fw-semibold small" %>
-        <%= f.select :stock_filter, [["Falta", "sin_stock"], ["Bajo", "bajo_stock"], ["Ok", "con_stock"]], { include_blank: "Todos" }, { class: "form-select", selected: params[:stock_filter] } %>
+        <%= f.select :stock_filter, [["Falta", "sin_stock"], ["Bajo", "bajo_stock"], ["Ok", "con_stock"]], { include_blank: "Todos", selected: params[:stock_filter] }, { class: "form-select" } %>
       </div>
 
       <div class="col-md-2 d-flex gap-1">

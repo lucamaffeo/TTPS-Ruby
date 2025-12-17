@@ -2,25 +2,25 @@ require "prawn"
 require "prawn/table"
 
 class Venta < ApplicationRecord
-  # === RELACIONES ===
+  # === ASOCIACIONES ===
   belongs_to :empleado, class_name: "Usuario"
   belongs_to :cliente, optional: true
-  # Si borro la venta, se borran sus detalles
   has_many :detalle_ventas, dependent: :destroy
   has_many :productos, through: :detalle_ventas
-  # Guarda la venta y sus items en un solo formulario.
+  
   accepts_nested_attributes_for :detalle_ventas, allow_destroy: true
 
   # === VALIDACIONES ===
   validates :fecha_hora, presence: { message: "no puede estar vacía" }
   validates :empleado, presence: { message: "debe asignarse un vendedor" }
-  validates :total, presence: { message: "no puede estar vacío" }, numericality: { greater_than_or_equal_to: 0, message: "debe ser >= 0" }
-  validates :pago, presence: { message: "debe seleccionar un medio de pago" }, inclusion: { in: %w[efectivo transferencia debito], message: "medio de pago inválido" }
-  validate  :debe_tener_al_menos_un_detalle
-  # validates_associated :detalle_ventas
-  # Validamos manualmente los detalles, ignorando los marcados para borrado
+  validates :total, presence: { message: "no puede estar vacío" }, 
+            numericality: { greater_than_or_equal_to: 0, message: "debe ser >= 0" }
+  validates :pago, presence: { message: "debe seleccionar un medio de pago" }, 
+            inclusion: { in: %w[efectivo transferencia debito], message: "medio de pago inválido" }
+  validate :debe_tener_al_menos_un_detalle
   validate :detalles_validos
 
+  # === SCOPES ===
   scope :activas, -> { where(cancelada: false) }
   scope :filtrar, ->(params) do
     ventas = left_outer_joins(:cliente).includes(:cliente, :empleado).order(fecha_hora: :desc)
@@ -47,15 +47,10 @@ class Venta < ApplicationRecord
     ventas
   end
 
-  # Indica si la venta ya fue cancelada
-  def cancelada?
-    self.cancelada
-  end
-
   # Cancela la venta: marca cancelada, setea fecha_cancelacion y repone stock.
   # Operación en transacción para evitar inconsistencias.
   def cancelar!(motivo: nil)
-    return false if cancelada?
+    return false if cancelada
 
     ActiveRecord::Base.transaction do
       # Reponer stock para cada detalle (usar lock para concurrencia)

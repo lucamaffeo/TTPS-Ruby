@@ -1,5 +1,5 @@
 class ProductosController < ApplicationController
-  before_action :set_producto, only: %i[show edit update destroy]
+  before_action :set_producto, only: %i[show edit update destroy eliminar_imagen]
 
   def index
     @productos = Producto.filtrar(params).page(params[:page]).per(6)
@@ -24,7 +24,16 @@ class ProductosController < ApplicationController
   end
 
   def update
-    if @producto.update(producto_params)
+    # Manejar imágenes por separado para no borrar las existentes
+    producto_attrs = producto_params
+    nuevas_imagenes = producto_attrs.delete(:imagenes)
+    
+    if @producto.update(producto_attrs)
+      # Solo adjuntar nuevas imágenes si vienen en el formulario
+      if nuevas_imagenes.present? && nuevas_imagenes.reject(&:blank?).any?
+        @producto.imagenes.attach(nuevas_imagenes.reject(&:blank?))
+      end
+      
       redirect_to @producto, notice: "Producto actualizado correctamente."
     else
       render :edit, status: :unprocessable_entity
@@ -37,14 +46,33 @@ class ProductosController < ApplicationController
   end
 
   def productos_filtrados
-    scope = Producto.activos
-
-    scope = scope.por_tipo(params[:tipo]) if params[:tipo].present?
-    scope = scope.por_categoria(params[:categoria]) if params[:categoria].present?
-    scope = scope.con_stock
-
-    productos = scope.order(:titulo).select(:id, :titulo, :precio, :stock, :estado_fisico)
+    productos = Producto.para_ventas(tipo: params[:tipo], categoria: params[:categoria])
     render json: productos
+  end
+
+  def eliminar_imagen
+    imagen = @producto.imagenes.find(params[:imagen_id])
+    
+    if @producto.imagenes.count <= 1
+      redirect_to edit_producto_path(@producto), alert: "No se puede eliminar la última imagen. El producto debe tener al menos una."
+    else
+      imagen.purge
+      redirect_to edit_producto_path(@producto), notice: "Imagen eliminada correctamente."
+    end
+  end
+
+  def buscar_productos
+    query = params[:q].to_s.strip
+    if query.length >= 2
+      productos = Producto.activos.con_stock
+                          .where("LOWER(titulo) LIKE ?", "%#{query.downcase}%")
+                          .order(:titulo)
+                          .limit(10)
+                          .select(:id, :titulo, :precio, :stock, :autor, :categoria)
+      render json: productos
+    else
+      render json: []
+    end
   end
 
   private

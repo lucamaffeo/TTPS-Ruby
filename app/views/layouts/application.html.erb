@@ -35,12 +35,6 @@
 
             <div class="collapse navbar-collapse" id="navbarContent">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item mx-1">
-                  <%= link_to storefront_productos_path, class: "nav-link" do %>
-                    <i class="bi bi-shop fs-5"></i> <span class="d-none d-lg-inline">StoreFront</span>
-                  <% end %>
-                </li>
-                
                 <% if usuario_signed_in? %>
                   <li class="nav-item mx-1">
                     <%= link_to productos_path, class: "nav-link" do %>
@@ -71,6 +65,11 @@
 
               <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <% if usuario_signed_in? %>
+                  <li class="nav-item mx-1">
+                    <%= link_to storefront_productos_path, class: "nav-link btn btn-outline btn-sm" do %>
+                      <i class="bi bi-shop"></i> <span class="d-none d-lg-inline">Ver StoreFront</span>
+                    <% end %>
+                  </li>
                   <li class="nav-item dropdown mx-1">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="bi bi-person-circle fs-4 me-1"></i>

@@ -6,10 +6,13 @@
       <%= df.hidden_field :producto_id, value: df.object.producto_id %>
       <div class="producto-fijo"><%= df.object.producto&.titulo || "Producto eliminado" %></div>
     <% else %>
-      <%= df.select :producto_id, [],
-            { include_blank: "Seleccioná un producto" },
-            { class: "form-control producto-select",
-              data: { selected: df.object.producto_id, precio: df.object.precio } } %>
+      <%= df.hidden_field :producto_id, class: "producto-id-field" %>
+      <input type="text" 
+             class="form-control producto-autocomplete" 
+             placeholder="Buscar producto por título..."
+             data-detalle-index="<%= df.index %>"
+             autocomplete="off">
+      <div class="producto-info text-muted small mt-1"></div>
     <% end %>
   </div>
 

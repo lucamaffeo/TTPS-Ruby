@@ -30,11 +30,24 @@
             <span class="fw-bold">ActiveSound</span>
           </a>
           <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <button type="button" class="btn btn-as-dark" data-bs-toggle="modal" data-bs-target="#modalLoginWarning">
-                <i class="bi bi-box-arrow-in-right"></i>&nbsp Iniciar Sesión
-              </button>
-            </li>
+            <% if usuario_signed_in? %>
+              <li class="nav-item me-2">
+                <%= link_to productos_path, class: "btn btn-outline-light" do %>
+                  <i class="bi bi-gear-fill"></i> Ir al Backstore
+                <% end %>
+              </li>
+              <li class="nav-item">
+                <span class="navbar-text text-white me-2">
+                  <i class="bi bi-person-circle"></i> <%= current_usuario.nombre %>
+                </span>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <button type="button" class="btn btn-as-dark" data-bs-toggle="modal" data-bs-target="#modalLoginWarning">
+                  <i class="bi bi-box-arrow-in-right"></i>&nbsp Iniciar Sesión
+                </button>
+              </li>
+            <% end %>
           </ul>
         </div>
       </nav>

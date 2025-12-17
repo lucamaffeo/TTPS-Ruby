@@ -1,12 +1,11 @@
 class Usuario < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # === DEVISE ===
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  # === CONSTANTES ===
   DEFAULT_PASSWORD = "123456".freeze
 
-  # Definición de roles sin usar enum (evita conflicto ActiveRecord::Enum)
   ROLES = {
     empleado: 0,
     gerente: 1,
@@ -29,13 +28,40 @@ class Usuario < ApplicationRecord
     eliminado: "Eliminado"
   }.freeze
 
-  # Scope por defecto: solo usuarios activos
-  default_scope { where(estado: ESTADOS[:activo]) }
+  # === VALIDACIONES ===
+  validates :rol, inclusion: { in: ROLES.values }, allow_nil: true
+  validates :nombre, presence: { message: "no puede estar vacío" }, 
+            length: { minimum: 2, maximum: 50 }, 
+            format: { with: /\A[[:alpha:]\s]+\z/, message: "solo puede contener letras y espacios" }
+  validates :dni, presence: { message: "no puede estar vacío" }, 
+            uniqueness: { message: "ya está en uso" }, 
+            format: { with: /\A\d{7,8}\z/, message: "debe tener 7 u 8 dígitos" }
+  validates :email, presence: { message: "no puede estar vacío" }, 
+            uniqueness: { message: "ya está en uso" }, 
+            format: { with: URI::MailTo::EMAIL_REGEXP, message: "debe ser un email válido" }
+  validates :rol, inclusion: { in: ROLES.values, message: "rol inválido" }, allow_nil: false
+  validates :estado, inclusion: { in: ESTADOS.values, message: "estado inválido" }, allow_nil: false
+  validates :password, confirmation: { message: "no coincide con la confirmación" }, 
+            length: { minimum: 6, message: "debe tener al menos 6 caracteres" }, 
+            if: :password_required?
+  validates :password, confirmation: { message: "no coincide con la confirmación" }, 
+            if: -> { password.present? }
 
-  # Scope para incluir eliminados
+  # === SCOPES ===
+  default_scope { where(estado: ESTADOS[:activo]) }
   scope :con_eliminados, -> { unscope(where: :estado) }
   scope :solo_eliminados, -> { unscope(where: :estado).where(estado: ESTADOS[:eliminado]) }
 
+  # === MÉTODOS DE CLASE ===
+  # Construye un usuario con la contraseña default
+  def self.con_contraseña_default(attrs)
+    usuario = new(attrs)
+    usuario.password = DEFAULT_PASSWORD
+    usuario.password_confirmation = DEFAULT_PASSWORD
+    usuario
+  end
+
+  # === MÉTODOS DE INSTANCIA ===
   # Devuelve el símbolo del rol (ej :empleado) o nil si no existe
   def rol_sym
     ROLES.key(rol)
@@ -84,24 +110,6 @@ class Usuario < ApplicationRecord
     update(estado: ESTADOS[:eliminado])
   end
 
-  # Validación: solo roles válidos (0, 1, 2) o nil
-  validates :rol,
-            inclusion: { in: ROLES.values },
-            allow_nil: true
-
-  validates :nombre, presence: { message: "no puede estar vacío" }, length: { minimum: 2, maximum: 50 }, format: { with: /\A[[:alpha:]\s]+\z/, message: "solo puede contener letras y espacios" }
-  validates :dni, presence: { message: "no puede estar vacío" }, uniqueness: { message: "ya está en uso" }, format: { with: /\A\d{7,8}\z/, message: "debe tener 7 u 8 dígitos" }
-  validates :email, presence: { message: "no puede estar vacío" }, uniqueness: { message: "ya está en uso" }, format: { with: URI::MailTo::EMAIL_REGEXP, message: "debe ser un email válido" }
-  validates :rol, inclusion: { in: ROLES.values, message: "rol inválido" }, allow_nil: false
-  validates :estado, inclusion: { in: ESTADOS.values, message: "estado inválido" }, allow_nil: false
-  validates :password, confirmation: { message: "no coincide con la confirmación" }, length: { minimum: 6, message: "debe tener al menos 6 caracteres" }, if: :password_required?
-
-  # Mensaje de confirmación de contraseña en español
-  validates :password, confirmation: { message: "no coincide con la confirmación" }, if: -> {
-    # Aplica cuando hay password cargada (en create o update con cambio)
-    password.present?
-  }
-
   # Override de Devise para evitar login de usuarios eliminados
   def active_for_authentication?
     super && activo?
@@ -109,14 +117,6 @@ class Usuario < ApplicationRecord
 
   def inactive_message
     activo? ? super : :deleted_account
-  end
-
-  # Construye un usuario con la contraseña default
-  def self.con_contraseña_default(attrs)
-    usuario = new(attrs)
-    usuario.password = DEFAULT_PASSWORD
-    usuario.password_confirmation = DEFAULT_PASSWORD
-    usuario
   end
 
   # Aplica la actualización respetando reglas de dominio.

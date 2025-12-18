@@ -119,7 +119,7 @@ GEM
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
-    faker (3.5.2)
+    faker (3.5.3)
       i18n (>= 1.8.11, < 2)
     fugit (1.12.1)
       et-orbi (~> 1.4)
@@ -409,7 +409,7 @@ DEPENDENCIES
   chartkick
   debug
   devise (~> 4.9)
-  faker (~> 3.4)
+  faker (~> 3.5)
   groupdate
   importmap-rails
   jbuilder
